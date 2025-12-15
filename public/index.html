@@ -127,6 +127,89 @@
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.35), rgba(118, 75, 162, 0.35));
         }
 
+        /* Pricing Cards */
+        .pricing {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .price-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .price-card.selected {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .price-card.popular {
+            position: relative;
+        }
+
+        .price-card.popular::before {
+            content: '🔥 Выгодно';
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .price-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .price-duration {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .price-desc {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .price-amount {
+            text-align: right;
+        }
+
+        .price-value {
+            color: #10b981;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .price-period {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .price-old {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            text-decoration: line-through;
+        }
+
         .connect-btn {
             width: 100%;
             padding: 18px;
@@ -144,6 +227,14 @@
         .connect-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .pay-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .pay-btn:hover {
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
         }
 
         .connect-btn:disabled {
@@ -242,6 +333,40 @@
         .service-btn.selected .icon-img {
             animation: float 2s ease-in-out infinite;
         }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .step-dot.done {
+            background: #10b981;
+        }
     </style>
 </head>
 <body>
@@ -253,6 +378,13 @@
                 <p>Безопасный доступ к любимым сервисам</p>
             </div>
 
+            <div class="step-indicator">
+                <div class="step-dot active" id="dot1"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-dot" id="dot3"></div>
+            </div>
+
+            <!-- Step 1: Select Service -->
             <div id="step1">
                 <div class="services">
                     <button class="service-btn" data-service="instagram" onclick="selectService(this)">
@@ -269,14 +401,63 @@
                     </button>
                 </div>
 
-                <button class="connect-btn" onclick="connect()">
-                    🚀 Подключиться
+                <button class="connect-btn" onclick="goToStep2()">
+                    Далее →
                 </button>
             </div>
 
+            <!-- Step 2: Select Plan & Pay -->
             <div id="step2" class="hidden">
+                <div class="pricing">
+                    <div class="price-card" data-days="7" data-amount="99" onclick="selectPlan(this)">
+                        <div class="price-info">
+                            <div class="price-duration">7 дней</div>
+                            <div class="price-desc">Попробовать</div>
+                        </div>
+                        <div class="price-amount">
+                            <div class="price-value">99 ₽</div>
+                        </div>
+                    </div>
+                    <div class="price-card popular selected" data-days="30" data-amount="299" onclick="selectPlan(this)">
+                        <div class="price-info">
+                            <div class="price-duration">30 дней</div>
+                            <div class="price-desc">Популярный выбор</div>
+                        </div>
+                        <div class="price-amount">
+                            <div class="price-value">299 ₽</div>
+                            <div class="price-period">≈ 10 ₽/день</div>
+                        </div>
+                    </div>
+                    <div class="price-card" data-days="90" data-amount="699" onclick="selectPlan(this)">
+                        <div class="price-info">
+                            <div class="price-duration">90 дней</div>
+                            <div class="price-desc">Максимальная экономия</div>
+                        </div>
+                        <div class="price-amount">
+                            <div class="price-old">897 ₽</div>
+                            <div class="price-value">699 ₽</div>
+                            <div class="price-period">≈ 8 ₽/день</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="connect-btn pay-btn" onclick="pay()">
+                    💳 Оплатить
+                </button>
+
+                <div class="secure-badge">
+                    🔒 Безопасная оплата через ЮKassa
+                </div>
+
+                <button class="connect-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); margin-top: 10px;" onclick="goToStep1()">
+                    ← Назад
+                </button>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div id="step3" class="hidden">
                 <div class="status success">
-                    ✅ Конфигурация готова!
+                    ✅ Оплата прошла успешно!
                 </div>
                 
                 <div class="config-link">
@@ -308,7 +489,13 @@
 
     <script>
         let selectedService = 'all';
+        let selectedPlan = { days: 30, amount: 299 };
         let configToken = null;
+
+        // Check if returning from payment
+        if (window.location.search.includes('payment=success')) {
+            createConfigAfterPayment();
+        }
 
         function selectService(btn) {
             document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('selected'));
@@ -316,18 +503,97 @@
             selectedService = btn.dataset.service;
         }
 
-        async function connect() {
-            const btn = document.querySelector('.connect-btn');
+        function selectPlan(card) {
+            document.querySelectorAll('.price-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedPlan = {
+                days: parseInt(card.dataset.days),
+                amount: parseInt(card.dataset.amount)
+            };
+        }
+
+        function goToStep1() {
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('dot1').classList.add('active');
+            document.getElementById('dot1').classList.remove('done');
+            document.getElementById('dot2').classList.remove('active');
+        }
+
+        function goToStep2() {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('dot1').classList.remove('active');
+            document.getElementById('dot1').classList.add('done');
+            document.getElementById('dot2').classList.add('active');
+        }
+
+        function goToStep3() {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+            document.getElementById('dot1').classList.add('done');
+            document.getElementById('dot2').classList.add('done');
+            document.getElementById('dot3').classList.add('active');
+        }
+
+        async function pay() {
+            const btn = document.querySelector('.pay-btn');
             const errorMsg = document.getElementById('errorMsg');
             
             btn.disabled = true;
-            btn.innerHTML = '⏳ Создаём подключение...';
+            btn.innerHTML = '⏳ Создаём платёж...';
             btn.classList.add('loading');
             errorMsg.classList.add('hidden');
 
             try {
                 const email = `user_${Date.now()}@vpn.local`;
                 
+                const response = await fetch('/api/payment/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: selectedPlan.amount,
+                        description: `VPN подписка на ${selectedPlan.days} дней`,
+                        email: email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.data.confirmationUrl) {
+                    // Save selected data to localStorage
+                    localStorage.setItem('vpn_plan', JSON.stringify({
+                        service: selectedService,
+                        days: selectedPlan.days,
+                        email: email
+                    }));
+                    
+                    // Redirect to YooKassa
+                    window.location.href = data.data.confirmationUrl;
+                } else {
+                    throw new Error(data.error || 'Ошибка создания платежа');
+                }
+            } catch (error) {
+                errorMsg.textContent = '❌ ' + error.message;
+                errorMsg.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '💳 Оплатить';
+                btn.classList.remove('loading');
+            }
+        }
+
+        async function createConfigAfterPayment() {
+            const savedPlan = JSON.parse(localStorage.getItem('vpn_plan') || '{}');
+            const email = savedPlan.email || `user_${Date.now()}@vpn.local`;
+            const days = savedPlan.days || 30;
+            selectedService = savedPlan.service || 'all';
+
+            try {
                 const response = await fetch('/api/create-user', {
                     method: 'POST',
                     headers: {
@@ -335,19 +601,14 @@
                     },
                     body: JSON.stringify({
                         email: email,
-                        planDuration: 30
+                        planDuration: days
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    configToken = data.data.configToken;
                     document.getElementById('configUrl').href = data.data.configUrl;
-                    document.getElementById('configUrl').textContent = '📥 Скачать конфиг';
-                    
-                    document.getElementById('step1').classList.add('hidden');
-                    document.getElementById('step2').classList.remove('hidden');
                     
                     const goBtn = document.getElementById('goBtn');
                     if (selectedService === 'instagram') {
@@ -357,15 +618,12 @@
                     } else {
                         goBtn.innerHTML = '🌐 Готово к использованию';
                     }
-                } else {
-                    throw new Error(data.error || 'Ошибка создания подключения');
+
+                    goToStep3();
+                    localStorage.removeItem('vpn_plan');
                 }
             } catch (error) {
-                errorMsg.textContent = '❌ ' + error.message;
-                errorMsg.classList.remove('hidden');
-                btn.disabled = false;
-                btn.innerHTML = '🚀 Подключиться';
-                btn.classList.remove('loading');
+                console.error('Error creating config:', error);
             }
         }
 

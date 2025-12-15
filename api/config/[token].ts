@@ -55,7 +55,9 @@ function buildXrayConfig(client: TokenPayload): object {
             "geosite:instagram",
             "geosite:facebook",
             "geosite:meta",
-            "geosite:whatsapp"
+            "geosite:whatsapp",
+            "geosite:youtube",
+            "geosite:google"
           ]
         },
         {
@@ -158,12 +160,12 @@ function buildXrayConfig(client: TokenPayload): object {
         },
         {
           type: "field",
-          domain: routingData.metaDomains,
+          domain: routingData.proxyDomains,
           outboundTag: "PROXY"
         },
         {
           type: "field",
-          ip: routingData.metaIPs,
+          ip: routingData.proxyIPs,
           outboundTag: "PROXY"
         },
         {

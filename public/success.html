@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 VPN Connect — Выберите сервис</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 45px 35px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .success-badge {
+            text-align: center;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .success-badge .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .success-badge h2 {
+            color: #10b981;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .success-badge p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid transparent;
+            border-radius: 24px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .service-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .service-card .icon-img {
+            width: 90px;
+            height: 90px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover .icon-img {
+            transform: scale(1.1) rotate(3deg);
+        }
+
+        .service-card .name {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .service-card .login-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .login-btn {
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .instructions h3 {
+            color: #fff;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .instructions a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .config-download {
+            display: block;
+            margin-top: 20px;
+            padding: 18px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .config-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 11px;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .success-badge .icon {
+            animation: celebrate 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="success-badge">
+                <div class="icon">🎉</div>
+                <h2>Оплата прошла успешно!</h2>
+                <p>Ваш VPN активирован на 30 дней</p>
+            </div>
+
+            <h3 class="section-title">Выберите сервис для входа</h3>
+
+            <div class="services">
+                <a href="https://instagram.com" target="_blank" class="service-card" id="instaCard">
+                    <img src="/instagram.png" alt="Instagram" class="icon-img">
+                    <div class="name">Instagram</div>
+                    <div class="login-btn">👤 Войти</div>
+                </a>
+                <a href="https://youtube.com" target="_blank" class="service-card" id="youtubeCard">
+                    <img src="/youtube.png" alt="YouTube" class="icon-img">
+                    <div class="name">YouTube</div>
+                    <div class="login-btn">👤 Войти</div>
+                </a>
+            </div>
+
+            <a href="#" id="configUrl" class="config-download">
+                📥 Скачать VPN конфиг
+            </a>
+
+            <div class="instructions">
+                <h3>📋 Как подключиться:</h3>
+                <ol>
+                    <li>Скачайте приложение: <a href="https://github.com/2dust/v2rayN/releases" target="_blank">v2rayN</a> (Windows) или <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank">v2rayNG</a> (Android)</li>
+                    <li>Нажмите "Скачать VPN конфиг" выше</li>
+                    <li>Импортируйте файл в приложение</li>
+                    <li>Включите VPN и наслаждайтесь!</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 VPN Connect • <a href="/" style="color: rgba(255,255,255,0.4);">На главную</a>
+        </div>
+    </div>
+
+    <script>
+        // Create config on page load
+        async function init() {
+            const email = localStorage.getItem('vpn_email') || `user_${Date.now()}@vpn.local`;
+            
+            try {
+                const response = await fetch('/api/create-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        planDuration: 30
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('configUrl').href = data.data.configUrl;
+                    localStorage.removeItem('vpn_email');
+                }
+            } catch (error) {
+                console.error('Error creating config:', error);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

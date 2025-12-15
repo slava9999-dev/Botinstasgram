@@ -53,7 +53,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       confirmation: {
         type: 'redirect',
-        return_url: `${baseUrl}/?payment=success`
+        return_url: `${baseUrl}/success.html`
       },
       capture: true,
       description: description,

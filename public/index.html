@@ -1,423 +1,383 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔐 VPN Connect</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-        min-height: 100vh;
-        background: linear-gradient(
-          135deg,
-          #0f0c29 0%,
-          #302b63 50%,
-          #24243e 100%
-        );
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-
-      .container {
-        max-width: 420px;
-        width: 100%;
-      }
-
-      .card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px);
-        border-radius: 24px;
-        padding: 40px 30px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-      }
-
-      .logo {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-
-      .logo-icon {
-        font-size: 48px;
-        margin-bottom: 10px;
-      }
-
-      .logo h1 {
-        color: #fff;
-        font-size: 24px;
-        font-weight: 700;
-      }
-
-      .logo p {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 14px;
-        margin-top: 5px;
-      }
-
-      .services {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-bottom: 20px;
-      }
-
-      .service-btn {
-        background: rgba(255, 255, 255, 0.08);
-        border: 2px solid transparent;
-        border-radius: 16px;
-        padding: 25px 15px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-      }
-
-      .service-btn:hover {
-        background: rgba(255, 255, 255, 0.12);
-        transform: translateY(-3px);
-      }
-
-      .service-btn.selected {
-        border-color: #667eea;
-        background: rgba(102, 126, 234, 0.15);
-      }
-
-      .service-btn .icon {
-        font-size: 40px;
-        margin-bottom: 10px;
-      }
-
-      .service-btn .name {
-        color: #fff;
-        font-size: 14px;
-        font-weight: 600;
-      }
-
-      .instagram-icon {
-        background: linear-gradient(
-          45deg,
-          #f09433,
-          #e6683c,
-          #dc2743,
-          #cc2366,
-          #bc1888
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      .youtube-icon {
-        color: #ff0000;
-      }
-
-      .all-btn {
-        grid-column: 1 / -1;
-        background: linear-gradient(
-          135deg,
-          rgba(102, 126, 234, 0.2),
-          rgba(118, 75, 162, 0.2)
-        );
-        border: 1px solid rgba(102, 126, 234, 0.3);
-      }
-
-      .all-btn:hover {
-        background: linear-gradient(
-          135deg,
-          rgba(102, 126, 234, 0.3),
-          rgba(118, 75, 162, 0.3)
-        );
-      }
-
-      .connect-btn {
-        width: 100%;
-        padding: 18px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        border-radius: 14px;
-        color: #fff;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-      }
-
-      .connect-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-      }
-
-      .connect-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .status {
-        text-align: center;
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 12px;
-        display: none;
-      }
-
-      .status.success {
-        display: block;
-        background: rgba(16, 185, 129, 0.15);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        color: #10b981;
-      }
-
-      .status.error {
-        display: block;
-        background: rgba(239, 68, 68, 0.15);
-        border: 1px solid rgba(239, 68, 68, 0.3);
-        color: #ef4444;
-      }
-
-      .footer {
-        text-align: center;
-        margin-top: 20px;
-        color: rgba(255, 255, 255, 0.4);
-        font-size: 12px;
-      }
-
-      .config-link {
-        display: block;
-        margin-top: 15px;
-        padding: 15px;
-        background: rgba(16, 185, 129, 0.1);
-        border-radius: 12px;
-        text-align: center;
-      }
-
-      .config-link a {
-        color: #10b981;
-        text-decoration: none;
-        font-weight: 600;
-        word-break: break-all;
-      }
-
-      .instructions {
-        margin-top: 20px;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        color: rgba(255, 255, 255, 0.7);
-        font-size: 13px;
-        line-height: 1.6;
-      }
-
-      .instructions h3 {
-        color: #fff;
-        margin-bottom: 10px;
-        font-size: 14px;
-      }
-
-      .instructions ol {
-        padding-left: 20px;
-      }
-
-      .instructions li {
-        margin-bottom: 8px;
-      }
-
-      .hidden {
-        display: none !important;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        50% {
-          opacity: 0.5;
-        }
-      }
 
-      .loading {
-        animation: pulse 1.5s infinite;
-      }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .logo h1 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .services {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .service-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 20px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .service-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-btn.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .service-btn .icon-img {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 12px;
+            border-radius: 16px;
+            object-fit: cover;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+            transition: transform 0.3s ease;
+        }
+
+        .service-btn:hover .icon-img {
+            transform: scale(1.1);
+        }
+
+        .service-btn .name {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .all-btn {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .all-btn .icon-img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .all-btn:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.35), rgba(118, 75, 162, 0.35));
+        }
+
+        .connect-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .connect-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .status.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .status.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+        }
+
+        .config-link {
+            display: block;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .config-link a {
+            color: #10b981;
+            text-decoration: none;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .service-btn.selected .icon-img {
+            animation: float 2s ease-in-out infinite;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="container">
-      <div class="card">
-        <div class="logo">
-          <div class="logo-icon">🛡️</div>
-          <h1>VPN Connect</h1>
-          <p>Безопасный доступ к любимым сервисам</p>
+        <div class="card">
+            <div class="logo">
+                <div class="logo-icon">🛡️</div>
+                <h1>VPN Connect</h1>
+                <p>Безопасный доступ к любимым сервисам</p>
+            </div>
+
+            <div id="step1">
+                <div class="services">
+                    <button class="service-btn" data-service="instagram" onclick="selectService(this)">
+                        <img src="/instagram.png" alt="Instagram" class="icon-img">
+                        <div class="name">Instagram</div>
+                    </button>
+                    <button class="service-btn" data-service="youtube" onclick="selectService(this)">
+                        <img src="/youtube.png" alt="YouTube" class="icon-img">
+                        <div class="name">YouTube</div>
+                    </button>
+                    <button class="service-btn all-btn selected" data-service="all" onclick="selectService(this)">
+                        <img src="/all.png" alt="All" class="icon-img">
+                        <div class="name">Всё сразу (рекомендуем)</div>
+                    </button>
+                </div>
+
+                <button class="connect-btn" onclick="connect()">
+                    🚀 Подключиться
+                </button>
+            </div>
+
+            <div id="step2" class="hidden">
+                <div class="status success">
+                    ✅ Конфигурация готова!
+                </div>
+                
+                <div class="config-link">
+                    <a id="configUrl" href="#" target="_blank">📥 Скачать конфиг</a>
+                </div>
+
+                <div class="instructions">
+                    <h3>📋 Инструкция:</h3>
+                    <ol>
+                        <li>Скачайте <a href="https://github.com/2dust/v2rayN/releases" target="_blank" style="color: #667eea;">v2rayN</a> (Windows) или <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank" style="color: #667eea;">v2rayNG</a> (Android)</li>
+                        <li>Нажмите "Скачать конфиг" выше</li>
+                        <li>Импортируйте файл в приложение</li>
+                        <li>Включите VPN и наслаждайтесь!</li>
+                    </ol>
+                </div>
+
+                <button class="connect-btn" onclick="goToService()" id="goBtn">
+                    🎯 Перейти к сервису
+                </button>
+            </div>
+
+            <div id="errorMsg" class="status error hidden"></div>
         </div>
 
-        <div id="step1">
-          <div class="services">
-            <button
-              class="service-btn"
-              data-service="instagram"
-              onclick="selectService(this)"
-            >
-              <div class="icon instagram-icon">📸</div>
-              <div class="name">Instagram</div>
-            </button>
-            <button
-              class="service-btn"
-              data-service="youtube"
-              onclick="selectService(this)"
-            >
-              <div class="icon youtube-icon">▶️</div>
-              <div class="name">YouTube</div>
-            </button>
-            <button
-              class="service-btn all-btn selected"
-              data-service="all"
-              onclick="selectService(this)"
-            >
-              <div class="icon">🌐</div>
-              <div class="name">Всё сразу (рекомендуем)</div>
-            </button>
-          </div>
-
-          <button class="connect-btn" onclick="connect()">
-            🚀 Подключиться
-          </button>
+        <div class="footer">
+            Powered by Smart Config Generator v2.0
         </div>
-
-        <div id="step2" class="hidden">
-          <div class="status success">✅ Конфигурация готова!</div>
-
-          <div class="config-link">
-            <a id="configUrl" href="#" target="_blank">📥 Скачать конфиг</a>
-          </div>
-
-          <div class="instructions">
-            <h3>📋 Инструкция:</h3>
-            <ol>
-              <li>
-                Скачайте
-                <a
-                  href="https://github.com/2dust/v2rayN/releases"
-                  target="_blank"
-                  style="color: #667eea"
-                  >v2rayN</a
-                >
-                (Windows) или
-                <a
-                  href="https://play.google.com/store/apps/details?id=com.v2ray.ang"
-                  target="_blank"
-                  style="color: #667eea"
-                  >v2rayNG</a
-                >
-                (Android)
-              </li>
-              <li>Нажмите "Скачать конфиг" выше</li>
-              <li>Импортируйте файл в приложение</li>
-              <li>Включите VPN и наслаждайтесь!</li>
-            </ol>
-          </div>
-
-          <button class="connect-btn" onclick="goToService()" id="goBtn">
-            🎯 Перейти к сервису
-          </button>
-        </div>
-
-        <div id="errorMsg" class="status error hidden"></div>
-      </div>
-
-      <div class="footer">Powered by Smart Config Generator v2.0</div>
     </div>
 
     <script>
-      let selectedService = "all";
-      let configToken = null;
+        let selectedService = 'all';
+        let configToken = null;
 
-      function selectService(btn) {
-        document
-          .querySelectorAll(".service-btn")
-          .forEach((b) => b.classList.remove("selected"));
-        btn.classList.add("selected");
-        selectedService = btn.dataset.service;
-      }
+        function selectService(btn) {
+            document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedService = btn.dataset.service;
+        }
 
-      async function connect() {
-        const btn = document.querySelector(".connect-btn");
-        const errorMsg = document.getElementById("errorMsg");
+        async function connect() {
+            const btn = document.querySelector('.connect-btn');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Создаём подключение...';
+            btn.classList.add('loading');
+            errorMsg.classList.add('hidden');
 
-        btn.disabled = true;
-        btn.innerHTML = "⏳ Создаём подключение...";
-        btn.classList.add("loading");
-        errorMsg.classList.add("hidden");
+            try {
+                const email = `user_${Date.now()}@vpn.local`;
+                
+                const response = await fetch('/api/create-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        planDuration: 30
+                    })
+                });
 
-        try {
-          // Generate unique email based on timestamp
-          const email = `user_${Date.now()}@vpn.local`;
+                const data = await response.json();
 
-          const response = await fetch("/api/create-user", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: email,
-              planDuration: 30,
-            }),
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            configToken = data.data.configToken;
-            document.getElementById("configUrl").href = data.data.configUrl;
-            document.getElementById("configUrl").textContent =
-              "📥 Скачать конфиг";
-
-            document.getElementById("step1").classList.add("hidden");
-            document.getElementById("step2").classList.remove("hidden");
-
-            // Update button based on selected service
-            const goBtn = document.getElementById("goBtn");
-            if (selectedService === "instagram") {
-              goBtn.innerHTML = "📸 Открыть Instagram";
-            } else if (selectedService === "youtube") {
-              goBtn.innerHTML = "▶️ Открыть YouTube";
-            } else {
-              goBtn.innerHTML = "🌐 Готово к использованию";
+                if (data.success) {
+                    configToken = data.data.configToken;
+                    document.getElementById('configUrl').href = data.data.configUrl;
+                    document.getElementById('configUrl').textContent = '📥 Скачать конфиг';
+                    
+                    document.getElementById('step1').classList.add('hidden');
+                    document.getElementById('step2').classList.remove('hidden');
+                    
+                    const goBtn = document.getElementById('goBtn');
+                    if (selectedService === 'instagram') {
+                        goBtn.innerHTML = '📸 Открыть Instagram';
+                    } else if (selectedService === 'youtube') {
+                        goBtn.innerHTML = '▶️ Открыть YouTube';
+                    } else {
+                        goBtn.innerHTML = '🌐 Готово к использованию';
+                    }
+                } else {
+                    throw new Error(data.error || 'Ошибка создания подключения');
+                }
+            } catch (error) {
+                errorMsg.textContent = '❌ ' + error.message;
+                errorMsg.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '🚀 Подключиться';
+                btn.classList.remove('loading');
             }
-          } else {
-            throw new Error(data.error || "Ошибка создания подключения");
-          }
-        } catch (error) {
-          errorMsg.textContent = "❌ " + error.message;
-          errorMsg.classList.remove("hidden");
-          btn.disabled = false;
-          btn.innerHTML = "🚀 Подключиться";
-          btn.classList.remove("loading");
         }
-      }
 
-      function goToService() {
-        if (selectedService === "instagram") {
-          window.open("https://instagram.com", "_blank");
-        } else if (selectedService === "youtube") {
-          window.open("https://youtube.com", "_blank");
-        } else {
-          alert(
-            "VPN готов! Теперь вы можете открыть Instagram, YouTube или любой другой сервис."
-          );
+        function goToService() {
+            if (selectedService === 'instagram') {
+                window.open('https://instagram.com', '_blank');
+            } else if (selectedService === 'youtube') {
+                window.open('https://youtube.com', '_blank');
+            } else {
+                alert('VPN готов! Теперь вы можете открыть Instagram, YouTube или любой другой сервис.');
+            }
         }
-      }
     </script>
-  </body>
+</body>
 </html>

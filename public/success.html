@@ -36,27 +36,43 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
         }
 
-        .success-badge {
+        .status-badge {
             text-align: center;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 30px;
         }
 
-        .success-badge .icon {
+        .status-badge.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-badge .icon {
             font-size: 48px;
             margin-bottom: 10px;
         }
 
-        .success-badge h2 {
-            color: #10b981;
+        .status-badge h2 {
             font-size: 20px;
             font-weight: 700;
         }
 
-        .success-badge p {
+        .status-badge.success h2 { color: #10b981; }
+        .status-badge.pending h2 { color: #f59e0b; }
+        .status-badge.error h2 { color: #ef4444; }
+
+        .status-badge p {
             color: rgba(255, 255, 255, 0.6);
             font-size: 14px;
             margin-top: 5px;
@@ -170,11 +186,20 @@
             text-align: center;
             text-decoration: none;
             transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            width: 100%;
         }
 
         .config-download:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .config-download:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .footer {
@@ -184,52 +209,117 @@
             font-size: 11px;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
         @keyframes celebrate {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
 
-        .success-badge .icon {
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-badge .icon {
             animation: celebrate 2s ease-in-out infinite;
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .retry-btn {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.5);
+            border-radius: 10px;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            background: rgba(102, 126, 234, 0.3);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <div class="success-badge">
-                <div class="icon">🎉</div>
-                <h2>Оплата прошла успешно!</h2>
-                <p>Ваш VPN активирован на 30 дней</p>
+            <!-- Pending State -->
+            <div id="pendingState" class="status-badge pending">
+                <div class="icon">⏳</div>
+                <h2>Проверяем оплату...</h2>
+                <p id="pendingText">Подождите, мы подтверждаем ваш платёж</p>
             </div>
 
-            <h3 class="section-title">Выберите сервис для входа</h3>
+            <!-- Success State (hidden by default) -->
+            <div id="successState" class="hidden">
+                <div class="status-badge success">
+                    <div class="icon">🎉</div>
+                    <h2>Оплата прошла успешно!</h2>
+                    <p>Ваш VPN активирован на 30 дней</p>
+                </div>
 
-            <div class="services">
-                <a href="https://instagram.com" target="_blank" class="service-card" id="instaCard">
-                    <img src="/instagram.png" alt="Instagram" class="icon-img">
-                    <div class="name">Instagram</div>
-                    <div class="login-btn">👤 Войти</div>
+                <h3 class="section-title">Выберите сервис для входа</h3>
+
+                <div class="services">
+                    <a href="https://instagram.com" target="_blank" class="service-card">
+                        <img src="/instagram.png" alt="Instagram" class="icon-img">
+                        <div class="name">Instagram</div>
+                        <div class="login-btn">👤 Войти</div>
+                    </a>
+                    <a href="https://youtube.com" target="_blank" class="service-card">
+                        <img src="/youtube.png" alt="YouTube" class="icon-img">
+                        <div class="name">YouTube</div>
+                        <div class="login-btn">👤 Войти</div>
+                    </a>
+                </div>
+
+                <a href="#" id="configUrl" class="config-download">
+                    📥 Скачать VPN конфиг
                 </a>
-                <a href="https://youtube.com" target="_blank" class="service-card" id="youtubeCard">
-                    <img src="/youtube.png" alt="YouTube" class="icon-img">
-                    <div class="name">YouTube</div>
-                    <div class="login-btn">👤 Войти</div>
-                </a>
+
+                <div class="instructions">
+                    <h3>📋 Как подключиться:</h3>
+                    <ol>
+                        <li>Скачайте приложение: <a href="https://github.com/2dust/v2rayN/releases" target="_blank">v2rayN</a> (Windows) или <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank">v2rayNG</a> (Android)</li>
+                        <li>Нажмите "Скачать VPN конфиг" выше</li>
+                        <li>Импортируйте файл в приложение</li>
+                        <li>Включите VPN и наслаждайтесь!</li>
+                    </ol>
+                </div>
             </div>
 
-            <a href="#" id="configUrl" class="config-download">
-                📥 Скачать VPN конфиг
-            </a>
-
-            <div class="instructions">
-                <h3>📋 Как подключиться:</h3>
-                <ol>
-                    <li>Скачайте приложение: <a href="https://github.com/2dust/v2rayN/releases" target="_blank">v2rayN</a> (Windows) или <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank">v2rayNG</a> (Android)</li>
-                    <li>Нажмите "Скачать VPN конфиг" выше</li>
-                    <li>Импортируйте файл в приложение</li>
-                    <li>Включите VPN и наслаждайтесь!</li>
-                </ol>
+            <!-- Error State (hidden by default) -->
+            <div id="errorState" class="hidden">
+                <div class="status-badge error">
+                    <div class="icon">❌</div>
+                    <h2>Упс, что-то пошло не так</h2>
+                    <p id="errorText">Не удалось подтвердить платёж</p>
+                </div>
+                <button class="retry-btn" onclick="checkPaymentStatus()">🔄 Проверить снова</button>
             </div>
         </div>
 
@@ -239,34 +329,92 @@
     </div>
 
     <script>
-        // Create config on page load
-        async function init() {
-            const email = localStorage.getItem('vpn_email') || `user_${Date.now()}@vpn.local`;
-            
-            try {
-                const response = await fetch('/api/create-user', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        planDuration: 30
-                    })
-                });
+        const STATE = {
+            PENDING: 'pending',
+            SUCCESS: 'success',
+            ERROR: 'error'
+        };
 
+        let checkAttempts = 0;
+        const MAX_ATTEMPTS = 30; // 30 attempts * 2 seconds = 60 seconds max wait
+        const CHECK_INTERVAL = 2000; // 2 seconds
+
+        function showState(state) {
+            document.getElementById('pendingState').classList.toggle('hidden', state !== STATE.PENDING);
+            document.getElementById('successState').classList.toggle('hidden', state !== STATE.SUCCESS);
+            document.getElementById('errorState').classList.toggle('hidden', state !== STATE.ERROR);
+        }
+
+        async function checkPaymentStatus() {
+            const email = localStorage.getItem('vpn_email');
+            const paymentId = localStorage.getItem('vpn_payment_id');
+
+            if (!email && !paymentId) {
+                // No payment info found - maybe direct access
+                showState(STATE.ERROR);
+                document.getElementById('errorText').textContent = 
+                    'Информация о платеже не найдена. Попробуйте оплатить заново.';
+                return;
+            }
+
+            try {
+                // Build query params
+                const params = new URLSearchParams();
+                if (paymentId) params.append('payment_id', paymentId);
+                if (email) params.append('email', email);
+
+                const response = await fetch(`/api/payment/status?${params.toString()}`);
                 const data = await response.json();
 
-                if (data.success) {
+                if (data.success && data.confirmed) {
+                    // Payment confirmed!
+                    showState(STATE.SUCCESS);
                     document.getElementById('configUrl').href = data.data.configUrl;
+                    
+                    // Clean up localStorage
                     localStorage.removeItem('vpn_email');
+                    localStorage.removeItem('vpn_payment_id');
+                    return;
                 }
+
+                // Not confirmed yet
+                checkAttempts++;
+                
+                if (checkAttempts >= MAX_ATTEMPTS) {
+                    showState(STATE.ERROR);
+                    document.getElementById('errorText').textContent = 
+                        'Превышено время ожидания. Если вы оплатили, напишите в поддержку.';
+                    return;
+                }
+
+                // Update pending text
+                document.getElementById('pendingText').textContent = 
+                    `Проверка ${checkAttempts} из ${MAX_ATTEMPTS}... Подождите`;
+
+                // Try again after interval
+                setTimeout(checkPaymentStatus, CHECK_INTERVAL);
+
             } catch (error) {
-                console.error('Error creating config:', error);
+                console.error('Error checking payment status:', error);
+                checkAttempts++;
+                
+                if (checkAttempts >= MAX_ATTEMPTS) {
+                    showState(STATE.ERROR);
+                    document.getElementById('errorText').textContent = 
+                        'Ошибка проверки платежа. Попробуйте позже.';
+                    return;
+                }
+
+                // Retry on network error
+                setTimeout(checkPaymentStatus, CHECK_INTERVAL);
             }
         }
 
-        init();
+        // Start checking on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showState(STATE.PENDING);
+            checkPaymentStatus();
+        });
     </script>
 </body>
 </html>

@@ -142,7 +142,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.
 
 ## 💡 Заметки
 
-- JWT_SECRET уже добавлен: `mySecretKeyForJWT2025VerySecure`
+- JWT_SECRET необходимо сгенерировать (см. .env.example)
 - Тариф на сайте: 99₽/месяц
 - После оплаты пользователь попадает на /success.html
 - Конфиг создаётся автоматически при загрузке success.html

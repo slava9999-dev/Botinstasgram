@@ -371,7 +371,7 @@
             try {
                 const email = `user_${Date.now()}@vpn.local`;
                 
-                // Save email for later
+                // Save email for later verification
                 localStorage.setItem('vpn_email', email);
                 
                 const response = await fetch('/api/payment/create', {
@@ -389,6 +389,8 @@
                 const data = await response.json();
 
                 if (data.success && data.data.confirmationUrl) {
+                    // Save payment ID for status check on success page
+                    localStorage.setItem('vpn_payment_id', data.data.paymentId);
                     window.location.href = data.data.confirmationUrl;
                 } else {
                     throw new Error(data.error || 'Ошибка создания платежа');

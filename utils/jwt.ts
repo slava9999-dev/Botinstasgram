@@ -13,7 +13,17 @@ export interface TokenPayload {
   exp: number;
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-me';
+/**
+ * Get JWT_SECRET from environment with validation.
+ * Throws error if not configured - this is intentional for security.
+ */
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is required. Please set it in Vercel or .env file.');
+  }
+  return secret;
+}
 
 /**
  * Generate a config token embedding all client info.
@@ -41,7 +51,7 @@ export function generateConfigToken(clientInfo: {
     serverName: clientInfo.serverName
   };
 
-  return jwt.sign(payload, JWT_SECRET, {
+  return jwt.sign(payload, getJwtSecret(), {
     algorithm: 'HS256',
     expiresIn: `${expiresInDays}d`
   });
@@ -53,7 +63,7 @@ export function generateConfigToken(clientInfo: {
  */
 export function validateConfigToken(token: string): TokenPayload | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const decoded = jwt.verify(token, getJwtSecret()) as unknown as TokenPayload;
     return decoded;
   } catch (error) {
     return null;

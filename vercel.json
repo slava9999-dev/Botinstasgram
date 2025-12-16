@@ -15,5 +15,13 @@
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/payment/webhook.ts": {
+      "maxDuration": 30
+    },
+    "api/create-user/index.ts": {
+      "maxDuration": 30
+    }
+  }
 }

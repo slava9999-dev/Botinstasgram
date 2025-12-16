@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧪 VPN Connect — Тестовый Доступ</title>
+    <title>VPN Connect — Доступ к Instagram и YouTube</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,185 +16,258 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
         }
 
         .container {
-            max-width: 420px;
-            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 28px;
-            padding: 45px 35px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            background: #fff;
+            border-radius: 24px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-        .test-badge {
+        /* Header */
+        .header {
             text-align: center;
-            background: rgba(245, 158, 11, 0.15);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            margin-bottom: 25px;
+        }
+
+        .header .emoji {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        /* Big button */
+        .big-button {
+            display: block;
+            width: 100%;
+            padding: 22px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .big-button.primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+        }
+
+        .big-button.primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .big-button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        /* Steps section */
+        .steps-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .steps-section.show {
+            display: block;
+        }
+
+        .step-card {
+            background: #f8fafc;
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+            border: 2px solid #e2e8f0;
         }
 
-        .test-badge .icon {
+        .step-card.active {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .step-card.done {
+            border-color: #10b981;
+            background: #dcfce7;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: #667eea;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .step-card.done .step-number {
+            background: #10b981;
+        }
+
+        .step-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .step-content {
+            margin-left: 48px;
+        }
+
+        .step-text {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .step-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 24px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .step-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .step-button.green {
+            background: #10b981;
+        }
+
+        .step-button.green:hover {
+            background: #059669;
+        }
+
+        /* QR Section */
+        .qr-section {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 16px;
+            border: 3px solid #10b981;
+        }
+
+        .qr-section h3 {
+            color: #1a1a2e;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .qr-section canvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .qr-hint {
+            margin-top: 15px;
+            padding: 12px;
+            background: #fef3c7;
+            border-radius: 10px;
+            color: #92400e;
+            font-size: 13px;
+        }
+
+        /* Device badge */
+        .device-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #f0f9ff;
+            color: #0369a1;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        /* Success message */
+        .success-box {
+            background: #dcfce7;
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .success-box .emoji {
             font-size: 48px;
             margin-bottom: 10px;
         }
 
-        .test-badge h2 {
-            color: #f59e0b;
-            font-size: 20px;
-            font-weight: 700;
+        .success-box h3 {
+            color: #166534;
+            margin-bottom: 8px;
         }
 
-        .test-badge p {
-            color: rgba(255, 255, 255, 0.6);
+        .success-box p {
+            color: #15803d;
             font-size: 14px;
-            margin-top: 5px;
         }
 
-        .info-block {
-            background: rgba(102, 126, 234, 0.1);
-            border: 1px solid rgba(102, 126, 234, 0.3);
+        /* Error */
+        .error-box {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
             border-radius: 12px;
             padding: 15px;
-            margin-bottom: 25px;
-        }
-
-        .info-block p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .get-config-btn {
-            display: block;
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            border: none;
-            border-radius: 14px;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .get-config-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4);
-        }
-
-        .get-config-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .result {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            display: none;
-        }
-
-        .result.show {
-            display: block;
-        }
-
-        .result h3 {
-            color: #10b981;
-            font-size: 16px;
-            margin-bottom: 15px;
-        }
-
-        .result a {
-            display: block;
-            padding: 15px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-radius: 10px;
-            color: #fff;
-            text-decoration: none;
-            text-align: center;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .result a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .error {
             margin-top: 15px;
-            padding: 15px;
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 10px;
-            color: #ef4444;
+            color: #dc2626;
             font-size: 14px;
             display: none;
         }
 
-        .error.show {
+        .error-box.show {
             display: block;
         }
 
-        .instructions {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 13px;
-            line-height: 1.7;
-        }
-
-        .instructions h3 {
-            color: #fff;
-            margin-bottom: 12px;
-            font-size: 15px;
-        }
-
-        .instructions ol {
-            padding-left: 20px;
-        }
-
-        .instructions li {
-            margin-bottom: 10px;
-        }
-
-        .instructions a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 25px;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 11px;
-        }
-
-        .footer a {
-            color: rgba(255, 255, 255, 0.4);
-            text-decoration: none;
-        }
-
+        /* Loading animation */
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -202,92 +276,287 @@
         .loading {
             animation: pulse 1.5s infinite;
         }
+
+        /* Help link */
+        .help-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .help-link:hover {
+            color: #667eea;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1a1a2e;
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Hide elements based on device */
+        .android-only, .ios-only, .desktop-only {
+            display: none;
+        }
+
+        body.is-android .android-only { display: block; }
+        body.is-ios .ios-only { display: block; }
+        body.is-desktop .desktop-only { display: block; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <div class="test-badge">
-                <div class="icon">🧪</div>
-                <h2>Тестовый доступ</h2>
-                <p>Бесплатный VPN на 1 день для проверки</p>
+            <!-- Initial State -->
+            <div id="initialState">
+                <div class="header">
+                    <div class="emoji">🔓</div>
+                    <h1>Открой Instagram и YouTube</h1>
+                    <p>Бесплатный тест на 1 день — проверь сам!</p>
+                </div>
+
+                <button class="big-button primary" id="startBtn" onclick="startSetup()">
+                    🚀 Получить бесплатный VPN
+                </button>
+
+                <div id="errorBox" class="error-box"></div>
             </div>
 
-            <div class="info-block">
-                <p>⚠️ Эта страница только для тестирования! После проверки работы VPN, обычные пользователи будут оплачивать через главную страницу.</p>
+            <!-- Setup Steps -->
+            <div id="stepsSection" class="steps-section">
+                <div class="device-badge" id="deviceBadge">
+                    <span id="deviceIcon">📱</span>
+                    <span id="deviceName">Телефон Android</span>
+                </div>
+
+                <!-- Step 1: Download app -->
+                <div class="step-card active" id="step1">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <div class="step-title">Скачай приложение</div>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-text">Это бесплатно. Нужно для подключения VPN.</p>
+                        
+                        <!-- Android -->
+                        <div class="android-only">
+                            <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank" class="step-button">
+                                📲 Скачать v2rayNG
+                            </a>
+                        </div>
+                        
+                        <!-- iOS -->
+                        <div class="ios-only">
+                            <a href="https://apps.apple.com/app/napsternetv/id1629465476" target="_blank" class="step-button">
+                                📲 Скачать NapsternetV
+                            </a>
+                            <p class="step-text" style="margin-top: 10px; font-size: 12px;">
+                                Или Shadowrocket (платное, но лучше)
+                            </p>
+                        </div>
+                        
+                        <!-- Desktop -->
+                        <div class="desktop-only">
+                            <a href="https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-With-Core.zip" target="_blank" class="step-button">
+                                💻 Скачать v2rayN
+                            </a>
+                            <p class="step-text" style="margin-top: 10px; font-size: 12px;">
+                                Распакуй ZIP и запусти v2rayN.exe
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Add config -->
+                <div class="step-card" id="step2">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Добавь VPN в приложение</div>
+                    </div>
+                    <div class="step-content">
+                        <!-- Mobile: QR code -->
+                        <div class="android-only">
+                            <div class="qr-section">
+                                <h3>📸 Отсканируй этот код в приложении</h3>
+                                <canvas id="qrcode"></canvas>
+                                <div class="qr-hint">
+                                    В приложении нажми ➕ → "Сканировать QR-код"
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ios-only">
+                            <div class="qr-section">
+                                <h3>📸 Отсканируй этот код в приложении</h3>
+                                <canvas id="qrcode-ios"></canvas>
+                                <div class="qr-hint">
+                                    В приложении нажми ➕ → "Scan QR Code"
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Desktop: Copy link -->
+                        <div class="desktop-only">
+                            <p class="step-text">Нажми кнопку и вставь ссылку в v2rayN:</p>
+                            <button class="step-button green" onclick="copyLink()">
+                                📋 Скопировать VPN-ссылку
+                            </button>
+                            <p class="step-text" style="margin-top: 10px; font-size: 12px;">
+                                В v2rayN: Серверы → Импорт из буфера обмена
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Turn on -->
+                <div class="step-card" id="step3">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <div class="step-title">Включи VPN</div>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-text android-only">
+                            В приложении нажми кнопку ▶️ внизу экрана. <br>
+                            Разреши подключение если спросит.
+                        </p>
+                        <p class="step-text ios-only">
+                            В приложении включи переключатель VPN. <br>
+                            Разреши подключение если спросит.
+                        </p>
+                        <p class="step-text desktop-only">
+                            В v2rayN нажми правой кнопкой на сервер → <br>
+                            "Установить как активный". <br>
+                            Потом: Системный прокси → Установить.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Success -->
+                <div class="success-box">
+                    <div class="emoji">🎉</div>
+                    <h3>Готово!</h3>
+                    <p>Теперь открой Instagram или YouTube — должно работать!</p>
+                </div>
+
+                <a href="/" class="help-link">
+                    ❓ Не получается? Напиши нам
+                </a>
             </div>
-
-            <button class="get-config-btn" onclick="getTestConfig()">
-                🔑 Получить тестовый конфиг
-            </button>
-
-            <div id="result" class="result">
-                <h3>✅ Конфиг готов!</h3>
-                <a href="#" id="configLink" target="_blank">📥 Скачать VPN конфиг</a>
-            </div>
-
-            <div id="error" class="error"></div>
-
-            <div class="instructions">
-                <h3>📋 Как подключиться:</h3>
-                <ol>
-                    <li>Скачайте приложение: <a href="https://github.com/2dust/v2rayN/releases" target="_blank">v2rayN</a> (Windows) или <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank">v2rayNG</a> (Android)</li>
-                    <li>Нажмите кнопку выше чтобы получить конфиг</li>
-                    <li>Скачайте и импортируйте конфиг в приложение</li>
-                    <li>Включите VPN</li>
-                    <li>Проверьте доступ к Instagram и YouTube!</li>
-                </ol>
-            </div>
-        </div>
-
-        <div class="footer">
-            🧪 Тестовая страница • <a href="/">На главную</a>
         </div>
     </div>
 
-    <script>
-        async function getTestConfig() {
-            const btn = document.querySelector('.get-config-btn');
-            const result = document.getElementById('result');
-            const configLink = document.getElementById('configLink');
-            const error = document.getElementById('error');
+    <div id="toast" class="toast">✓ Ссылка скопирована!</div>
 
+    <script>
+        let vlessUri = '';
+
+        // Detect device
+        function detectDevice() {
+            const ua = navigator.userAgent.toLowerCase();
+            
+            if (/android/i.test(ua)) {
+                document.body.classList.add('is-android');
+                document.getElementById('deviceIcon').textContent = '🤖';
+                document.getElementById('deviceName').textContent = 'Android';
+                return 'android';
+            } else if (/iphone|ipad|ipod/i.test(ua)) {
+                document.body.classList.add('is-ios');
+                document.getElementById('deviceIcon').textContent = '🍎';
+                document.getElementById('deviceName').textContent = 'iPhone';
+                return 'ios';
+            } else {
+                document.body.classList.add('is-desktop');
+                document.getElementById('deviceIcon').textContent = '💻';
+                document.getElementById('deviceName').textContent = 'Компьютер';
+                return 'desktop';
+            }
+        }
+
+        async function startSetup() {
+            const btn = document.getElementById('startBtn');
+            const errorBox = document.getElementById('errorBox');
+            
             btn.disabled = true;
-            btn.innerHTML = '⏳ Создаём конфиг...';
+            btn.innerHTML = '⏳ Подождите...';
             btn.classList.add('loading');
-            result.classList.remove('show');
-            error.classList.remove('show');
+            errorBox.classList.remove('show');
 
             try {
-                const email = `test_${Date.now()}@vpn.test`;
+                const email = `user_${Date.now()}@vpn.local`;
                 
+                // Create user
                 const response = await fetch('/api/create-user', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        planDuration: 1 // 1 день для теста
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, planDuration: 1 })
                 });
 
                 const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Ошибка');
 
-                if (data.success) {
-                    configLink.href = data.data.configUrl;
-                    result.classList.add('show');
-                    btn.innerHTML = '✅ Конфиг создан!';
-                } else {
-                    throw new Error(data.error || 'Ошибка создания конфига');
+                // Get VLESS link
+                const linkResponse = await fetch(`/api/link/${data.data.configToken}`);
+                const linkData = await linkResponse.json();
+                if (!linkData.success) throw new Error(linkData.error || 'Ошибка');
+
+                vlessUri = linkData.vlessUri;
+
+                // Detect device and show steps
+                const device = detectDevice();
+
+                // Generate QR codes
+                if (device === 'android') {
+                    QRCode.toCanvas(document.getElementById('qrcode'), vlessUri, {
+                        width: 220,
+                        margin: 2
+                    });
+                } else if (device === 'ios') {
+                    QRCode.toCanvas(document.getElementById('qrcode-ios'), vlessUri, {
+                        width: 220,
+                        margin: 2
+                    });
                 }
+
+                // Show steps
+                document.getElementById('initialState').style.display = 'none';
+                document.getElementById('stepsSection').classList.add('show');
+
             } catch (err) {
-                error.textContent = '❌ ' + err.message;
-                error.classList.add('show');
+                errorBox.textContent = '❌ ' + err.message;
+                errorBox.classList.add('show');
                 btn.disabled = false;
-                btn.innerHTML = '🔑 Получить тестовый конфиг';
+                btn.innerHTML = '🚀 Получить бесплатный VPN';
                 btn.classList.remove('loading');
             }
+        }
+
+        function copyLink() {
+            if (!vlessUri) return;
+            
+            navigator.clipboard.writeText(vlessUri).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            });
         }
     </script>
 </body>

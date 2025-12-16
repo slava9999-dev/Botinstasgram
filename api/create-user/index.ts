@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { v4 as uuidv4 } from 'uuid';
 import { PanelManager } from '../../utils/panel';
 import { generateConfigToken } from '../../utils/jwt';
+import { checkRateLimit, RateLimitPresets } from '../../utils/rate-limit';
 
 /**
  * POST /api/create-user
@@ -26,6 +27,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Rate limiting: 10 requests per minute per IP
+  const rateLimitResult = checkRateLimit(req, RateLimitPresets.USER_CREATE);
+  if (!rateLimitResult.allowed) {
+    return res.status(429).json({
+      error: 'Too many user creation requests. Please try again later.',
+      code: 'RATE_LIMIT_EXCEEDED',
+      retryAfter: rateLimitResult.retryAfter
+    });
   }
 
   try {

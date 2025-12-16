@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { checkRateLimit, RateLimitPresets } from '../../utils/rate-limit';
 
 /**
  * POST /api/payment/create
@@ -24,6 +25,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Rate limiting: 5 requests per minute per IP
+  const rateLimitResult = checkRateLimit(req, RateLimitPresets.PAYMENT_CREATE);
+  if (!rateLimitResult.allowed) {
+    return res.status(429).json({
+      error: 'Too many payment requests. Please try again later.',
+      code: 'RATE_LIMIT_EXCEEDED',
+      retryAfter: rateLimitResult.retryAfter
+    });
   }
 
   try {

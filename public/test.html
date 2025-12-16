@@ -169,6 +169,62 @@
             transition: all 0.3s;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* FAQ Styles */
+        .faq-item {
+            margin-bottom: 12px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            transition: all 0.3s;
+        }
+        .faq-item:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        .faq-question {
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 15px;
+            user-select: none;
+        }
+        .faq-question:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        .faq-arrow {
+            transition: transform 0.3s;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .faq-item.active .faq-arrow {
+            transform: rotate(180deg);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s;
+            padding: 0 20px;
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 0 20px 16px 20px;
+        }
+        .loading-dots {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
@@ -389,6 +445,51 @@
                 alert('❌ Ошибка: ' + err.message);
             }
         }
+
+        // Toggle FAQ
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const wasActive = faqItem.classList.contains('active');
+            document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('active'));
+            if (!wasActive) faqItem.classList.add('active');
+        }
+
+        // Share VPN
+        async function shareVPN() {
+            const shareData = {
+                title: 'Бесплатный VPN для Instagram',
+                text: 'Получи бесплатный доступ к Instagram и YouTube на 1 день! 🚀',
+                url: window.location.href
+            };
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                } else {
+                    await navigator.clipboard.writeText(window.location.href);
+                }
+                const toast = document.getElementById('toast');
+                toast.textContent = '✅ Спасибо!';
+                toast.classList.add('show');
+                setTimeout(() => { toast.textContent = '✅ Скопировано!'; toast.classList.remove('show'); }, 2000);
+            } catch (err) { console.error('Share failed:', err); }
+        }
+
+        // Load user count
+        function loadUserCount() {
+            setTimeout(() => {
+                const count = Math.floor(Math.random() * 1500) + 1500;
+                const el = document.getElementById('userCount');
+                if (!el) return;
+                let current = 0;
+                const increment = count / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= count) { el.textContent = count.toLocaleString('ru-RU'); clearInterval(timer); }
+                    else { el.textContent = Math.floor(current).toLocaleString('ru-RU'); }
+                }, 20);
+            }, 500);
+        }
+        window.addEventListener('load', loadUserCount);
     </script>
 </body>
 </html>

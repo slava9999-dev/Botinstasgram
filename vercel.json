@@ -3,6 +3,10 @@
     {
       "source": "/api/config/:token",
       "destination": "/api/config/[token]"
+    },
+    {
+      "source": "/api/link/:token",
+      "destination": "/api/link/[token]"
     }
   ],
   "headers": [

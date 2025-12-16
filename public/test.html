@@ -2,126 +2,78 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPN Connect — Доступ к Instagram и YouTube</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VPN для Instagram и YouTube</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
+            padding: 15px;
         }
 
         .card {
+            max-width: 400px;
+            margin: 0 auto;
             background: #fff;
             border-radius: 24px;
-            padding: 30px 25px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 25px 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 25px;
         }
 
-        .header .emoji {
-            font-size: 60px;
-            margin-bottom: 15px;
-        }
+        .header .icon { font-size: 50px; }
+        .header h1 { font-size: 22px; color: #1a1a2e; margin: 10px 0 5px; }
+        .header p { color: #666; font-size: 14px; }
 
-        .header h1 {
-            font-size: 24px;
-            color: #1a1a2e;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 15px;
-        }
-
-        /* Big button */
-        .big-button {
+        /* Big green button */
+        .main-btn {
             display: block;
             width: 100%;
-            padding: 22px;
+            padding: 20px;
             font-size: 18px;
             font-weight: 700;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
             border: none;
             border-radius: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            text-decoration: none;
+            transition: all 0.3s;
         }
 
-        .big-button.primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-        }
+        .main-btn:active { transform: scale(0.98); }
+        .main-btn:disabled { opacity: 0.6; }
 
-        .big-button.primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
-        }
+        /* Steps */
+        .steps { display: none; margin-top: 25px; }
+        .steps.show { display: block; }
 
-        .big-button:disabled {
-            opacity: 0.6;
-            cursor: wait;
-        }
-
-        /* Steps section */
-        .steps-section {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .steps-section.show {
-            display: block;
-        }
-
-        .step-card {
+        .step {
             background: #f8fafc;
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 15px;
-            border: 2px solid #e2e8f0;
+            border-left: 4px solid #667eea;
         }
 
-        .step-card.active {
-            border-color: #10b981;
-            background: #f0fdf4;
-        }
-
-        .step-card.done {
-            border-color: #10b981;
-            background: #dcfce7;
-        }
-
-        .step-header {
+        .step-head {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 12px;
         }
 
-        .step-number {
-            width: 36px;
-            height: 36px;
+        .step-num {
+            width: 32px;
+            height: 32px;
             background: #667eea;
             color: #fff;
             border-radius: 50%;
@@ -129,172 +81,83 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .step-card.done .step-number {
-            background: #10b981;
-        }
-
-        .step-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: #1a1a2e;
-        }
-
-        .step-content {
-            margin-left: 48px;
-        }
-
-        .step-text {
-            color: #64748b;
             font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 12px;
         }
 
-        .step-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 14px 24px;
+        .step-title { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+
+        .step-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
             background: #667eea;
             color: #fff;
             border: none;
             border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
             text-decoration: none;
-        }
-
-        .step-button:hover {
-            background: #5a67d8;
-            transform: translateY(-2px);
-        }
-
-        .step-button.green {
-            background: #10b981;
-        }
-
-        .step-button.green:hover {
-            background: #059669;
-        }
-
-        /* QR Section */
-        .qr-section {
             text-align: center;
-            padding: 20px;
-            background: #fff;
-            border-radius: 16px;
-            border: 3px solid #10b981;
         }
 
-        .qr-section h3 {
-            color: #1a1a2e;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
+        .step-btn:active { opacity: 0.9; }
 
-        .qr-section canvas {
-            display: block;
-            margin: 0 auto;
-        }
-
-        .qr-hint {
-            margin-top: 15px;
+        .step-hint {
+            margin-top: 10px;
             padding: 12px;
             background: #fef3c7;
             border-radius: 10px;
             color: #92400e;
             font-size: 13px;
+            line-height: 1.5;
         }
 
-        /* Device badge */
-        .device-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            background: #f0f9ff;
-            color: #0369a1;
-            border-radius: 20px;
+        /* QR */
+        .qr-box {
+            background: #fff;
+            border: 3px solid #10b981;
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .qr-box canvas { max-width: 100%; }
+        
+        .qr-label {
+            margin-top: 10px;
             font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 20px;
+            color: #666;
         }
 
-        /* Success message */
-        .success-box {
+        /* Final */
+        .final {
             background: #dcfce7;
-            border: 2px solid #10b981;
             border-radius: 16px;
             padding: 20px;
             text-align: center;
-            margin-top: 20px;
-        }
-
-        .success-box .emoji {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-
-        .success-box h3 {
-            color: #166534;
-            margin-bottom: 8px;
-        }
-
-        .success-box p {
-            color: #15803d;
-            font-size: 14px;
-        }
-
-        /* Error */
-        .error-box {
-            background: #fef2f2;
-            border: 2px solid #ef4444;
-            border-radius: 12px;
-            padding: 15px;
             margin-top: 15px;
+        }
+
+        .final .icon { font-size: 40px; }
+        .final h3 { color: #166534; margin: 10px 0 5px; }
+        .final p { color: #15803d; font-size: 14px; }
+
+        .error {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fee2e2;
+            border-radius: 12px;
             color: #dc2626;
             font-size: 14px;
             display: none;
         }
-
-        .error-box.show {
-            display: block;
-        }
-
-        /* Loading animation */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .loading {
-            animation: pulse 1.5s infinite;
-        }
-
-        /* Help link */
-        .help-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            color: #64748b;
-            font-size: 13px;
-            text-decoration: none;
-        }
-
-        .help-link:hover {
-            color: #667eea;
-        }
+        .error.show { display: block; }
 
         /* Toast */
         .toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
             background: #1a1a2e;
@@ -302,260 +165,166 @@
             padding: 15px 25px;
             border-radius: 12px;
             font-size: 14px;
-            font-weight: 500;
             opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
+            transition: all 0.3s;
         }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* Hide elements based on device */
-        .android-only, .ios-only, .desktop-only {
-            display: none;
-        }
-
-        body.is-android .android-only { display: block; }
-        body.is-ios .ios-only { display: block; }
-        body.is-desktop .desktop-only { display: block; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <!-- Initial State -->
-            <div id="initialState">
-                <div class="header">
-                    <div class="emoji">🔓</div>
-                    <h1>Открой Instagram и YouTube</h1>
-                    <p>Бесплатный тест на 1 день — проверь сам!</p>
+    <div class="card">
+        <!-- Initial -->
+        <div id="initial">
+            <div class="header">
+                <div class="icon">📱</div>
+                <h1>VPN для Instagram и YouTube</h1>
+                <p>Бесплатный тест на 1 день</p>
+            </div>
+            <button class="main-btn" id="startBtn" onclick="start()">
+                🚀 Получить VPN бесплатно
+            </button>
+            <div id="error" class="error"></div>
+        </div>
+
+        <!-- Steps -->
+        <div id="steps" class="steps">
+            
+            <!-- Step 1: Download app -->
+            <div class="step">
+                <div class="step-head">
+                    <div class="step-num">1</div>
+                    <div class="step-title">Скачай приложение</div>
                 </div>
-
-                <button class="big-button primary" id="startBtn" onclick="startSetup()">
-                    🚀 Получить бесплатный VPN
-                </button>
-
-                <div id="errorBox" class="error-box"></div>
+                <a id="appLink" href="#" target="_blank" class="step-btn">
+                    📲 Скачать приложение
+                </a>
+                <div class="step-hint">
+                    👆 Нажми кнопку — откроется магазин приложений. Установи приложение.
+                </div>
             </div>
 
-            <!-- Setup Steps -->
-            <div id="stepsSection" class="steps-section">
-                <div class="device-badge" id="deviceBadge">
-                    <span id="deviceIcon">📱</span>
-                    <span id="deviceName">Телефон Android</span>
+            <!-- Step 2: Scan QR -->
+            <div class="step">
+                <div class="step-head">
+                    <div class="step-num">2</div>
+                    <div class="step-title">Добавь VPN в приложение</div>
                 </div>
-
-                <!-- Step 1: Download app -->
-                <div class="step-card active" id="step1">
-                    <div class="step-header">
-                        <div class="step-number">1</div>
-                        <div class="step-title">Скачай приложение</div>
-                    </div>
-                    <div class="step-content">
-                        <p class="step-text">Это бесплатно. Нужно для подключения VPN.</p>
-                        
-                        <!-- Android -->
-                        <div class="android-only">
-                            <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank" class="step-button">
-                                📲 Скачать v2rayNG
-                            </a>
-                        </div>
-                        
-                        <!-- iOS -->
-                        <div class="ios-only">
-                            <a href="https://apps.apple.com/app/napsternetv/id1629465476" target="_blank" class="step-button">
-                                📲 Скачать NapsternetV
-                            </a>
-                            <p class="step-text" style="margin-top: 10px; font-size: 12px;">
-                                Или Shadowrocket (платное, но лучше)
-                            </p>
-                        </div>
-                        
-                        <!-- Desktop -->
-                        <div class="desktop-only">
-                            <a href="https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-With-Core.zip" target="_blank" class="step-button">
-                                💻 Скачать v2rayN
-                            </a>
-                            <p class="step-text" style="margin-top: 10px; font-size: 12px;">
-                                Распакуй ZIP и запусти v2rayN.exe
-                            </p>
-                        </div>
-                    </div>
+                <div class="qr-box">
+                    <canvas id="qr"></canvas>
+                    <div class="qr-label">QR-код для сканирования</div>
                 </div>
-
-                <!-- Step 2: Add config -->
-                <div class="step-card" id="step2">
-                    <div class="step-header">
-                        <div class="step-number">2</div>
-                        <div class="step-title">Добавь VPN в приложение</div>
-                    </div>
-                    <div class="step-content">
-                        <!-- Mobile: QR code -->
-                        <div class="android-only">
-                            <div class="qr-section">
-                                <h3>📸 Отсканируй этот код в приложении</h3>
-                                <canvas id="qrcode"></canvas>
-                                <div class="qr-hint">
-                                    В приложении нажми ➕ → "Сканировать QR-код"
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="ios-only">
-                            <div class="qr-section">
-                                <h3>📸 Отсканируй этот код в приложении</h3>
-                                <canvas id="qrcode-ios"></canvas>
-                                <div class="qr-hint">
-                                    В приложении нажми ➕ → "Scan QR Code"
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Desktop: Copy link -->
-                        <div class="desktop-only">
-                            <p class="step-text">Нажми кнопку и вставь ссылку в v2rayN:</p>
-                            <button class="step-button green" onclick="copyLink()">
-                                📋 Скопировать VPN-ссылку
-                            </button>
-                            <p class="step-text" style="margin-top: 10px; font-size: 12px;">
-                                В v2rayN: Серверы → Импорт из буфера обмена
-                            </p>
-                        </div>
-                    </div>
+                <div class="step-hint" id="scanHint">
+                    📸 Открой приложение → нажми <b>+</b> → выбери <b>"Сканировать QR"</b> → наведи камеру на этот код
                 </div>
+            </div>
 
-                <!-- Step 3: Turn on -->
-                <div class="step-card" id="step3">
-                    <div class="step-header">
-                        <div class="step-number">3</div>
-                        <div class="step-title">Включи VPN</div>
-                    </div>
-                    <div class="step-content">
-                        <p class="step-text android-only">
-                            В приложении нажми кнопку ▶️ внизу экрана. <br>
-                            Разреши подключение если спросит.
-                        </p>
-                        <p class="step-text ios-only">
-                            В приложении включи переключатель VPN. <br>
-                            Разреши подключение если спросит.
-                        </p>
-                        <p class="step-text desktop-only">
-                            В v2rayN нажми правой кнопкой на сервер → <br>
-                            "Установить как активный". <br>
-                            Потом: Системный прокси → Установить.
-                        </p>
-                    </div>
+            <!-- Step 3: Turn on -->
+            <div class="step">
+                <div class="step-head">
+                    <div class="step-num">3</div>
+                    <div class="step-title">Включи VPN</div>
                 </div>
-
-                <!-- Success -->
-                <div class="success-box">
-                    <div class="emoji">🎉</div>
-                    <h3>Готово!</h3>
-                    <p>Теперь открой Instagram или YouTube — должно работать!</p>
+                <div class="step-hint" id="turnOnHint">
+                    ▶️ В приложении нажми большую кнопку <b>внизу экрана</b> (или переключатель). Если телефон спросит разрешение — нажми <b>"ОК"</b>.
                 </div>
+            </div>
 
-                <a href="/" class="help-link">
-                    ❓ Не получается? Напиши нам
-                </a>
+            <!-- Done -->
+            <div class="final">
+                <div class="icon">🎉</div>
+                <h3>Готово!</h3>
+                <p>Теперь открой Instagram или YouTube — всё работает!</p>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="toast">✓ Ссылка скопирована!</div>
+    <div id="toast" class="toast">✓ Скопировано!</div>
 
     <script>
         let vlessUri = '';
 
         // Detect device
-        function detectDevice() {
-            const ua = navigator.userAgent.toLowerCase();
-            
-            if (/android/i.test(ua)) {
-                document.body.classList.add('is-android');
-                document.getElementById('deviceIcon').textContent = '🤖';
-                document.getElementById('deviceName').textContent = 'Android';
-                return 'android';
-            } else if (/iphone|ipad|ipod/i.test(ua)) {
-                document.body.classList.add('is-ios');
-                document.getElementById('deviceIcon').textContent = '🍎';
-                document.getElementById('deviceName').textContent = 'iPhone';
-                return 'ios';
-            } else {
-                document.body.classList.add('is-desktop');
-                document.getElementById('deviceIcon').textContent = '💻';
-                document.getElementById('deviceName').textContent = 'Компьютер';
-                return 'desktop';
-            }
+        function getDevice() {
+            const ua = navigator.userAgent;
+            if (/android/i.test(ua)) return 'android';
+            if (/iphone|ipad|ipod/i.test(ua)) return 'ios';
+            return 'desktop';
         }
 
-        async function startSetup() {
+        async function start() {
             const btn = document.getElementById('startBtn');
-            const errorBox = document.getElementById('errorBox');
+            const error = document.getElementById('error');
             
             btn.disabled = true;
-            btn.innerHTML = '⏳ Подождите...';
-            btn.classList.add('loading');
-            errorBox.classList.remove('show');
+            btn.textContent = '⏳ Подождите...';
+            error.classList.remove('show');
 
             try {
-                const email = `user_${Date.now()}@vpn.local`;
-                
                 // Create user
-                const response = await fetch('/api/create-user', {
+                const res = await fetch('/api/create-user', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, planDuration: 1 })
+                    body: JSON.stringify({ 
+                        email: `user_${Date.now()}@vpn.local`, 
+                        planDuration: 1 
+                    })
                 });
-
-                const data = await response.json();
+                const data = await res.json();
                 if (!data.success) throw new Error(data.error || 'Ошибка');
 
-                // Get VLESS link
-                const linkResponse = await fetch(`/api/link/${data.data.configToken}`);
-                const linkData = await linkResponse.json();
+                // Get link
+                const linkRes = await fetch(`/api/link/${data.data.configToken}`);
+                const linkData = await linkRes.json();
                 if (!linkData.success) throw new Error(linkData.error || 'Ошибка');
 
                 vlessUri = linkData.vlessUri;
 
-                // Detect device and show steps
-                const device = detectDevice();
+                // Set app link based on device
+                const device = getDevice();
+                const appLink = document.getElementById('appLink');
+                const scanHint = document.getElementById('scanHint');
+                const turnOnHint = document.getElementById('turnOnHint');
 
-                // Generate QR codes
                 if (device === 'android') {
-                    QRCode.toCanvas(document.getElementById('qrcode'), vlessUri, {
-                        width: 220,
-                        margin: 2
-                    });
+                    appLink.href = 'https://play.google.com/store/apps/details?id=com.v2ray.ang';
+                    appLink.textContent = '📲 Скачать v2rayNG (Android)';
+                    scanHint.innerHTML = '📸 Открой v2rayNG → нажми <b>+</b> вверху → выбери <b>"Сканировать QR-код"</b> → наведи камеру сюда';
+                    turnOnHint.innerHTML = '▶️ Нажми кнопку <b>V</b> внизу экрана. Если спросит разрешение — нажми <b>"ОК"</b>.';
                 } else if (device === 'ios') {
-                    QRCode.toCanvas(document.getElementById('qrcode-ios'), vlessUri, {
-                        width: 220,
-                        margin: 2
-                    });
+                    appLink.href = 'https://apps.apple.com/app/napsternetv/id1629465476';
+                    appLink.textContent = '📲 Скачать NapsternetV (iPhone)';
+                    scanHint.innerHTML = '📸 Открой NapsternetV → нажми <b>+</b> → выбери <b>"Scan QR"</b> → наведи камеру сюда';
+                    turnOnHint.innerHTML = '▶️ Включи переключатель VPN. Если спросит разрешение — нажми <b>"Allow"</b>.';
+                } else {
+                    appLink.href = 'https://github.com/2dust/v2rayN/releases/latest/download/v2rayN-With-Core.zip';
+                    appLink.textContent = '💻 Скачать v2rayN (Windows)';
+                    scanHint.innerHTML = '📋 <b>Для компьютера:</b> <button onclick="copyLink()" style="padding:10px 20px;background:#10b981;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;margin-top:10px;">Скопировать ссылку</button><br><br>В v2rayN: <b>Серверы</b> → <b>Импорт из буфера</b>';
+                    turnOnHint.innerHTML = '▶️ Кликни правой кнопкой на сервер → <b>"Активировать"</b>. Потом: <b>Системный прокси → Установить</b>.';
                 }
 
+                // Generate QR
+                QRCode.toCanvas(document.getElementById('qr'), vlessUri, {
+                    width: 200,
+                    margin: 2
+                });
+
                 // Show steps
-                document.getElementById('initialState').style.display = 'none';
-                document.getElementById('stepsSection').classList.add('show');
+                document.getElementById('initial').style.display = 'none';
+                document.getElementById('steps').classList.add('show');
 
             } catch (err) {
-                errorBox.textContent = '❌ ' + err.message;
-                errorBox.classList.add('show');
+                error.textContent = '❌ ' + err.message;
+                error.classList.add('show');
                 btn.disabled = false;
-                btn.innerHTML = '🚀 Получить бесплатный VPN';
-                btn.classList.remove('loading');
+                btn.textContent = '🚀 Получить VPN бесплатно';
             }
         }
 
         function copyLink() {
-            if (!vlessUri) return;
-            
             navigator.clipboard.writeText(vlessUri).then(() => {
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2500);
+                setTimeout(() => toast.classList.remove('show'), 2000);
             });
         }
     </script>

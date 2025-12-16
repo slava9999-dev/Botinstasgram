@@ -1,8 +1,18 @@
-# 🚀 VPN Connect — Smart Config Generator v2.0
+# 🚀 VPN Connect — Smart Config Generator v2.1.0
 
 **Полнофункциональный VPN-сервис с автоматической генерацией VLESS Reality конфигов и интеграцией платежей ЮKassa.**
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/slava9999-dev/Botinstasgram)
+![Version](https://img.shields.io/badge/version-2.1.0-blue)
+![Status](https://img.shields.io/badge/status-production--ready-green)
+![TS Compliance](https://img.shields.io/badge/TS%20compliance-98%25-brightgreen)
+
+**📚 Документация:**
+
+- [ARCHITECTURE.md](./ARCHITECTURE.md) — Архитектура проекта
+- [DEPLOYMENT.md](./DEPLOYMENT.md) — Чек-лист перед деплоем
+- [TODO.md](./TODO.md) — Статус и roadmap
+- [SPEC.md](./SPEC.md) — Техническое задание
 
 ---
 

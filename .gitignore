@@ -1,27 +1,160 @@
-# Dependencies
-node_modules/
+# ============================================
+# VPN Connect - .gitignore
+# ============================================
+# Version: 2.1.0
+# Last updated: 2025-12-16
 
-# Vercel
-.vercel/
-
-# Build output
-dist/
-
-# Environment
+# ============================================
+# 🔐 CRITICAL - NEVER COMMIT THESE!
+# ============================================
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
 
-# IDE
-.idea/
+# Backup files with sensitive data
+*.env.backup
+*.env.old
+
+# ============================================
+# 📦 Dependencies
+# ============================================
+node_modules/
+package-lock.json.backup
+
+# ============================================
+# 🏗️ Build Output
+# ============================================
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# ============================================
+# ☁️ Vercel
+# ============================================
+.vercel/
+.vercel.json.backup
+
+# ============================================
+# 💻 IDE / Editors
+# ============================================
+# VSCode
 .vscode/
+*.code-workspace
+
+# JetBrains (WebStorm, IntelliJ, etc.)
+.idea/
+*.iml
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
 *.swp
 *.swo
+*~
 
-# OS
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ============================================
+# 🖥️ Operating System
+# ============================================
+# macOS
 .DS_Store
-Thumbs.db
+.AppleDouble
+.LSOverride
+._*
 
-# Logs
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================
+# 📝 Logs
+# ============================================
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Runtime logs
+logs/
+*.log.*
+
+# ============================================
+# 🧪 Testing
+# ============================================
+coverage/
+.nyc_output/
+*.lcov
+
+# Jest
+jest-coverage/
+
+# ============================================
+# 🔧 Temporary Files
+# ============================================
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# ============================================
+# 📊 Analytics / Monitoring
+# ============================================
+.sentryclirc
+
+# ============================================
+# 🗃️ Database (if added later)
+# ============================================
+*.sqlite
+*.sqlite3
+*.db
+
+# ============================================
+# 🔑 Secrets / Keys (CRITICAL!)
+# ============================================
+*.pem
+*.key
+*.cert
+*.crt
+secrets/
+credentials/
+
+# ============================================
+# 📸 Screenshots / Test Data
+# ============================================
+screenshots/
+test-data/
+*.test.json
+
+# ============================================
+# 📦 Package Manager Locks (keep package-lock.json)
+# ============================================
+# We keep package-lock.json for reproducible builds
+# But ignore yarn/pnpm locks if accidentally created
+yarn.lock
+pnpm-lock.yaml
+
+# ============================================
+# 🚫 Other
+# ============================================
+.eslintcache
+.stylelintcache

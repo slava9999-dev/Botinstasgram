@@ -1,20 +1,43 @@
 {
-  "name": "smart-config-generator",
-  "version": "2.0.0",
+  "name": "vpn-connect-smart-config",
+  "version": "2.1.0",
+  "description": "VPN Connect - Smart Config Generator with YooKassa payment integration",
   "private": true,
   "scripts": {
-    "dev": "vercel dev"
+    "dev": "vercel dev",
+    "build": "tsc --noEmit",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "axios": "^1.6.0",
-    "jsonwebtoken": "^9.0.0",
-    "uuid": "^9.0.0"
+    "axios": "1.6.7",
+    "jsonwebtoken": "9.0.2",
+    "uuid": "9.0.1"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.0",
-    "@types/node": "^20.0.0",
-    "@types/uuid": "^9.0.0",
-    "@vercel/node": "^3.0.0",
-    "typescript": "^5.0.0"
-  }
+    "@types/jsonwebtoken": "9.0.5",
+    "@types/node": "20.11.16",
+    "@types/uuid": "9.0.8",
+    "@vercel/node": "3.0.21",
+    "typescript": "5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slava9999-dev/Botinstasgram.git"
+  },
+  "keywords": [
+    "vpn",
+    "vless",
+    "reality",
+    "3x-ui",
+    "xray",
+    "config-generator",
+    "yookassa",
+    "payment"
+  ],
+  "author": "NeuroExpert Team",
+  "license": "MIT"
 }

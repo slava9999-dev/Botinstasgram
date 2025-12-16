@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 VPN Connect — Тестовый Доступ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 45px 35px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .test-badge {
+            text-align: center;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .test-badge .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .test-badge h2 {
+            color: #f59e0b;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .test-badge p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .info-block {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-block p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .get-config-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .get-config-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .get-config-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result h3 {
+            color: #10b981;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .result a {
+            display: block;
+            padding: 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .result a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .error {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            color: #ef4444;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .instructions {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .instructions h3 {
+            color: #fff;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .instructions a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 11px;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="test-badge">
+                <div class="icon">🧪</div>
+                <h2>Тестовый доступ</h2>
+                <p>Бесплатный VPN на 1 день для проверки</p>
+            </div>
+
+            <div class="info-block">
+                <p>⚠️ Эта страница только для тестирования! После проверки работы VPN, обычные пользователи будут оплачивать через главную страницу.</p>
+            </div>
+
+            <button class="get-config-btn" onclick="getTestConfig()">
+                🔑 Получить тестовый конфиг
+            </button>
+
+            <div id="result" class="result">
+                <h3>✅ Конфиг готов!</h3>
+                <a href="#" id="configLink" target="_blank">📥 Скачать VPN конфиг</a>
+            </div>
+
+            <div id="error" class="error"></div>
+
+            <div class="instructions">
+                <h3>📋 Как подключиться:</h3>
+                <ol>
+                    <li>Скачайте приложение: <a href="https://github.com/2dust/v2rayN/releases" target="_blank">v2rayN</a> (Windows) или <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank">v2rayNG</a> (Android)</li>
+                    <li>Нажмите кнопку выше чтобы получить конфиг</li>
+                    <li>Скачайте и импортируйте конфиг в приложение</li>
+                    <li>Включите VPN</li>
+                    <li>Проверьте доступ к Instagram и YouTube!</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="footer">
+            🧪 Тестовая страница • <a href="/">На главную</a>
+        </div>
+    </div>
+
+    <script>
+        async function getTestConfig() {
+            const btn = document.querySelector('.get-config-btn');
+            const result = document.getElementById('result');
+            const configLink = document.getElementById('configLink');
+            const error = document.getElementById('error');
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Создаём конфиг...';
+            btn.classList.add('loading');
+            result.classList.remove('show');
+            error.classList.remove('show');
+
+            try {
+                const email = `test_${Date.now()}@vpn.test`;
+                
+                const response = await fetch('/api/create-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        planDuration: 1 // 1 день для теста
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    configLink.href = data.data.configUrl;
+                    result.classList.add('show');
+                    btn.innerHTML = '✅ Конфиг создан!';
+                } else {
+                    throw new Error(data.error || 'Ошибка создания конфига');
+                }
+            } catch (err) {
+                error.textContent = '❌ ' + err.message;
+                error.classList.add('show');
+                btn.disabled = false;
+                btn.innerHTML = '🔑 Получить тестовый конфиг';
+                btn.classList.remove('loading');
+            }
+        }
+    </script>
+</body>
+</html>

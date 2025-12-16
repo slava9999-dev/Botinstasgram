@@ -216,6 +216,19 @@
                 <div class="step-hint" id="scanHint">
                     📸 Открой приложение → нажми <b>+</b> → выбери <b>"Сканировать QR"</b> → наведи камеру на этот код
                 </div>
+                
+                <!-- Download buttons -->
+                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                    <button onclick="downloadConfig()" style="padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s;">
+                        💾 Скачать конфиг (JSON)
+                    </button>
+                    <button onclick="copyLink()" style="padding: 12px 24px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); transition: all 0.3s;">
+                        📋 Скопировать ссылку
+                    </button>
+                </div>
+                <div style="margin-top: 10px; text-align: center; font-size: 13px; color: #94a3b8;">
+                    <b>Для компьютера:</b> Скачай JSON конфиг и импортируй в v2rayN
+                </div>
             </div>
 
             <!-- Step 3: Turn on -->
@@ -242,6 +255,8 @@
 
     <script>
         let vlessUri = '';
+        let configToken = '';
+
 
         // Detect device
         function getDevice() {
@@ -272,12 +287,16 @@
                 const data = await res.json();
                 if (!data.success) throw new Error(data.error || 'Ошибка');
 
+                // Save config token for download
+                configToken = data.data.configToken;
+
                 // Get link
-                const linkRes = await fetch(`/api/link/${data.data.configToken}`);
+                const linkRes = await fetch(`/api/link/${configToken}`);
                 const linkData = await linkRes.json();
                 if (!linkData.success) throw new Error(linkData.error || 'Ошибка');
 
                 vlessUri = linkData.vlessUri;
+
 
                 // Set app link based on device
                 const device = getDevice();
@@ -332,6 +351,43 @@
                 toast.classList.add('show');
                 setTimeout(() => toast.classList.remove('show'), 2000);
             });
+        }
+
+        async function downloadConfig() {
+            if (!configToken) {
+                alert('❌ Сначала нажмите "Получить VPN бесплатно"');
+                return;
+            }
+
+            try {
+                // Fetch JSON config
+                const res = await fetch(`/api/config/${configToken}`);
+                if (!res.ok) throw new Error('Не удалось получить конфиг');
+                
+                const config = await res.json();
+                
+                // Create download
+                const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'vpn_config.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                // Show success toast
+                const toast = document.getElementById('toast');
+                toast.textContent = '✅ Конфиг скачан!';
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.textContent = '✓ Скопировано!'; // Reset toast text
+                    toast.classList.remove('show');
+                }, 2000);
+            } catch (err) {
+                alert('❌ Ошибка: ' + err.message);
+            }
         }
     </script>
 </body>

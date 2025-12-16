@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { v4 as uuidv4 } from 'uuid';
 import { PanelManager } from '../../utils/panel';
 import { generateConfigToken } from '../../utils/jwt';
+import { logger, LogEvent } from '../../utils/logger';
 
 /**
  * POST /api/payment/webhook
@@ -72,11 +73,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { event, object: payment } = notification;
 
-    console.log(`[Webhook] Received event: ${event}, payment: ${payment.id}`);
+    // Log webhook received
+    logger.logWebhookReceived(event, payment.id);
 
     // Only process successful payments
     if (event !== 'payment.succeeded' && event !== 'payment.waiting_for_capture') {
-      console.log(`[Webhook] Ignoring event: ${event}`);
+      logger.info(LogEvent.WEBHOOK_IGNORED, `Ignoring event: ${event}`, { event, paymentId: payment.id });
       return res.status(200).json({ status: 'ignored', event });
     }
 

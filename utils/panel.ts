@@ -279,7 +279,12 @@ export class PanelManager {
       };
     }
 
-    const expiryTime = totalDays > 0 ? Date.now() + totalDays * 24 * 60 * 60 * 1000 : 0;
+    // TEMPORARY FIX: Set expiryTime to 0 (unlimited) for testing
+    // TODO: Fix the expiry time format issue
+    // const expiryTime = totalDays > 0 ? Date.now() + totalDays * 24 * 60 * 60 * 1000 : 0;
+    const expiryTime = 0; // Unlimited for now
+    
+    console.log(`[Panel] Creating client with expiryTime: ${expiryTime} (0 = unlimited)`);
 
     const newClient = {
       id: uuid,

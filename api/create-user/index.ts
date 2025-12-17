@@ -58,14 +58,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const duration = parseInt(planDuration, 10);
     const isTrial = duration <= 3 && !isPaid;
 
-    // ⚠️ ВРЕМЕННО: telegramId опционален для теста
-    // TODO: В продакшене вернуть проверку!
-    // if (isTrial && !telegramId) {
-    //   return res.status(400).json({ 
-    //     error: 'Telegram ID обязателен для бесплатного периода',
-    //     code: 'TELEGRAM_ID_REQUIRED'
-    //   });
-    // }
+    // ✅ PRODUCTION: Telegram ID is REQUIRED for trial users
+    // This prevents abuse and ensures one trial per real Telegram user
+    if (!isPaid && !telegramId) {
+      console.error('[Create-User] Trial request without Telegram ID blocked');
+      return res.status(400).json({ 
+        error: 'Telegram ID обязателен для пробного периода',
+        code: 'TELEGRAM_ID_REQUIRED',
+        message: 'Пожалуйста, откройте ссылку через Telegram бот'
+      });
+    }
+
+    // Validate Telegram ID format (should be numeric string or number)
+    if (telegramId && !/^\d+$/.test(String(telegramId))) {
+      console.error('[Create-User] Invalid Telegram ID format:', telegramId);
+      return res.status(400).json({
+        error: 'Неверный формат Telegram ID',
+        code: 'INVALID_TELEGRAM_ID'
+      });
+    }
 
     // Generate email based on telegramId or random
     // Format: tg_123456789@vpn.local (для проверки уникальности)

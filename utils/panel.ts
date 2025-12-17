@@ -1,4 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
+import * as https from 'https';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface ClientInfo {
   uuid: string;
@@ -43,28 +45,58 @@ export interface TrafficStats {
 export class PanelManager {
   private axiosInstance: AxiosInstance;
   private cookie: string | null = null;
-  private panelUrl: string;
+  private baseURL: string; // Changed from panelUrl
   private username: string;
   private password: string;
 
+  // Static cache for Vercel warm instances
+  private static cachedCookie: string | null = null;
+  private static sessionExpiry: number = 0;
+  private readonly SESSION_TTL = 60 * 60 * 1000; // 1 hour
+
+  // Compatibility getter for existing error handlers
+  private get panelUrl(): string {
+    return this.baseURL;
+  }
+
   constructor() {
-    this.panelUrl = process.env.PANEL_URL || '';
+    this.baseURL = process.env.PANEL_URL?.replace(/\/$/, '') || ''; // Changed from panelUrl
     this.username = process.env.PANEL_USER || '';
     this.password = process.env.PANEL_PASS || '';
-
+    
+    // Reuse cached cookie if available
+    if (PanelManager.cachedCookie && Date.now() < PanelManager.sessionExpiry) {
+      this.cookie = PanelManager.cachedCookie;
+    }
+    
     this.axiosInstance = axios.create({
-      baseURL: this.panelUrl,
+      baseURL: this.baseURL, // Changed from panelUrl
       timeout: 15000,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-      }
+      },
+      // Игнорируем SSL ошибки для самоподписанных сертификатов (часто на VPS)
+      httpsAgent: new https.Agent({  
+        rejectUnauthorized: false
+      })
     });
+
+    // Set cookie header if we have one
+    if (this.cookie) {
+      this.axiosInstance.defaults.headers.common['Cookie'] = this.cookie;
+    }
   }
 
   async login(retryCount = 0): Promise<void> {
+    // Skip login if we already have a valid session
+    if (this.cookie && Date.now() < PanelManager.sessionExpiry) {
+      console.log('[Panel] Using cached session');
+      return;
+    }
+
     try {
-      console.log(`[Panel] Attempting login to ${this.panelUrl} (attempt ${retryCount + 1}/4)`);
+      console.log(`[Panel] Attempting login to ${this.baseURL} (attempt ${retryCount + 1}/4)`); // Changed from panelUrl
       
       const response = await this.axiosInstance.post('/login', {
         username: this.username,
@@ -76,7 +108,12 @@ export class PanelManager {
         if (cookies) {
           this.cookie = cookies.join(';');
           this.axiosInstance.defaults.headers.common['Cookie'] = this.cookie;
-          console.log('[Panel] Login successful');
+          
+          // Update static cache
+          PanelManager.cachedCookie = this.cookie;
+          PanelManager.sessionExpiry = Date.now() + this.SESSION_TTL;
+          
+          console.log('[Panel] Login successful, session cached');
         } else {
           console.warn('[Panel] Login response OK but no cookies received');
         }

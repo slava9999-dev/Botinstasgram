@@ -148,7 +148,7 @@ async function sendHelp(botToken: string, chatId: number) {
           `2. Нажми кнопку "Получить VPN"\n` +
           `3. Следуй инструкциям на сайте\n` +
           `4. Наслаждайся доступом к Instagram!\n\n` +
-          `<b>Поддержка:</b> @your_support_username`,
+          `<b>Поддержка:</b> @vpn_connect_support`,
     parse_mode: 'HTML'
   };
 

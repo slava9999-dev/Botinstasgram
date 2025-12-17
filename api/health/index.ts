@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PanelManager } from '../../utils/panel';
 import { validateEnvironment, logEnvironmentStatus } from '../../utils/env-validator';
+import { checkKVHealth } from '../../utils/storage';
 
 
 /**
@@ -12,6 +13,7 @@ import { validateEnvironment, logEnvironmentStatus } from '../../utils/env-valid
  * - 3X-UI panel connectivity
  * - JWT secret presence
  * - YooKassa credentials
+ * - Storage (Vercel KV / in-memory)
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
@@ -81,6 +83,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   checks.services.reality = hasReality
     ? { status: 'ok' }
     : { status: 'warning', message: 'Reality settings not fully configured' };
+
+  // Check KV Storage
+  try {
+    const kvHealth = await checkKVHealth();
+    checks.services.storage = {
+      status: kvHealth.available ? 'ok' : 'warning',
+      message: `Using ${kvHealth.type}${kvHealth.latencyMs ? ` (${kvHealth.latencyMs}ms)` : ''}`
+    };
+  } catch (error: any) {
+    checks.services.storage = {
+      status: 'warning',
+      message: `Storage check failed: ${error.message}`
+    };
+  }
 
   // Determine overall status
   const hasErrors = Object.values(checks.services).some(s => s.status === 'error');

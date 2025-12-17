@@ -65,6 +65,24 @@ export const PAYMENT_CONFIG = {
 } as const;
 
 /**
+ * Trial Configuration
+ */
+export const TRIAL_CONFIG = {
+  DURATION_DAYS: 3,
+  ONE_PER_USER: true,
+  REQUIRE_TELEGRAM_ID: true,
+} as const;
+
+/**
+ * Telegram Bot Configuration
+ */
+export const TELEGRAM_CONFIG = {
+  SUPPORT_USERNAME: '@vpn_connect_support',
+  SUPPORT_LINK: 'https://t.me/vpn_connect_support',
+  BOT_USERNAME: '@VPNConnectBot', // TODO: Update with real bot username
+} as const;
+
+/**
  * YooKassa API
  */
 export const YOOKASSA_CONFIG = {
@@ -165,10 +183,16 @@ export const APP_URLS = {
  * Client Application Downloads
  */
 export const CLIENT_APPS = {
-  WINDOWS: 'https://github.com/2dust/v2rayN/releases',
-  ANDROID: 'https://play.google.com/store/apps/details?id=com.v2ray.ang',
-  IOS: 'https://apps.apple.com/app/shadowrocket/id932747118',
-  MACOS: 'https://github.com/yanue/V2rayU/releases',
+  // Recommended clients
+  IOS_FOXRAY: 'https://apps.apple.com/app/foxray/id6448898396',
+  ANDROID_HIDDIFY: 'https://play.google.com/store/apps/details?id=app.hiddify.com',
+  ANDROID_APK: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk',
+  WINDOWS_HIDDIFY: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe',
+  MACOS_HIDDIFY: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-MacOS.dmg',
+  HIDDIFY_RELEASES: 'https://github.com/hiddify/hiddify-next/releases',
+  // Legacy clients (for reference)
+  WINDOWS_V2RAYN: 'https://github.com/2dust/v2rayN/releases',
+  IOS_SHADOWROCKET: 'https://apps.apple.com/app/shadowrocket/id932747118',
 } as const;
 
 // ============================================
@@ -212,6 +236,12 @@ export const ERROR_CODES = {
   INVALID_AMOUNT: 'INVALID_AMOUNT',
   INVALID_DURATION: 'INVALID_DURATION',
   INVALID_UUID: 'INVALID_UUID',
+  INVALID_TELEGRAM_ID: 'INVALID_TELEGRAM_ID',
+  
+  // Trial
+  TRIAL_EXPIRED: 'TRIAL_EXPIRED',
+  TRIAL_ALREADY_USED: 'TRIAL_ALREADY_USED',
+  TELEGRAM_ID_REQUIRED: 'TELEGRAM_ID_REQUIRED',
   
   // Panel
   PANEL_NOT_CONFIGURED: 'PANEL_NOT_CONFIGURED',
@@ -222,6 +252,7 @@ export const ERROR_CODES = {
   PAYMENT_NOT_CONFIGURED: 'PAYMENT_NOT_CONFIGURED',
   PAYMENT_ERROR: 'PAYMENT_ERROR',
   PAYMENT_NOT_FOUND: 'PAYMENT_NOT_FOUND',
+  PAYMENT_REQUIRED: 'PAYMENT_REQUIRED',
   
   // Rate Limiting
   RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
@@ -229,6 +260,7 @@ export const ERROR_CODES = {
   // User
   USER_NOT_FOUND: 'USER_NOT_FOUND',
   USER_CREATION_FAILED: 'USER_CREATION_FAILED',
+  USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
   
   // Generic
   INTERNAL_ERROR: 'INTERNAL_ERROR',
@@ -256,6 +288,8 @@ export type Currency = typeof PAYMENT_CONFIG.CURRENCY;
 Object.freeze(JWT_CONFIG);
 Object.freeze(RATE_LIMITS);
 Object.freeze(PAYMENT_CONFIG);
+Object.freeze(TRIAL_CONFIG);
+Object.freeze(TELEGRAM_CONFIG);
 Object.freeze(YOOKASSA_CONFIG);
 Object.freeze(PANEL_CONFIG);
 Object.freeze(REALITY_CONFIG);
@@ -268,3 +302,4 @@ Object.freeze(APP_URLS);
 Object.freeze(CLIENT_APPS);
 Object.freeze(VALIDATION);
 Object.freeze(ERROR_CODES);
+

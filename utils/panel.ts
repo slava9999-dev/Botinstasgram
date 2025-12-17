@@ -279,12 +279,17 @@ export class PanelManager {
       };
     }
 
-    // TEMPORARY FIX: Set expiryTime to 0 (unlimited) for testing
-    // TODO: Fix the expiry time format issue
-    // const expiryTime = totalDays > 0 ? Date.now() + totalDays * 24 * 60 * 60 * 1000 : 0;
-    const expiryTime = 0; // Unlimited for now
+    // ✅ PRODUCTION: Правильный расчёт времени истечения
+    // 3X-UI использует Unix timestamp в миллисекундах
+    const expiryTime = totalDays > 0 
+      ? Date.now() + (totalDays * 24 * 60 * 60 * 1000) 
+      : 0; // 0 = unlimited
+
+    const expiryDate = expiryTime > 0 
+      ? new Date(expiryTime).toISOString() 
+      : 'unlimited';
     
-    console.log(`[Panel] Creating client with expiryTime: ${expiryTime} (0 = unlimited)`);
+    console.log(`[Panel] Creating client with expiryTime: ${expiryTime} (${expiryDate})`);
 
     const newClient = {
       id: uuid,

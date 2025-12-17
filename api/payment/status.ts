@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { PaymentStorage } from '../../utils/storage';
 
 /**
  * GET /api/payment/status?payment_id=xxx
@@ -6,27 +7,9 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
  * 
  * Check if payment was confirmed and get config URL.
  * Called by success.html to get the config after payment.
+ * 
+ * Now uses Vercel KV for persistent storage!
  */
-
-interface PaymentRecord {
-  paymentId: string;
-  email: string;
-  amount: number;
-  configToken: string;
-  configUrl: string;
-  createdAt: Date;
-  expiresAt: Date;
-}
-
-// Reference the global store from webhook.ts
-declare global {
-  var confirmedPayments: Map<string, PaymentRecord>;
-}
-
-// Initialize if not exists
-if (!global.confirmedPayments) {
-  global.confirmedPayments = new Map<string, PaymentRecord>();
-}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
@@ -47,7 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Try to find by payment_id first
     if (payment_id && typeof payment_id === 'string') {
-      const record = global.confirmedPayments.get(payment_id);
+      const record = await PaymentStorage.getById(payment_id);
       if (record) {
         return res.status(200).json({
           success: true,
@@ -63,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Try to find by email
     if (email && typeof email === 'string') {
-      const record = global.confirmedPayments.get(`email:${email}`);
+      const record = await PaymentStorage.getByEmail(email);
       if (record) {
         return res.status(200).json({
           success: true,

@@ -105,19 +105,37 @@ async function sendVPNLink(botToken: string, chatId: number, userId: number, fir
   const message: TelegramMessage = {
     chat_id: chatId,
     text: `👋 Привет, ${firstName}!\n\n` +
-          `🔐 Получи VPN для доступа к Instagram и YouTube!\n\n` +
-          `✨ Что ты получишь:\n` +
-          `• 3 дня бесплатного доступа\n` +
-          `• Безлимитный трафик\n` +
-          `• Высокая скорость\n` +
-          `• Работает на всех устройствах\n\n` +
-          `📱 Выбери вариант:`,
+          `🔐 <b>VPN для Instagram и YouTube</b>\n\n` +
+          `📋 <b>Как подключиться (2 шага):</b>\n\n` +
+          `<b>Шаг 1:</b> Скачай приложение 👇\n` +
+          `(выбери свою систему)\n\n` +
+          `<b>Шаг 2:</b> Вернись сюда и нажми\n` +
+          `"🚀 Получить VPN" — всё настроится автоматически!\n\n` +
+          `✨ <b>3 дня БЕСПЛАТНО</b>`,
     parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [
         [
           {
-            text: '🚀 Получить VPN БЕСПЛАТНО (3 дня)',
+            text: '📱 Скачать для iPhone',
+            url: 'https://apps.apple.com/app/streisand/id6450534064'
+          }
+        ],
+        [
+          {
+            text: '🤖 Скачать для Android',
+            url: 'https://play.google.com/store/apps/details?id=app.hiddify.com'
+          }
+        ],
+        [
+          {
+            text: '📦 Android APK (если нет Play Store)',
+            url: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk'
+          }
+        ],
+        [
+          {
+            text: '🚀 Получить VPN БЕСПЛАТНО',
             url: vpnUrl
           }
         ],

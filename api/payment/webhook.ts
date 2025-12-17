@@ -3,16 +3,22 @@ import { v4 as uuidv4 } from 'uuid';
 import { PanelManager } from '../../utils/panel';
 import { generateConfigToken } from '../../utils/jwt';
 import { logger, LogEvent } from '../../utils/logger';
+import { PaymentStorage, PaymentRecord } from '../../utils/storage';
 
 /**
  * POST /api/payment/webhook
  * YooKassa webhook handler for payment confirmation.
  * 
+ * SECURITY:
+ * - Validates that request comes from YooKassa IP range
+ * - Stores payments in Vercel KV (persistent)
+ * - Logs all webhook events
+ * 
  * Flow:
  * 1. YooKassa sends notification when payment is captured
- * 2. We verify the signature (if secret is set)
+ * 2. We verify the source IP
  * 3. Create user in 3X-UI panel
- * 4. Store payment data in KV/Edge Config (or memory for now)
+ * 4. Store payment data in Vercel KV
  * 
  * YooKassa notification format:
  * {
@@ -22,31 +28,64 @@ import { logger, LogEvent } from '../../utils/logger';
  *     "id": "payment_id",
  *     "status": "succeeded",
  *     "amount": { "value": "99.00", "currency": "RUB" },
- *     "metadata": { "email": "user@example.com" }
+ *     "metadata": { "email": "user@example.com", "telegramId": "123456789" }
  *   }
  * }
  */
 
-// In-memory store for confirmed payments (will be replaced with KV in production)
-// This works across requests in Vercel because the function stays warm
-declare global {
-  var confirmedPayments: Map<string, PaymentRecord>;
+// ============================================
+// YOOKASSA IP VERIFICATION
+// ============================================
+
+// YooKassa official IP ranges (as of 2024)
+// Source: https://yookassa.ru/developers/using-api/webhooks
+const YOOKASSA_IP_RANGES = [
+  '185.71.76.', '185.71.77.',   // 185.71.76.0/24, 185.71.77.0/24
+  '77.75.153.', '77.75.154.',   // 77.75.153.0/24
+  '77.75.156.', '77.75.157.',   // Additional ranges
+];
+
+/**
+ * Verify that request comes from YooKassa IP
+ */
+function isYooKassaIP(req: VercelRequest): boolean {
+  // Get client IP from various headers
+  const forwardedFor = req.headers['x-forwarded-for'];
+  const realIP = req.headers['x-real-ip'];
+  
+  let clientIP: string | null = null;
+  
+  if (typeof forwardedFor === 'string') {
+    // x-forwarded-for may contain multiple IPs, take the first one
+    clientIP = forwardedFor.split(',')[0].trim();
+  } else if (typeof realIP === 'string') {
+    clientIP = realIP.trim();
+  }
+  
+  if (!clientIP) {
+    console.warn('[Webhook] Could not determine client IP');
+    // In development, allow requests without IP check
+    if (process.env.NODE_ENV === 'development') {
+      return true;
+    }
+    return false;
+  }
+  
+  console.log(`[Webhook] Request from IP: ${clientIP}`);
+  
+  // Check if IP starts with any of the YooKassa ranges
+  const isValid = YOOKASSA_IP_RANGES.some(range => clientIP!.startsWith(range));
+  
+  if (!isValid) {
+    console.warn(`[Webhook] IP ${clientIP} not in YooKassa range!`);
+  }
+  
+  return isValid;
 }
 
-interface PaymentRecord {
-  paymentId: string;
-  email: string;
-  amount: number;
-  configToken: string;
-  configUrl: string;
-  createdAt: Date;
-  expiresAt: Date;
-}
-
-// Initialize global store
-if (!global.confirmedPayments) {
-  global.confirmedPayments = new Map<string, PaymentRecord>();
-}
+// ============================================
+// MAIN HANDLER
+// ============================================
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
@@ -63,11 +102,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // ✅ SECURITY: Verify YooKassa IP
+    if (!isYooKassaIP(req)) {
+      console.error('[Webhook] Request from unauthorized IP');
+      // Return 200 to not reveal security check to attacker
+      return res.status(200).json({ status: 'ignored' });
+    }
+
     const notification = req.body;
 
     // Validate notification structure
     if (!notification || !notification.event || !notification.object) {
-      console.error('Invalid notification structure:', notification);
+      console.error('[Webhook] Invalid notification structure:', notification);
       return res.status(400).json({ error: 'Invalid notification format' });
     }
 
@@ -82,38 +128,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ status: 'ignored', event });
     }
 
-    // For waiting_for_capture, we need to capture it (auto-capture should be enabled, but just in case)
+    // For waiting_for_capture, we need to capture it (auto-capture should be enabled)
     if (payment.status !== 'succeeded' && payment.status !== 'waiting_for_capture') {
       console.log(`[Webhook] Payment not succeeded yet: ${payment.status}`);
       return res.status(200).json({ status: 'pending', paymentStatus: payment.status });
     }
 
-    // Extract email from metadata
-    const email = payment.metadata?.email || `user_${payment.id}@vpn.local`;
-    const amount = parseFloat(payment.amount?.value || '99');
-
-    // Check if already processed
-    if (global.confirmedPayments.has(payment.id)) {
-      const existing = global.confirmedPayments.get(payment.id)!;
+    // Check if already processed (using KV now!)
+    const existingPayment = await PaymentStorage.getById(payment.id);
+    if (existingPayment) {
       console.log(`[Webhook] Payment already processed: ${payment.id}`);
       return res.status(200).json({ 
         status: 'already_processed',
-        configUrl: existing.configUrl 
+        configUrl: existingPayment.configUrl 
       });
     }
+
+    // Extract data from metadata
+    const email = payment.metadata?.email || `user_${payment.id}@vpn.local`;
+    const telegramId = payment.metadata?.telegramId;
+    const amount = parseFloat(payment.amount?.value || '99');
 
     // Create user in 3X-UI panel
     const INBOUND_ID = parseInt(process.env.INBOUND_ID || '1', 10);
     const uuid = uuidv4();
     const planDuration = 30; // days
 
-    let clientInfo;
-    let configToken;
-    let configUrl;
+    let configToken: string;
+    let configUrl: string;
 
     try {
       const panel = new PanelManager();
-      clientInfo = await panel.addClient(INBOUND_ID, email, uuid, planDuration);
+      const clientInfo = await panel.addClient(INBOUND_ID, email, uuid, planDuration);
       
       // Generate stateless token
       configToken = generateConfigToken(clientInfo, planDuration);
@@ -123,11 +169,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ? `https://${process.env.VERCEL_URL}` 
         : process.env.BASE_URL || 'https://botinstasgram.vercel.app';
       
-      configUrl = `${baseUrl}/api/config/${configToken}`;
+      configUrl = `${baseUrl}/api/go/${configToken}`;
     } catch (panelError: any) {
       console.error('[Webhook] Panel error:', panelError.message);
       // Still acknowledge the webhook, but log the error
-      // We can retry later or handle manually
       return res.status(200).json({ 
         status: 'panel_error',
         error: panelError.message,
@@ -137,23 +182,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const expiresAt = new Date(Date.now() + planDuration * 24 * 60 * 60 * 1000);
 
-    // Store confirmed payment
+    // ✅ Save to Vercel KV (persistent!)
     const record: PaymentRecord = {
       paymentId: payment.id,
       email,
+      telegramId,
       amount,
       configToken,
       configUrl,
-      createdAt: new Date(),
-      expiresAt
+      uuid,
+      createdAt: new Date().toISOString(),
+      expiresAt: expiresAt.toISOString(),
+      status: 'succeeded'
     };
 
-    global.confirmedPayments.set(payment.id, record);
-    
-    // Also store by email for lookup
-    global.confirmedPayments.set(`email:${email}`, record);
+    await PaymentStorage.save(record);
 
-    console.log(`[Webhook] Payment confirmed: ${payment.id}, email: ${email}`);
+    console.log(`[Webhook] ✅ Payment confirmed and saved: ${payment.id}, email: ${email}`);
 
     return res.status(200).json({
       status: 'success',

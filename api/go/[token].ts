@@ -204,7 +204,7 @@ function copyToClipboard(text) {
 `;
 
 function iosPage(subUrl: string, vlessUri: string): string {
-  // Streisand - лучший вариант для России
+  // Streisand deep link
   const streisandDeepLink = `streisand://import/${Buffer.from(vlessUri).toString('base64')}`;
   
   return `<!DOCTYPE html>
@@ -212,47 +212,46 @@ function iosPage(subUrl: string, vlessUri: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VPN для iPhone</title>
+  <title>Подключение VPN</title>
   ${styles}
+  <script>
+    // Автоматически пробуем открыть приложение
+    window.onload = function() {
+      setTimeout(function() {
+        window.location.href = '${streisandDeepLink}';
+      }, 500);
+    };
+  </script>
 </head>
 <body>
   <div class="card">
-    <span class="icon-big">📱</span>
-    <h1>VPN для iPhone</h1>
+    <span class="icon-big">✅</span>
+    <h1>VPN готов!</h1>
+    <p style="text-align: center; color: #10b981; font-weight: 600;">
+      Приложение должно открыться автоматически
+    </p>
     
-    <div class="step">
-      <h2><span class="step-num">1</span>Установи Streisand</h2>
-      <p>Лучшее бесплатное приложение для VPN:</p>
-      <a href="https://apps.apple.com/app/streisand/id6450534064" class="btn btn-blue" target="_blank">
-        📲 Скачать Streisand (бесплатно)
-      </a>
-      <div class="warning">
-        ⚠️ Если приложение недоступно — смените регион App Store на Казахстан или США
-      </div>
+    <a href="${streisandDeepLink}" class="btn btn-green" style="margin-top: 20px;">
+      ⚡ ПОДКЛЮЧИТЬ VPN
+    </a>
+    
+    <div class="warning" style="margin-top: 20px;">
+      💡 <b>Что делать дальше:</b><br>
+      1. Streisand откроется автоматически<br>
+      2. VPN добавится сам<br>
+      3. Нажми <b>"Подключить"</b> в приложении<br>
+      4. Готово! Открывай Instagram! 🎉
     </div>
 
-    <div class="step">
-      <h2><span class="step-num">2</span>Добавь VPN автоматически</h2>
-      <p>Нажми кнопку — Streisand откроется и добавит сервер сам!</p>
-      <a href="${streisandDeepLink}" class="btn btn-green">
-        ⚡ ПОДКЛЮЧИТЬ VPN
-      </a>
-      <div class="warning" style="margin-top: 15px;">
-        💡 Если не открылось автоматически:<br>
-        1. Скопируй ссылку ниже<br>
-        2. Открой Streisand → нажми +<br>
-        3. Выбери "Добавить из буфера обмена"
-      </div>
+    <div class="step" style="margin-top: 20px;">
+      <p style="font-size: 13px; color: #666;">Если приложение не открылось:</p>
       <div class="copy-box">
         <input type="text" value="${subUrl}" readonly id="sub-url">
         <button class="copy-btn" onclick="copyToClipboard('${subUrl}')">📋</button>
       </div>
-    </div>
-
-    <div class="success">
-      <div class="icon">🎉</div>
-      <h3>Почти готово!</h3>
-      <p>После добавления включи VPN и открой Instagram!</p>
+      <p style="font-size: 12px; color: #999; margin-top: 8px;">
+        Скопируй → Открой Streisand → Нажми + → "Из буфера"
+      </p>
     </div>
   </div>
 </body>
@@ -260,87 +259,54 @@ function iosPage(subUrl: string, vlessUri: string): string {
 }
 
 function androidPage(subUrl: string, vlessUri: string): string {
-  // Hiddify deep link formats:
-  // hiddify://import/<encoded_url>
-  // hiddify://add?url=<subscription_url>
+  // Hiddify deep link
   const hiddifyDeepLink = `hiddify://import/${encodeURIComponent(subUrl)}`;
-  const hiddifyAddLink = `hiddify://add?url=${encodeURIComponent(subUrl)}`;
   
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VPN для Android</title>
+  <title>Подключение VPN</title>
   ${styles}
   <script>
-    // Попытка автоматически открыть Hiddify
-    function tryOpenApp() {
-      const hiddifyLink = '${hiddifyDeepLink}';
-      
-      // Пробуем открыть приложение
-      window.location.href = hiddifyLink;
-      
-      // Если не получилось через 2 секунды - показываем инструкции
-      setTimeout(function() {
-        if (document.visibilityState === 'visible') {
-          document.getElementById('install-step').style.display = 'block';
-          document.getElementById('connecting-msg').style.display = 'none';
-        }
-      }, 2000);
-    }
-    
-    // Автозапуск при загрузке
+    // Автоматически открываем Hiddify
     window.onload = function() {
-      tryOpenApp();
+      setTimeout(function() {
+        window.location.href = '${hiddifyDeepLink}';
+      }, 500);
     };
   </script>
 </head>
 <body>
   <div class="card">
-    <span class="icon-big">🤖</span>
-    <h1>VPN для Android</h1>
+    <span class="icon-big">✅</span>
+    <h1>VPN готов!</h1>
+    <p style="text-align: center; color: #10b981; font-weight: 600;">
+      Приложение должно открыться автоматически
+    </p>
     
-    <div id="connecting-msg" style="text-align: center; padding: 20px;">
-      <p style="font-size: 18px;">⏳ Открываем Hiddify...</p>
-      <p style="color: #666; font-size: 14px;">Если приложение не открылось, нажмите кнопку ниже</p>
+    <a href="${hiddifyDeepLink}" class="btn btn-green" style="margin-top: 20px;">
+      ⚡ ПОДКЛЮЧИТЬ VPN
+    </a>
+    
+    <div class="warning" style="margin-top: 20px;">
+      💡 <b>Что делать дальше:</b><br>
+      1. Hiddify откроется автоматически<br>
+      2. VPN добавится сам<br>
+      3. Нажми <b>"Подключить"</b> в приложении<br>
+      4. Готово! Открывай Instagram! 🎉
     </div>
 
-    <div id="install-step" style="display: none;">
-      <div class="step">
-        <h2><span class="step-num">1</span>Установи Hiddify</h2>
-        <p>Бесплатное приложение</p>
-        <a href="https://play.google.com/store/apps/details?id=app.hiddify.com" class="btn btn-blue" target="_blank">
-          📲 Google Play
-        </a>
-        <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk" class="btn btn-orange" target="_blank">
-          📦 Скачать APK напрямую
-        </a>
-        <div class="warning">
-          ⚠️ Если нет в Play Store — скачай APK. Это официальная версия с GitHub!
-        </div>
-      </div>
-    </div>
-
-    <div class="step">
-      <h2><span class="step-num">2</span>Добавь VPN</h2>
-      <p>Нажми кнопку — Hiddify откроется и добавит сервер автоматически!</p>
-      <a href="${hiddifyDeepLink}" class="btn btn-green">
-        ⚡ ПОДКЛЮЧИТЬ VPN
-      </a>
-      <div class="warning">
-        💡 Если не открылось: открой Hiddify → нажми + → выбери "Добавить из буфера"
-      </div>
+    <div class="step" style="margin-top: 20px;">
+      <p style="font-size: 13px; color: #666;">Если приложение не открылось:</p>
       <div class="copy-box">
         <input type="text" value="${subUrl}" readonly>
         <button class="copy-btn" onclick="copyToClipboard('${subUrl}')">📋</button>
       </div>
-    </div>
-
-    <div class="success">
-      <div class="icon">🎉</div>
-      <h3>Почти готово!</h3>
-      <p>Нажми "Подключить" в Hiddify и открой Instagram!</p>
+      <p style="font-size: 12px; color: #999; margin-top: 8px;">
+        Скопируй → Открой Hiddify → Нажми + → "Из буфера"
+      </p>
     </div>
   </div>
 </body>

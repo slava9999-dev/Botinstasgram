@@ -53,12 +53,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const duration = parseInt(planDuration, 10);
     const isTrial = duration <= 3 && !isPaid;
 
-    if (isTrial && !telegramId) {
-      return res.status(400).json({ 
-        error: 'Telegram ID обязателен для бесплатного периода',
-        code: 'TELEGRAM_ID_REQUIRED'
-      });
-    }
+    // ⚠️ ВРЕМЕННО: telegramId опционален для теста
+    // TODO: В продакшене вернуть проверку!
+    // if (isTrial && !telegramId) {
+    //   return res.status(400).json({ 
+    //     error: 'Telegram ID обязателен для бесплатного периода',
+    //     code: 'TELEGRAM_ID_REQUIRED'
+    //   });
+    // }
 
     // Generate email based on telegramId or random
     // Format: tg_123456789@vpn.local (для проверки уникальности)

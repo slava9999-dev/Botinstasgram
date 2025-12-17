@@ -404,11 +404,15 @@
 
             <div class="features">
                 <div class="feature">
-                    <div class="feature-icon">📸</div>
+                    <div class="feature-icon">
+                        <img src="/instagram.png" alt="Instagram" style="width: 40px; height: 40px; object-fit: contain;">
+                    </div>
                     <div class="feature-text">Instagram</div>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">▶️</div>
+                    <div class="feature-icon">
+                        <img src="/youtube.png" alt="YouTube" style="width: 40px; height: 40px; object-fit: contain;">
+                    </div>
                     <div class="feature-text">YouTube</div>
                 </div>
                 <div class="feature">
@@ -531,13 +535,17 @@
             return params.get('tg_id') || params.get('telegram_id') || params.get('tgid');
         }
 
-        const telegramId = getTelegramId();
+        // ⚠️ ВРЕМЕННО: Генерируем случайный ID если нет tg_id (ДЛЯ ТЕСТА!)
+        // TODO: В продакшене УБРАТЬ и требовать настоящий Telegram ID!
+        const telegramId = getTelegramId() || `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         // Show appropriate alert
-        if (telegramId) {
+        if (getTelegramId()) {
             document.getElementById('tg-info').classList.remove('hidden');
         } else {
-            document.getElementById('tg-warning').classList.remove('hidden');
+            // ⚠️ ВРЕМЕННО: Скрываем предупреждение для теста
+            // TODO: В продакшене раскомментировать!
+            // document.getElementById('tg-warning').classList.remove('hidden');
         }
 
         // Main function: Get VPN
@@ -552,12 +560,13 @@
             btn.classList.remove('pulse');
             btn.innerHTML = '<span>⏳</span><span>Создаём VPN...</span>';
 
-            // Check Telegram ID
-            if (!telegramId) {
-                showError('Откройте ссылку через Telegram бот');
-                resetButton();
-                return;
-            }
+            // ⚠️ ВРЕМЕННО: Убрана проверка telegramId для теста
+            // TODO: В продакшене вернуть проверку!
+            // if (!telegramId) {
+            //     showError('Откройте ссылку через Telegram бот');
+            //     resetButton();
+            //     return;
+            // }
 
             try {
                 const response = await fetch('/api/create-user', {

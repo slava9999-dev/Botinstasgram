@@ -7,6 +7,18 @@
     {
       "source": "/api/link/:token",
       "destination": "/api/link/[token]"
+    },
+    {
+      "source": "/api/sub/:token",
+      "destination": "/api/sub/[token]"
+    },
+    {
+      "source": "/api/go/:token",
+      "destination": "/api/go/[token]"
+    },
+    {
+      "source": "/api/users/:uuid/traffic",
+      "destination": "/api/users/[uuid]/traffic"
     }
   ],
   "headers": [
@@ -26,6 +38,9 @@
     },
     "api/create-user/index.ts": {
       "maxDuration": 30
+    },
+    "api/go/[token].ts": {
+      "maxDuration": 10
     }
   }
 }

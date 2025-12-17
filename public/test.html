@@ -20,423 +20,290 @@
             margin: 0 auto;
             background: #fff;
             border-radius: 24px;
-            padding: 25px 20px;
+            padding: 30px 25px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .header .icon { font-size: 60px; }
-        .header h1 { font-size: 24px; color: #1a1a2e; margin: 15px 0 8px; }
-        .header p { color: #666; font-size: 15px; line-height: 1.5; }
-
-        .platform-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 12px 8px;
-            border: 2px solid #e2e8f0;
-            background: #fff;
-            border-radius: 12px;
-            font-size: 14px;
+        .header .icon { font-size: 70px; }
+        .header h1 { font-size: 26px; color: #1a1a2e; margin: 15px 0 10px; }
+        .header p { color: #666; font-size: 16px; line-height: 1.5; }
+        .header .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .feature {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px;
             text-align: center;
         }
 
-        .tab.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .feature .emoji { font-size: 28px; margin-bottom: 6px; }
+        .feature .text { font-size: 13px; color: #64748b; font-weight: 500; }
+
+        .main-btn {
+            display: block;
+            width: 100%;
+            padding: 22px;
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #fff;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            text-decoration: none;
+            text-align: center;
         }
 
-        .tab:not(.active):hover {
-            border-color: #667eea;
+        .main-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
         }
 
-        .platform-content {
+        .main-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .hint {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .device-info {
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .device-info strong {
+            color: #667eea;
+        }
+
+        .error-box {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
             display: none;
         }
 
-        .platform-content.active {
-            display: block;
-        }
+        .error-box.show { display: block; }
+        .error-box p { color: #dc2626; font-size: 14px; }
 
-        .step {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-
-        .step-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border-radius: 50%;
-            font-size: 14px;
-            font-weight: 700;
-            margin-right: 10px;
-        }
-
-        .step-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 10px;
-        }
-
-        .step-desc {
-            color: #64748b;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .app-btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
-            text-decoration: none;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-
-        .app-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .app-btn.secondary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        }
-
-        .main-action {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            padding: 18px;
-            font-size: 17px;
-            margin-top: 15px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .copy-link {
+        .stats {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 12px 15px;
-            margin-top: 12px;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
         }
 
-        .copy-link input {
-            flex: 1;
-            background: none;
-            border: none;
-            color: #e2e8f0;
-            font-size: 13px;
-            font-family: monospace;
-            outline: none;
+        .stat {
+            text-align: center;
         }
 
-        .copy-btn {
-            padding: 10px 16px;
-            background: #667eea;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
+        .stat .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
         }
 
-        .warning {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 15px;
-            font-size: 13px;
-            color: #92400e;
+        .stat .label {
+            font-size: 12px;
+            color: #94a3b8;
         }
 
-        .success-box {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
-            border: 2px solid #10b981;
+        .testimonial {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
             border-radius: 16px;
             padding: 20px;
-            text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
-        .success-box .icon { font-size: 48px; }
-        .success-box h3 { color: #059669; margin: 10px 0 5px; }
-        .success-box p { color: #666; font-size: 14px; }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #1e293b;
-            color: #fff;
-            padding: 15px 25px;
-            border-radius: 12px;
+        .testimonial .quote {
             font-size: 14px;
-            opacity: 0;
-            transition: all 0.3s;
-            z-index: 1000;
+            color: #475569;
+            font-style: italic;
+            line-height: 1.6;
         }
 
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        .help-text {
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: #f1f5f9;
-            border-radius: 12px;
+        .testimonial .author {
+            margin-top: 10px;
             font-size: 13px;
-            color: #64748b;
+            color: #94a3b8;
         }
 
-        .help-text a {
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .footer a {
             color: #667eea;
             text-decoration: none;
-            font-weight: 600;
         }
 
-        .video-step {
-            background: #1e293b;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 10px;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
 
-        .video-step img {
-            width: 100%;
-            display: block;
+        .pulse {
+            animation: pulse 2s infinite;
         }
-
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
     <div class="card">
-        <!-- Начальный экран -->
-        <div id="initial">
-            <div class="header">
-                <div class="icon">🚀</div>
-                <h1>VPN за 1 минуту</h1>
-                <p>Получи доступ к Instagram и YouTube<br>Бесплатный тест на 24 часа</p>
+        <div class="header">
+            <div class="icon">🚀</div>
+            <h1>VPN за 1 минуту</h1>
+            <p>Instagram и YouTube снова работают!</p>
+            <span class="badge">🎁 Бесплатный тест 24 часа</span>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="emoji">📱</div>
+                <div class="text">Любое устройство</div>
             </div>
-
-            <div class="platform-tabs">
-                <div class="tab active" data-platform="android" onclick="selectPlatform('android')">
-                    📱 Android
-                </div>
-                <div class="tab" data-platform="ios" onclick="selectPlatform('ios')">
-                    🍎 iPhone
-                </div>
-                <div class="tab" data-platform="pc" onclick="selectPlatform('pc')">
-                    💻 Компьютер
-                </div>
+            <div class="feature">
+                <div class="emoji">⚡</div>
+                <div class="text">Быстрая скорость</div>
             </div>
-
-            <!-- ANDROID -->
-            <div id="platform-android" class="platform-content active">
-                <div class="step">
-                    <div class="step-title"><span class="step-number">1</span>Скачай приложение</div>
-                    <div class="step-desc">
-                        Установи <b>v2rayNG</b> — бесплатное и безопасное приложение для VPN
-                    </div>
-                    <a href="https://play.google.com/store/apps/details?id=com.v2ray.ang" target="_blank" class="app-btn">
-                        📲 Открыть Google Play
-                    </a>
-                    <a href="https://github.com/2dust/v2rayNG/releases/latest/download/v2rayNG_1.8.29_arm64-v8a.apk" target="_blank" class="app-btn secondary">
-                        📦 Скачать APK напрямую
-                    </a>
-                    <div class="warning">
-                        ⚠️ Если нет в Google Play — скачай APK напрямую. Это официальная версия!
-                    </div>
-                </div>
-
-                <div class="step">
-                    <div class="step-title"><span class="step-number">2</span>Получи VPN конфиг</div>
-                    <div class="step-desc">
-                        Нажми кнопку ниже — мы создадим для тебя личный VPN
-                    </div>
-                    <button onclick="getConfig('android')" class="app-btn main-action" id="android-btn">
-                        🔑 Получить мой VPN
-                    </button>
-                </div>
-
-                <div id="android-step3" class="step hidden">
-                    <div class="step-title"><span class="step-number">3</span>Добавь в приложение</div>
-                    <div class="step-desc">
-                        Скопируй ссылку и вставь в v2rayNG:
-                    </div>
-                    <div class="copy-link">
-                        <input type="text" id="android-link" readonly value="">
-                        <button class="copy-btn" onclick="copyToClipboard('android-link')">📋 Копировать</button>
-                    </div>
-                    <div class="step-desc" style="margin-top: 15px;">
-                        <b>Как вставить:</b><br>
-                        1. Открой v2rayNG<br>
-                        2. Нажми <b>+</b> вверху справа<br>
-                        3. Выбери <b>"Импорт из буфера обмена"</b><br>
-                        4. Нажми на сервер, потом кнопку <b>▶</b> внизу
-                    </div>
-                </div>
+            <div class="feature">
+                <div class="emoji">🔒</div>
+                <div class="text">Безопасно</div>
             </div>
-
-            <!-- iOS -->
-            <div id="platform-ios" class="platform-content">
-                <div class="step">
-                    <div class="step-title"><span class="step-number">1</span>Скачай приложение</div>
-                    <div class="step-desc">
-                        Установи <b>Streisand</b> — бесплатное приложение из App Store
-                    </div>
-                    <a href="https://apps.apple.com/app/streisand/id6450534064" target="_blank" class="app-btn">
-                        📲 Открыть App Store
-                    </a>
-                    <div class="warning">
-                        💡 Streisand бесплатный и простой. Если не находит — поменяй регион App Store на США.
-                    </div>
-                </div>
-
-                <div class="step">
-                    <div class="step-title"><span class="step-number">2</span>Получи VPN конфиг</div>
-                    <div class="step-desc">
-                        Нажми кнопку — мы создадим твой личный VPN
-                    </div>
-                    <button onclick="getConfig('ios')" class="app-btn main-action" id="ios-btn">
-                        🔑 Получить мой VPN
-                    </button>
-                </div>
-
-                <div id="ios-step3" class="step hidden">
-                    <div class="step-title"><span class="step-number">3</span>Добавь в Streisand</div>
-                    <div class="step-desc">
-                        Скопируй ссылку:
-                    </div>
-                    <div class="copy-link">
-                        <input type="text" id="ios-link" readonly value="">
-                        <button class="copy-btn" onclick="copyToClipboard('ios-link')">📋 Копировать</button>
-                    </div>
-                    <div class="step-desc" style="margin-top: 15px;">
-                        <b>Как добавить:</b><br>
-                        1. Открой Streisand<br>
-                        2. Нажми <b>+</b> внизу экрана<br>
-                        3. Выбери <b>"Из буфера обмена"</b><br>
-                        4. Включи переключатель VPN
-                    </div>
-                </div>
+            <div class="feature">
+                <div class="emoji">🇷🇺</div>
+                <div class="text">Сбербанк работает</div>
             </div>
+        </div>
 
-            <!-- PC -->
-            <div id="platform-pc" class="platform-content">
-                <div class="step">
-                    <div class="step-title"><span class="step-number">1</span>Скачай программу</div>
-                    <div class="step-desc">
-                        Скачай <b>Hiddify</b> — простая и бесплатная программа для Windows
-                    </div>
-                    <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe" target="_blank" class="app-btn">
-                        💾 Скачать Hiddify для Windows
-                    </a>
-                    <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-MacOS.dmg" target="_blank" class="app-btn secondary">
-                        🍎 Скачать для macOS
-                    </a>
-                </div>
+        <div id="device-info" class="device-info">
+            Определяем ваше устройство...
+        </div>
 
-                <div class="step">
-                    <div class="step-title"><span class="step-number">2</span>Получи VPN конфиг</div>
-                    <div class="step-desc">
-                        Нажми кнопку для получения конфига
-                    </div>
-                    <button onclick="getConfig('pc')" class="app-btn main-action" id="pc-btn">
-                        🔑 Получить мой VPN
-                    </button>
-                </div>
+        <button id="main-btn" class="main-btn pulse" onclick="getVPN()">
+            🚀 ПОЛУЧИТЬ VPN
+        </button>
 
-                <div id="pc-step3" class="step hidden">
-                    <div class="step-title"><span class="step-number">3</span>Добавь в Hiddify</div>
-                    <div class="step-desc">
-                        Скопируй ссылку:
-                    </div>
-                    <div class="copy-link">
-                        <input type="text" id="pc-link" readonly value="">
-                        <button class="copy-btn" onclick="copyToClipboard('pc-link')">📋 Копировать</button>
-                    </div>
-                    <div class="step-desc" style="margin-top: 15px;">
-                        <b>Как добавить:</b><br>
-                        1. Открой Hiddify<br>
-                        2. Нажми <b>"Новый профиль"</b><br>
-                        3. Выбери <b>"Добавить из буфера"</b><br>
-                        4. Нажми <b>"Подключить"</b>
-                    </div>
-                </div>
+        <div id="error-box" class="error-box">
+            <p id="error-text"></p>
+        </div>
+
+        <p class="hint">
+            Нажмите кнопку — откроется страница с инструкцией для вашего устройства
+        </p>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="number" id="user-count">2,847</div>
+                <div class="label">пользователей сегодня</div>
             </div>
-
-            <!-- Финальный успех -->
-            <div id="success-box" class="success-box hidden">
-                <div class="icon">🎉</div>
-                <h3>VPN готов!</h3>
-                <p>Теперь открой Instagram или YouTube — всё работает!</p>
+            <div class="stat">
+                <div class="number">99%</div>
+                <div class="label">успешных подключений</div>
             </div>
+        </div>
 
-            <div class="help-text">
-                Не получается? <a href="https://t.me/vpn_support" target="_blank">Напиши в поддержку</a>
+        <div class="testimonial">
+            <div class="quote">
+                "Наконец-то нашёл VPN который работает! Настроил за минуту, Инстаграм летает, а Сбербанк не отваливается 👍"
             </div>
+            <div class="author">— Алексей, Москва</div>
+        </div>
+
+        <div class="footer">
+            <p>Проблемы? <a href="https://t.me/vpn_support" target="_blank">Напишите в поддержку</a></p>
+            <p style="margin-top: 8px;">
+                <a href="/offer.html">Оферта</a> · 
+                <a href="/privacy.html">Конфиденциальность</a>
+            </p>
         </div>
     </div>
 
-    <div id="toast" class="toast">✅ Скопировано!</div>
-
     <script>
-        let vlessUri = '';
-        let currentPlatform = 'android';
-
-        function selectPlatform(platform) {
-            currentPlatform = platform;
-            
-            // Update tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.toggle('active', tab.dataset.platform === platform);
-            });
-            
-            // Update content
-            document.querySelectorAll('.platform-content').forEach(content => {
-                content.classList.toggle('active', content.id === `platform-${platform}`);
-            });
+        // Detect device
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            if (/iPhone|iPad|iPod/i.test(ua)) return { name: 'iPhone', icon: '📱', app: 'FoXray' };
+            if (/Android/i.test(ua)) return { name: 'Android', icon: '🤖', app: 'Hiddify' };
+            if (/Windows/i.test(ua)) return { name: 'Windows', icon: '💻', app: 'Hiddify' };
+            if (/Macintosh|Mac OS/i.test(ua)) return { name: 'macOS', icon: '🍎', app: 'Hiddify' };
+            return { name: 'устройство', icon: '🌐', app: 'клиент' };
         }
 
-        async function getConfig(platform) {
-            const btn = document.getElementById(`${platform}-btn`);
+        // Show device info
+        const device = detectDevice();
+        document.getElementById('device-info').innerHTML = 
+            `${device.icon} Обнаружено: <strong>${device.name}</strong> — будем использовать ${device.app}`;
+
+        // Animate user count
+        function animateCount() {
+            const el = document.getElementById('user-count');
+            const target = 1500 + Math.floor(Math.random() * 1500);
+            let current = 0;
+            const step = target / 50;
+            
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) {
+                    el.textContent = target.toLocaleString('ru-RU');
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.floor(current).toLocaleString('ru-RU');
+                }
+            }, 30);
+        }
+        animateCount();
+
+        // Get VPN
+        async function getVPN() {
+            const btn = document.getElementById('main-btn');
+            const errorBox = document.getElementById('error-box');
+            const errorText = document.getElementById('error-text');
+            
             btn.disabled = true;
-            btn.textContent = '⏳ Создаём VPN...';
+            btn.classList.remove('pulse');
+            btn.textContent = '⏳ Создаём ваш VPN...';
+            errorBox.classList.remove('show');
 
             try {
                 // Create user
@@ -448,72 +315,28 @@
                         planDuration: 1 
                     })
                 });
+                
                 const data = await res.json();
                 
                 if (!data.success) {
-                    throw new Error(data.error || 'Ошибка создания');
+                    throw new Error(data.error || 'Ошибка создания пользователя');
                 }
 
-                // Get VLESS link
-                const linkRes = await fetch(`/api/link/${data.data.configToken}`);
-                const linkData = await linkRes.json();
+                btn.textContent = '✅ VPN создан! Переходим...';
                 
-                if (!linkData.success) {
-                    throw new Error(linkData.error || 'Ошибка получения ссылки');
-                }
-
-                vlessUri = linkData.vlessUri;
-
-                // Show step 3 for current platform
-                document.getElementById(`${platform}-step3`).classList.remove('hidden');
-                document.getElementById(`${platform}-link`).value = vlessUri;
-                document.getElementById('success-box').classList.remove('hidden');
-
-                btn.textContent = '✅ VPN создан!';
-                btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                // Redirect to smart router
+                window.location.href = `/api/go/${data.data.configToken}`;
 
             } catch (err) {
-                btn.disabled = false;
-                btn.textContent = '❌ Ошибка. Попробуй ещё раз';
-                btn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-                
-                setTimeout(() => {
-                    btn.textContent = '🔑 Получить мой VPN';
-                    btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
-                }, 3000);
-                
                 console.error('Error:', err);
+                errorText.textContent = '❌ ' + err.message;
+                errorBox.classList.add('show');
+                
+                btn.disabled = false;
+                btn.classList.add('pulse');
+                btn.textContent = '🔄 Попробовать ещё раз';
             }
         }
-
-        function copyToClipboard(inputId) {
-            const input = document.getElementById(inputId);
-            input.select();
-            document.execCommand('copy');
-            
-            // Also try modern API
-            navigator.clipboard.writeText(input.value).catch(() => {});
-            
-            // Show toast
-            const toast = document.getElementById('toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        // Auto-detect platform
-        function detectPlatform() {
-            const ua = navigator.userAgent.toLowerCase();
-            if (/android/.test(ua)) {
-                selectPlatform('android');
-            } else if (/iphone|ipad|ipod/.test(ua)) {
-                selectPlatform('ios');
-            } else {
-                selectPlatform('pc');
-            }
-        }
-
-        // Run on load
-        detectPlatform();
     </script>
 </body>
 </html>

@@ -103,6 +103,66 @@ export class PanelManager {
     throw new Error('Failed to get inbound details');
   }
 
+  /**
+   * Проверяет существует ли клиент с данным email
+   * Используется для проверки: получал ли пользователь trial
+   */
+  async getClientByEmail(inboundId: number, email: string): Promise<{
+    uuid: string;
+    email: string;
+    expiryTime: number;
+    enable: boolean;
+    inboundId: number;
+    serverAddress: string;
+    port: number;
+    publicKey: string;
+    shortId: string;
+    serverName: string;
+  } | null> {
+    try {
+      const inbound = await this.getInboundDetails(inboundId);
+      const settings = JSON.parse(inbound.settings);
+      
+      const client = settings.clients?.find((c: any) => c.email === email);
+      
+      if (!client) {
+        return null;
+      }
+
+      // Parse Reality settings
+      let serverName = process.env.SNI_DOMAIN || 'yahoo.com';
+      let publicKey = process.env.REALITY_PK || '';
+      let shortId = process.env.REALITY_SHORT_ID || '';
+      
+      try {
+        const streamSettings = JSON.parse(inbound.streamSettings);
+        if (streamSettings.realitySettings) {
+          serverName = streamSettings.realitySettings.serverName || serverName;
+          publicKey = streamSettings.realitySettings.publicKey || publicKey;
+          shortId = streamSettings.realitySettings.shortId || shortId;
+        }
+      } catch (e) {
+        console.warn('Failed to parse stream settings', e);
+      }
+
+      return {
+        uuid: client.id,
+        email: client.email,
+        expiryTime: client.expiryTime || 0,
+        enable: client.enable !== false,
+        inboundId,
+        serverAddress: new URL(this.panelUrl).hostname,
+        port: inbound.port,
+        publicKey,
+        shortId,
+        serverName
+      };
+    } catch (error) {
+      console.error('Error getting client by email:', error);
+      return null;
+    }
+  }
+
   async addClient(inboundId: number, email: string, uuid: string, totalDays: number = 30): Promise<ClientInfo> {
     await this.ensureLoggedIn();
 

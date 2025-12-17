@@ -204,11 +204,10 @@ function copyToClipboard(text) {
 `;
 
 function iosPage(subUrl: string, vlessUri: string): string {
-  // FoXray deep links:
-  // foxray://add?url=<subscription_url>
-  // foxray://import/<base64>
+  // Multiple app deep links for Russia (FoXray may be blocked)
+  const streisandDeepLink = `streisand://import/${Buffer.from(vlessUri).toString('base64')}`;
+  const v2boxDeepLink = `v2box://install-sub?url=${encodeURIComponent(subUrl)}`;
   const foxrayDeepLink = `foxray://add?url=${encodeURIComponent(subUrl)}`;
-  const foxrayVlessDeepLink = `foxray://import/${Buffer.from(vlessUri).toString('base64')}`;
   
   return `<!DOCTYPE html>
 <html lang="ru">
@@ -217,60 +216,40 @@ function iosPage(subUrl: string, vlessUri: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VPN для iPhone</title>
   ${styles}
-  <script>
-    // Попытка автоматически открыть FoXray
-    function tryOpenApp() {
-      const foxrayLink = '${foxrayDeepLink}';
-      const appStoreLink = 'https://apps.apple.com/app/foxray/id6448898396';
-      
-      // Пробуем открыть приложение
-      window.location.href = foxrayLink;
-      
-      // Если не получилось через 2 секунды - предлагаем скачать
-      setTimeout(function() {
-        if (document.visibilityState === 'visible') {
-          // Пользователь всё ещё на странице - значит приложение не открылось
-          document.getElementById('install-step').style.display = 'block';
-          document.getElementById('connecting-msg').style.display = 'none';
-        }
-      }, 2000);
-    }
-    
-    // Автозапуск при загрузке
-    window.onload = function() {
-      tryOpenApp();
-    };
-  </script>
 </head>
 <body>
   <div class="card">
     <span class="icon-big">📱</span>
     <h1>VPN для iPhone</h1>
     
-    <div id="connecting-msg" style="text-align: center; padding: 20px;">
-      <p style="font-size: 18px;">⏳ Открываем FoXray...</p>
-      <p style="color: #666; font-size: 14px;">Если приложение не открылось, нажмите кнопку ниже</p>
-    </div>
-    
-    <div id="install-step" style="display: none;">
-      <div class="step">
-        <h2><span class="step-num">1</span>Установи FoXray</h2>
-        <p>Бесплатное приложение из App Store</p>
-        <a href="https://apps.apple.com/app/foxray/id6448898396" class="btn btn-blue" target="_blank">
-          📲 Открыть App Store
-        </a>
+    <div class="step">
+      <h2><span class="step-num">1</span>Установи приложение</h2>
+      <p>Выбери одно из доступных в России:</p>
+      <a href="https://apps.apple.com/app/streisand/id6450534064" class="btn btn-blue" target="_blank">
+        📲 Streisand (бесплатно)
+      </a>
+      <a href="https://apps.apple.com/app/v2box-v2ray-client/id6446814690" class="btn btn-blue" target="_blank" style="margin-top: 8px;">
+        📲 V2Box (бесплатно)
+      </a>
+      <div class="warning">
+        ⚠️ Если приложения недоступны — смените регион App Store на Казахстан или США
       </div>
     </div>
 
     <div class="step">
       <h2><span class="step-num">2</span>Добавь VPN</h2>
-      <p>Нажми кнопку — FoXray откроется и добавит сервер автоматически!</p>
-      <a href="${foxrayDeepLink}" class="btn btn-green">
-        ⚡ ПОДКЛЮЧИТЬ VPN
+      <p>Попробуй автоматически:</p>
+      <a href="${streisandDeepLink}" class="btn btn-green">
+        ⚡ Открыть в Streisand
       </a>
-      <div class="warning">
-        💡 Если не открылось: скопируй ссылку и вставь в FoXray вручную
-        (+ → Subscription URL → Вставь ссылку)
+      <a href="${v2boxDeepLink}" class="btn btn-green" style="margin-top: 8px;">
+        ⚡ Открыть в V2Box
+      </a>
+      <div class="warning" style="margin-top: 15px;">
+        💡 Если не открылось автоматически:<br>
+        1. Скопируй ссылку ниже<br>
+        2. Открой приложение → нажми +<br>
+        3. Выбери "Добавить из буфера"
       </div>
       <div class="copy-box">
         <input type="text" value="${subUrl}" readonly id="sub-url">
@@ -281,7 +260,7 @@ function iosPage(subUrl: string, vlessUri: string): string {
     <div class="success">
       <div class="icon">🎉</div>
       <h3>Почти готово!</h3>
-      <p>После добавления включи VPN в приложении и открой Instagram!</p>
+      <p>После добавления включи VPN и открой Instagram!</p>
     </div>
   </div>
 </body>

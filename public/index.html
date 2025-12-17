@@ -535,16 +535,28 @@
             return params.get('tg_id') || params.get('telegram_id') || params.get('tgid');
         }
 
-        // ⚠️ ВРЕМЕННО: Генерируем случайный ID если нет tg_id (ДЛЯ ТЕСТА!)
-        // TODO: В продакшене УБРАТЬ и требовать настоящий Telegram ID!
+        // ═══════════════════════════════════════════════════════════════
+        // ⚠️  РЕЖИМ ТЕСТИРОВАНИЯ (БЕЗ TELEGRAM BOT)
+        // ═══════════════════════════════════════════════════════════════
+        // ВНИМАНИЕ: Этот код позволяет тестировать без Telegram бота.
+        // 
+        // ПРИ ПЕРЕХОДЕ В ПРОДАКШЕН:
+        // 1. УДАЛИТЬ fallback ` || test_...` в строке ниже
+        // 2. РАСКОММЕНТИРОВАТЬ проверку в функции getVPN()
+        // 3. РАСКОММЕНТИРОВАТЬ предупреждение в строке 548
+        // 
+        // Правильный продакшен код:
+        // const telegramId = getTelegramId(); // БЕЗ FALLBACK!
+        // ═══════════════════════════════════════════════════════════════
+        
         const telegramId = getTelegramId() || `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
         // Show appropriate alert
         if (getTelegramId()) {
             document.getElementById('tg-info').classList.remove('hidden');
         } else {
-            // ⚠️ ВРЕМЕННО: Скрываем предупреждение для теста
-            // TODO: В продакшене раскомментировать!
+            // ⚠️ ТЕСТОВЫЙ РЕЖИМ: Скрываем предупреждение
+            // В продакшене раскомментировать:
             // document.getElementById('tg-warning').classList.remove('hidden');
         }
 

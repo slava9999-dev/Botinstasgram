@@ -1,5 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PanelManager } from '../../utils/panel';
+import { validateEnvironment, logEnvironmentStatus } from '../../utils/env-validator';
+
 
 /**
  * GET /api/health
@@ -55,16 +57,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } else {
     // Try to connect to panel
     try {
+      console.log('[Health] Testing panel connection...');
       const panel = new PanelManager();
       await panel.login();
       checks.services.panel = { status: 'ok' };
+      console.log('[Health] Panel connection successful');
     } catch (error: any) {
+      console.error('[Health] Panel connection failed:', error.message);
       checks.services.panel = { 
         status: 'error', 
         message: `Panel connection failed: ${error.message}` 
       };
     }
   }
+
+  // Log full environment status for debugging
+  logEnvironmentStatus();
 
   // Check Reality settings
   const hasReality = process.env.REALITY_PK && 

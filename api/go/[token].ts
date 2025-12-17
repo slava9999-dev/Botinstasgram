@@ -23,7 +23,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const payload = validateConfigToken(token);
   
   if (!payload) {
-    return res.status(401).send(errorPage('Ссылка истекла или недействительна'));
+    console.error('[Go] Invalid token access attempt');
+    return res.status(401).send(errorPage(
+      'Ссылка истекла или недействительна. Пожалуйста, создайте новый VPN конфиг на главной странице.'
+    ));
   }
 
   const userAgent = req.headers['user-agent'] || '';

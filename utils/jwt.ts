@@ -60,16 +60,58 @@ export function generateConfigToken(clientInfo: {
 /**
  * Validate and decode a config token.
  * Returns null if invalid or expired.
+ * 
+ * Enhanced with detailed error logging for debugging 401 errors.
  */
 export function validateConfigToken(token: string): TokenPayload | null {
   try {
     const secret = getJwtSecret();
-    return jwt.verify(token, secret) as TokenPayload;
-  } catch (error) {
-    console.error('JWT Verification Failed:', error);
-    // Для отладки можно временно раскомментировать:
-    // console.log('Token:', token);
-    // console.log('Secret (first 3 chars):', getJwtSecret().substring(0, 3));
+    const decoded = jwt.verify(token, secret) as TokenPayload;
+    
+    // Additional expiration check for better error messages
+    const now = Date.now();
+    const expMs = decoded.exp * 1000; // JWT exp is in seconds
+    
+    if (expMs < now) {
+      const expiredAgo = Math.floor((now - expMs) / 1000 / 60); // minutes
+      console.error('[JWT] Token expired:', {
+        expiredAt: new Date(expMs).toISOString(),
+        expiredAgoMinutes: expiredAgo,
+        now: new Date(now).toISOString()
+      });
+      return null;
+    }
+    
+    // Validation successful
+    console.log('[JWT] Token validated successfully:', {
+      uuid: decoded.uuid.substring(0, 8) + '...',
+      email: decoded.email,
+      expiresIn: Math.floor((expMs - now) / 1000 / 60 / 60 / 24) + ' days'
+    });
+    
+    return decoded;
+    
+  } catch (error: any) {
+    // Detailed error logging for different JWT error types
+    const errorType = error.name || 'UnknownError';
+    const errorMsg = error.message || 'No error message';
+    
+    console.error('[JWT] Validation failed:', {
+      errorType,
+      errorMessage: errorMsg,
+      tokenPreview: token.substring(0, 20) + '...',
+      secretConfigured: !!process.env.JWT_SECRET
+    });
+    
+    // Different handling for different error types
+    if (errorType === 'TokenExpiredError') {
+      console.error('[JWT] Token has expired. User needs to request a new config.');
+    } else if (errorType === 'JsonWebTokenError') {
+      console.error('[JWT] Invalid token signature or format. Possible causes: wrong secret, corrupted token.');
+    } else if (errorType === 'NotBeforeError') {
+      console.error('[JWT] Token used before its validity period.');
+    }
+    
     return null;
   }
 }

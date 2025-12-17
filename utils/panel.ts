@@ -64,6 +64,8 @@ export class PanelManager {
 
   async login(retryCount = 0): Promise<void> {
     try {
+      console.log(`[Panel] Attempting login to ${this.panelUrl} (attempt ${retryCount + 1}/4)`);
+      
       const response = await this.axiosInstance.post('/login', {
         username: this.username,
         password: this.password
@@ -74,17 +76,56 @@ export class PanelManager {
         if (cookies) {
           this.cookie = cookies.join(';');
           this.axiosInstance.defaults.headers.common['Cookie'] = this.cookie;
+          console.log('[Panel] Login successful');
+        } else {
+          console.warn('[Panel] Login response OK but no cookies received');
         }
       } else {
-        throw new Error('Login failed: ' + response.data.msg);
+        const errorMsg = response.data.msg || 'Unknown error';
+        console.error('[Panel] Login failed:', errorMsg);
+        throw new Error('Login failed: ' + errorMsg);
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Детальное логирование разных типов ошибок
+      const errorType = error.code || error.name || 'UnknownError';
+      
+      console.error('[Panel] Login error:', {
+        type: errorType,
+        message: error.message,
+        panelUrl: this.panelUrl,
+        attempt: retryCount + 1,
+        maxAttempts: 4
+      });
+      
+      // Специфичные сообщения для разных ошибок
+      if (errorType === 'ECONNREFUSED') {
+        console.error('[Panel] Connection refused. Check if panel is running and firewall allows connections.');
+      } else if (errorType === 'ETIMEDOUT') {
+        console.error('[Panel] Connection timeout. Panel may be slow or unreachable.');
+      } else if (errorType === 'ENOTFOUND') {
+        console.error('[Panel] DNS resolution failed. Check PANEL_URL in environment variables.');
+      } else if (error.response?.status === 401) {
+        console.error('[Panel] Invalid credentials. Check PANEL_USER and PANEL_PASS.');
+      } else if (error.response?.status === 403) {
+        console.error('[Panel] Access forbidden. Check panel permissions.');
+      }
+      
+      // Retry logic
       if (retryCount < 3) {
         const delay = Math.pow(2, retryCount) * 1000;
+        console.log(`[Panel] Retrying in ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
         return this.login(retryCount + 1);
       }
-      throw error;
+      
+      // После всех попыток - выбрасываем понятную ошибку
+      const userFriendlyError = new Error(
+        `Failed to connect to 3X-UI panel after 4 attempts. ` +
+        `Last error: ${error.message}. ` +
+        `Please check PANEL_URL, credentials, and VPS accessibility.`
+      );
+      console.error('[Panel] All login attempts failed');
+      throw userFriendlyError;
     }
   }
 

@@ -1,4 +1,21 @@
 {
+  "directDomains": [
+    "geosite:cn",
+    "geosite:category-bank-ru",
+    "geosite:category-gov-ru",
+    "domain:sberbank.ru",
+    "domain:tinkoff.ru",
+    "domain:alfabank.ru",
+    "domain:vtb.ru",
+    "domain:gosuslugi.ru",
+    "domain:mos.ru",
+    "domain:nalog.gov.ru",
+    "regexp:.*\\.gosuslugi\\.ru$",
+    "regexp:.*\\.gov\\.ru$"
+  ],
+  "blockDomains": [
+    "geosite:category-ads-all"
+  ],
   "proxyDomains": [
     "geosite:instagram",
     "geosite:facebook",

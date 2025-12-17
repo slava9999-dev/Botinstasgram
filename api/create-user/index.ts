@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { PanelManager } from '../../utils/panel';
 import { generateConfigToken } from '../../utils/jwt';
 import { checkRateLimit, RateLimitPresets } from '../../utils/rate-limit';
+import { requireValidEnvironment } from '../../utils/env-validator';
+
 
 /**
  * POST /api/create-user
@@ -42,6 +44,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Проверка критичных переменных окружения
+    requireValidEnvironment();
+    
     const { 
       telegramId, 
       email: customEmail,

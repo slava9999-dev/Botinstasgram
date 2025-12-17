@@ -3,259 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VPN за 1 минуту — Instagram и YouTube</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>VPN для Instagram и YouTube — Бесплатно 3 дня</title>
+    <meta name="description" content="Получите доступ к Instagram и YouTube за 1 минуту. Бесплатный тест на 3 дня.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 15px;
+            color: #1a1a2e;
+        }
+
+        .container {
+            max-width: 440px;
+            margin: 0 auto;
         }
 
         .card {
-            max-width: 420px;
-            margin: 0 auto;
             background: #fff;
             border-radius: 24px;
-            padding: 30px 25px;
+            padding: 30px 24px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
         }
 
+        /* Header */
         .header {
             text-align: center;
             margin-bottom: 25px;
         }
-
-        .header .icon { font-size: 70px; }
-        .header h1 { font-size: 26px; color: #1a1a2e; margin: 15px 0 10px; }
-        .header p { color: #666; font-size: 16px; line-height: 1.5; }
-        .header .badge {
+        .header .icon { font-size: 64px; }
+        .header h1 { 
+            font-size: 26px; 
+            font-weight: 800;
+            margin: 12px 0 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header p { color: #64748b; font-size: 15px; line-height: 1.5; }
+        
+        .badge {
             display: inline-block;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #fff;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
             font-weight: 600;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
+        /* Features */
         .features {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin-bottom: 25px;
         }
-
         .feature {
             background: #f8fafc;
-            border-radius: 12px;
-            padding: 14px;
+            border-radius: 14px;
+            padding: 14px 12px;
             text-align: center;
         }
+        .feature .emoji { font-size: 26px; margin-bottom: 6px; }
+        .feature .text { font-size: 12px; color: #64748b; font-weight: 500; }
 
-        .feature .emoji { font-size: 28px; margin-bottom: 6px; }
-        .feature .text { font-size: 13px; color: #64748b; font-weight: 500; }
-
-        .main-btn {
+        /* Buttons */
+        .btn {
             display: block;
             width: 100%;
-            padding: 22px;
-            font-size: 20px;
+            padding: 18px 24px;
+            font-size: 17px;
             font-weight: 700;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
             border: none;
-            border-radius: 16px;
+            border-radius: 14px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
             text-decoration: none;
             text-align: center;
+            margin-bottom: 12px;
         }
-
-        .main-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
+        .btn:last-child { margin-bottom: 0; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
-
-        .main-btn:disabled {
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5);
+        }
+        .btn-primary:disabled {
             background: #94a3b8;
-            cursor: not-allowed;
-            transform: none;
             box-shadow: none;
+            transform: none;
+            cursor: wait;
         }
 
-        .hint {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 13px;
-            color: #94a3b8;
+        .btn-secondary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
         }
 
+        /* Section titles */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .step:last-child { margin-bottom: 0; }
+        .step-num {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .step-text {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.5;
+            padding-top: 3px;
+        }
+        .step-text b { color: #1a1a2e; }
+
+        /* Prices */
+        .prices {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.15);
+        }
+        .price-row:last-child { border-bottom: none; }
+        .price-name { font-size: 15px; color: #475569; }
+        .price-value { 
+            font-size: 18px; 
+            font-weight: 700; 
+            color: #667eea;
+        }
+        .price-value.free { color: #10b981; }
+
+        /* Device info */
         .device-info {
-            background: #f1f5f9;
+            background: #e0e7ff;
             border-radius: 10px;
-            padding: 12px;
+            padding: 12px 16px;
             text-align: center;
             margin-bottom: 20px;
             font-size: 14px;
-            color: #64748b;
+            color: #4338ca;
         }
 
-        .device-info strong {
-            color: #667eea;
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+        }
+        .footer a { 
+            color: rgba(255,255,255,0.9); 
+            text-decoration: none;
+        }
+        .footer a:hover { text-decoration: underline; }
+        .footer .legal {
+            margin-top: 12px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.5;
         }
 
+        /* Error */
         .error-box {
             background: #fee2e2;
             border: 1px solid #ef4444;
             border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
+            padding: 14px;
+            margin-bottom: 15px;
             display: none;
+            font-size: 14px;
+            color: #dc2626;
         }
-
         .error-box.show { display: block; }
-        .error-box p { color: #dc2626; font-size: 14px; }
 
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat .number {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .stat .label {
-            font-size: 12px;
-            color: #94a3b8;
-        }
-
-        .testimonial {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        /* Success */
+        .success-box {
+            background: #d1fae5;
+            border: 1px solid #10b981;
             border-radius: 16px;
             padding: 20px;
-            margin-top: 25px;
-        }
-
-        .testimonial .quote {
-            font-size: 14px;
-            color: #475569;
-            font-style: italic;
-            line-height: 1.6;
-        }
-
-        .testimonial .author {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #94a3b8;
-        }
-
-        .footer {
             text-align: center;
-            margin-top: 25px;
-            font-size: 12px;
-            color: #94a3b8;
+            display: none;
         }
+        .success-box.show { display: block; }
+        .success-box .icon { font-size: 48px; margin-bottom: 10px; }
+        .success-box h3 { color: #059669; margin-bottom: 8px; }
+        .success-box p { color: #475569; font-size: 14px; }
 
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
+        /* Pulse animation */
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.02); }
         }
+        .pulse { animation: pulse 2s infinite; }
 
-        .pulse {
-            animation: pulse 2s infinite;
-        }
+        /* Hide sections */
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="header">
-            <div class="icon">🚀</div>
-            <h1>VPN за 1 минуту</h1>
-            <p>Instagram и YouTube снова работают!</p>
-            <span class="badge">🎁 Бесплатный тест 24 часа</span>
+    <div class="container">
+        <!-- Main Card -->
+        <div class="card">
+            <div class="header">
+                <div class="icon">🚀</div>
+                <h1>VPN для Instagram</h1>
+                <p>Instagram и YouTube снова работают!<br>Настройка за 1 минуту</p>
+                <span class="badge">🎁 3 дня БЕСПЛАТНО</span>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="emoji">📱</div>
+                    <div class="text">Все устройства</div>
+                </div>
+                <div class="feature">
+                    <div class="emoji">⚡</div>
+                    <div class="text">Быстрая скорость</div>
+                </div>
+                <div class="feature">
+                    <div class="emoji">🔒</div>
+                    <div class="text">Безопасно</div>
+                </div>
+                <div class="feature">
+                    <div class="emoji">🏦</div>
+                    <div class="text">Банки работают</div>
+                </div>
+            </div>
+
+            <!-- Device detection -->
+            <div id="device-info" class="device-info">
+                Определяем устройство...
+            </div>
+
+            <!-- Error box -->
+            <div id="error-box" class="error-box"></div>
+
+            <!-- Success box -->
+            <div id="success-box" class="success-box">
+                <div class="icon">🎉</div>
+                <h3>VPN создан!</h3>
+                <p>Сейчас откроется страница с инструкцией...</p>
+            </div>
+
+            <!-- Main button -->
+            <button id="btn-connect" class="btn btn-primary pulse" onclick="getVPN()">
+                🚀 ПОЛУЧИТЬ VPN БЕСПЛАТНО
+            </button>
+
+            <!-- Instructions -->
+            <div class="instructions">
+                <div class="section-title">📋 Как подключить:</div>
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-text">Нажми <b>«Получить VPN»</b> выше</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-text">Установи приложение <b>Hiddify</b> или <b>FoXray</b></div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-text">Нажми <b>«Подключить»</b> — конфиг добавится автоматически</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-text">Готово! Открывай <b>Instagram</b> 🎉</div>
+                </div>
+            </div>
         </div>
 
-        <div class="features">
-            <div class="feature">
-                <div class="emoji">📱</div>
-                <div class="text">Любое устройство</div>
+        <!-- Pricing Card -->
+        <div class="card">
+            <div class="section-title">💰 Тарифы</div>
+            
+            <div class="prices">
+                <div class="price-row">
+                    <span class="price-name">🎁 Пробный период</span>
+                    <span class="price-value free">3 дня бесплатно</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-name">📅 Подписка</span>
+                    <span class="price-value">99 ₽/месяц</span>
+                </div>
             </div>
-            <div class="feature">
-                <div class="emoji">⚡</div>
-                <div class="text">Быстрая скорость</div>
-            </div>
-            <div class="feature">
-                <div class="emoji">🔒</div>
-                <div class="text">Безопасно</div>
-            </div>
-            <div class="feature">
-                <div class="emoji">🇷🇺</div>
-                <div class="text">Сбербанк работает</div>
-            </div>
-        </div>
 
-        <div id="device-info" class="device-info">
-            Определяем ваше устройство...
-        </div>
-
-        <button id="main-btn" class="main-btn pulse" onclick="getVPN()">
-            🚀 ПОЛУЧИТЬ VPN
-        </button>
-
-        <div id="error-box" class="error-box">
-            <p id="error-text"></p>
-        </div>
-
-        <p class="hint">
-            Нажмите кнопку — откроется страница с инструкцией для вашего устройства
-        </p>
-
-        <div class="stats">
-            <div class="stat">
-                <div class="number" id="user-count">2,847</div>
-                <div class="label">пользователей сегодня</div>
-            </div>
-            <div class="stat">
-                <div class="number">99%</div>
-                <div class="label">успешных подключений</div>
-            </div>
-        </div>
-
-        <div class="testimonial">
-            <div class="quote">
-                "Наконец-то нашёл VPN который работает! Настроил за минуту, Инстаграм летает, а Сбербанк не отваливается 👍"
-            </div>
-            <div class="author">— Алексей, Москва</div>
-        </div>
-
-        <div class="footer">
-            <p>Проблемы? <a href="https://t.me/vpn_support" target="_blank">Напишите в поддержку</a></p>
-            <p style="margin-top: 8px;">
-                <a href="/offer.html">Оферта</a> · 
-                <a href="/privacy.html">Конфиденциальность</a>
+            <button id="btn-pay" class="btn btn-secondary" onclick="openPayment()">
+                💳 Оплатить и продлить
+            </button>
+            
+            <p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:12px;">
+                Сначала попробуй бесплатно 3 дня, потом оплати если понравится
             </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                <a href="/offer.html">Публичная оферта</a> · 
+                <a href="/privacy.html">Политика конфиденциальности</a>
+            </p>
+            <p style="margin-top:8px;">
+                <a href="https://t.me/vpn_support">Поддержка в Telegram</a>
+            </p>
+            <div class="legal">
+                ИП Дмитричев Александр Геннадьевич<br>
+                ИНН: 520500573503<br>
+                © 2024 VPN Connect. Все права защищены.
+            </div>
         </div>
     </div>
 
@@ -267,74 +372,91 @@
             if (/Android/i.test(ua)) return { name: 'Android', icon: '🤖', app: 'Hiddify' };
             if (/Windows/i.test(ua)) return { name: 'Windows', icon: '💻', app: 'Hiddify' };
             if (/Macintosh|Mac OS/i.test(ua)) return { name: 'macOS', icon: '🍎', app: 'Hiddify' };
-            return { name: 'устройство', icon: '🌐', app: 'клиент' };
+            return { name: 'устройство', icon: '🌐', app: 'VPN клиент' };
         }
 
-        // Show device info
         const device = detectDevice();
         document.getElementById('device-info').innerHTML = 
-            `${device.icon} Обнаружено: <strong>${device.name}</strong> — будем использовать ${device.app}`;
+            `${device.icon} <b>${device.name}</b> — используем <b>${device.app}</b>`;
 
-        // Animate user count
-        function animateCount() {
-            const el = document.getElementById('user-count');
-            const target = 1500 + Math.floor(Math.random() * 1500);
-            let current = 0;
-            const step = target / 50;
-            
-            const timer = setInterval(() => {
-                current += step;
-                if (current >= target) {
-                    el.textContent = target.toLocaleString('ru-RU');
-                    clearInterval(timer);
-                } else {
-                    el.textContent = Math.floor(current).toLocaleString('ru-RU');
-                }
-            }, 30);
-        }
-        animateCount();
-
-        // Get VPN
+        // Get VPN (3 days free trial)
         async function getVPN() {
-            const btn = document.getElementById('main-btn');
+            const btn = document.getElementById('btn-connect');
             const errorBox = document.getElementById('error-box');
-            const errorText = document.getElementById('error-text');
+            const successBox = document.getElementById('success-box');
             
             btn.disabled = true;
             btn.classList.remove('pulse');
-            btn.textContent = '⏳ Создаём ваш VPN...';
+            btn.textContent = '⏳ Создаём VPN...';
             errorBox.classList.remove('show');
 
             try {
-                // Create user
                 const res = await fetch('/api/create-user', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         email: `user_${Date.now()}@vpn.local`, 
-                        planDuration: 1 
+                        planDuration: 3  // 3 дня бесплатно!
                     })
                 });
                 
                 const data = await res.json();
                 
                 if (!data.success) {
-                    throw new Error(data.error || 'Ошибка создания пользователя');
+                    throw new Error(data.error || 'Ошибка создания');
                 }
 
-                btn.textContent = '✅ VPN создан! Переходим...';
-                
+                // Show success
+                btn.classList.add('hidden');
+                successBox.classList.add('show');
+
                 // Redirect to smart router
-                window.location.href = `/api/go/${data.data.configToken}`;
+                setTimeout(() => {
+                    window.location.href = `/api/go/${data.data.configToken}`;
+                }, 1500);
 
             } catch (err) {
                 console.error('Error:', err);
-                errorText.textContent = '❌ ' + err.message;
+                errorBox.textContent = '❌ ' + (err.message || 'Ошибка. Попробуйте ещё раз');
                 errorBox.classList.add('show');
                 
                 btn.disabled = false;
                 btn.classList.add('pulse');
-                btn.textContent = '🔄 Попробовать ещё раз';
+                btn.textContent = '🔄 Попробовать снова';
+            }
+        }
+
+        // Open payment (YooKassa)
+        async function openPayment() {
+            const btn = document.getElementById('btn-pay');
+            btn.disabled = true;
+            btn.textContent = '⏳ Переход к оплате...';
+
+            try {
+                const res = await fetch('/api/payment/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        amount: 99,
+                        planDuration: 30,
+                        description: 'VPN Connect - 1 месяц'
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Ошибка создания платежа');
+                }
+
+                // Redirect to YooKassa
+                window.location.href = data.confirmationUrl;
+
+            } catch (err) {
+                console.error('Payment error:', err);
+                alert('❌ Ошибка: ' + (err.message || 'Не удалось создать платёж'));
+                btn.disabled = false;
+                btn.textContent = '💳 Оплатить и продлить';
             }
         }
     </script>

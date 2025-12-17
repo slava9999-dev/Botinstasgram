@@ -112,7 +112,7 @@ export const VPN_CLIENT = {
   
   // Default SNI options
   RECOMMENDED_SNI: [
-    'yahoo.com',
+    'www.google.com',
     'www.microsoft.com', 
     'www.cloudflare.com',
     'www.google.com',

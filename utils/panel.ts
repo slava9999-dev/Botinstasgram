@@ -208,7 +208,7 @@ export class PanelManager {
       }
 
       // Parse Reality settings
-      let serverName = process.env.SNI_DOMAIN || 'yahoo.com';
+      let serverName = process.env.SNI_DOMAIN || 'www.google.com';
       let publicKey = process.env.REALITY_PK || '';
       let shortId = process.env.REALITY_SHORT_ID || '';
       
@@ -248,7 +248,7 @@ export class PanelManager {
     const settings = JSON.parse(inbound.settings);
 
     // Parse Reality settings
-    let serverName = process.env.SNI_DOMAIN || 'yahoo.com';
+    let serverName = process.env.SNI_DOMAIN || 'www.google.com';
     let publicKey = process.env.REALITY_PK || '';
     let shortId = process.env.REALITY_SHORT_ID || '';
     const port = inbound.port;

@@ -108,7 +108,7 @@ export const PANEL_CONFIG = {
  * VLESS Reality Configuration
  */
 export const REALITY_CONFIG = {
-  DEFAULT_SNI: 'www.google.com',
+  DEFAULT_SNI: 'www.microsoft.com',
   FLOW: 'xtls-rprx-vision' as const,
   FINGERPRINT: 'chrome' as const,
   SPIDER_X: '/',

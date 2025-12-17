@@ -10,7 +10,7 @@
 // Параметры сервера (из вашей конфигурации)
 const SERVER_ADDRESS = '72.56.64.62';
 const SERVER_PORT = 443;
-const SNI_DOMAIN = 'www.google.com';
+const SNI_DOMAIN = 'www.microsoft.com'; // ✅ Синхронизировано с 3X-UI
 const FLOW = 'xtls-rprx-vision';
 const FINGERPRINT = 'chrome';
 

@@ -163,7 +163,7 @@ tail -f /var/log/xray/error.log
 
 - **IP:** 72.56.64.62
 - **Порт:** 443 (VLESS Reality)
-- **SNI:** yahoo.com
+- **SNI:** www.microsoft.com ✅ (синхронизировано)
 - **3X-UI Panel:** http://72.56.64.62:2053/WIx1sHmHYPPEuG8AKY/panel/
 
 ### Конфигурация:

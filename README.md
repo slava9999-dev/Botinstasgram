@@ -200,7 +200,7 @@ cp .env.example .env
 | `INBOUND_ID`          | ID inbound'а                     | Обычно `1`                                                           |
 | `REALITY_PK`          | Reality Public Key               | Из настроек inbound                                                  |
 | `REALITY_SHORT_ID`    | Reality Short ID                 | Из настроек inbound                                                  |
-| `SNI_DOMAIN`          | SNI домен                        | `yahoo.com`                                                          |
+| `SNI_DOMAIN`          | SNI домен                        | `www.microsoft.com`                                                  |
 
 ### Шаг 4: Деплой
 
@@ -281,8 +281,8 @@ bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.
    - Network: **TCP**
    - Security: **Reality**
    - uTLS: **Chrome**
-   - Dest: `yahoo.com:443`
-   - SNI: `yahoo.com`
+   - Dest: `www.microsoft.com:443`
+   - SNI: `www.microsoft.com`
 4. Нажать **Generate** для Reality Keys
 5. **Сохранить** Public Key и Short ID
 

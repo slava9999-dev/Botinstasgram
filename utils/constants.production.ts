@@ -110,12 +110,12 @@ export const VPN_CLIENT = {
   // Security
   SECURITY: 'reality',
   
-  // Default SNI options
+  // Default SNI options (www.microsoft.com проверен и работает!)
   RECOMMENDED_SNI: [
+    'www.microsoft.com', // ✅ Основной - проверен на сервере
     'www.google.com',
-    'www.microsoft.com', 
     'www.cloudflare.com',
-    'www.google.com',
+    'yahoo.com',
   ],
 } as const;
 

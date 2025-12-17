@@ -201,6 +201,12 @@ function copyToClipboard(text) {
 `;
 
 function iosPage(subUrl: string, vlessUri: string): string {
+  // FoXray deep links:
+  // foxray://add?url=<subscription_url>
+  // foxray://import/<base64>
+  const foxrayDeepLink = `foxray://add?url=${encodeURIComponent(subUrl)}`;
+  const foxrayVlessDeepLink = `foxray://import/${Buffer.from(vlessUri).toString('base64')}`;
+  
   return `<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -208,30 +214,60 @@ function iosPage(subUrl: string, vlessUri: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VPN для iPhone</title>
   ${styles}
+  <script>
+    // Попытка автоматически открыть FoXray
+    function tryOpenApp() {
+      const foxrayLink = '${foxrayDeepLink}';
+      const appStoreLink = 'https://apps.apple.com/app/foxray/id6448898396';
+      
+      // Пробуем открыть приложение
+      window.location.href = foxrayLink;
+      
+      // Если не получилось через 2 секунды - предлагаем скачать
+      setTimeout(function() {
+        if (document.visibilityState === 'visible') {
+          // Пользователь всё ещё на странице - значит приложение не открылось
+          document.getElementById('install-step').style.display = 'block';
+          document.getElementById('connecting-msg').style.display = 'none';
+        }
+      }, 2000);
+    }
+    
+    // Автозапуск при загрузке
+    window.onload = function() {
+      tryOpenApp();
+    };
+  </script>
 </head>
 <body>
   <div class="card">
     <span class="icon-big">📱</span>
     <h1>VPN для iPhone</h1>
-    <p style="text-align: center;">Instagram и YouTube за 2 шага!</p>
-
-    <div class="step">
-      <h2><span class="step-num">1</span>Установи FoXray</h2>
-      <p>Бесплатное приложение из App Store</p>
-      <a href="https://apps.apple.com/app/foxray/id6448898396" class="btn btn-blue" target="_blank">
-        📲 Открыть App Store
-      </a>
+    
+    <div id="connecting-msg" style="text-align: center; padding: 20px;">
+      <p style="font-size: 18px;">⏳ Открываем FoXray...</p>
+      <p style="color: #666; font-size: 14px;">Если приложение не открылось, нажмите кнопку ниже</p>
+    </div>
+    
+    <div id="install-step" style="display: none;">
+      <div class="step">
+        <h2><span class="step-num">1</span>Установи FoXray</h2>
+        <p>Бесплатное приложение из App Store</p>
+        <a href="https://apps.apple.com/app/foxray/id6448898396" class="btn btn-blue" target="_blank">
+          📲 Открыть App Store
+        </a>
+      </div>
     </div>
 
     <div class="step">
       <h2><span class="step-num">2</span>Добавь VPN</h2>
       <p>Нажми кнопку — FoXray откроется и добавит сервер автоматически!</p>
-      <a href="${subUrl}" class="btn btn-green">
+      <a href="${foxrayDeepLink}" class="btn btn-green">
         ⚡ ПОДКЛЮЧИТЬ VPN
       </a>
       <div class="warning">
         💡 Если не открылось: скопируй ссылку и вставь в FoXray вручную
-        (Настройки → Subscription → +)
+        (+ → Subscription URL → Вставь ссылку)
       </div>
       <div class="copy-box">
         <input type="text" value="${subUrl}" readonly id="sub-url">
@@ -241,16 +277,20 @@ function iosPage(subUrl: string, vlessUri: string): string {
 
     <div class="success">
       <div class="icon">🎉</div>
-      <h3>Готово!</h3>
+      <h3>Почти готово!</h3>
       <p>После добавления включи VPN в приложении и открой Instagram!</p>
     </div>
   </div>
 </body>
-</html>`;
+</html>`
 }
 
 function androidPage(subUrl: string, vlessUri: string): string {
+  // Hiddify deep link formats:
+  // hiddify://import/<encoded_url>
+  // hiddify://add?url=<subscription_url>
   const hiddifyDeepLink = `hiddify://import/${encodeURIComponent(subUrl)}`;
+  const hiddifyAddLink = `hiddify://add?url=${encodeURIComponent(subUrl)}`;
   
   return `<!DOCTYPE html>
 <html lang="ru">
@@ -259,35 +299,63 @@ function androidPage(subUrl: string, vlessUri: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VPN для Android</title>
   ${styles}
+  <script>
+    // Попытка автоматически открыть Hiddify
+    function tryOpenApp() {
+      const hiddifyLink = '${hiddifyDeepLink}';
+      
+      // Пробуем открыть приложение
+      window.location.href = hiddifyLink;
+      
+      // Если не получилось через 2 секунды - показываем инструкции
+      setTimeout(function() {
+        if (document.visibilityState === 'visible') {
+          document.getElementById('install-step').style.display = 'block';
+          document.getElementById('connecting-msg').style.display = 'none';
+        }
+      }, 2000);
+    }
+    
+    // Автозапуск при загрузке
+    window.onload = function() {
+      tryOpenApp();
+    };
+  </script>
 </head>
 <body>
   <div class="card">
     <span class="icon-big">🤖</span>
     <h1>VPN для Android</h1>
-    <p style="text-align: center;">Instagram и YouTube за 2 шага!</p>
+    
+    <div id="connecting-msg" style="text-align: center; padding: 20px;">
+      <p style="font-size: 18px;">⏳ Открываем Hiddify...</p>
+      <p style="color: #666; font-size: 14px;">Если приложение не открылось, нажмите кнопку ниже</p>
+    </div>
 
-    <div class="step">
-      <h2><span class="step-num">1</span>Установи Hiddify</h2>
-      <p>Бесплатное приложение</p>
-      <a href="https://play.google.com/store/apps/details?id=app.hiddify.com" class="btn btn-blue" target="_blank">
-        📲 Google Play
-      </a>
-      <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk" class="btn btn-orange" target="_blank">
-        📦 Скачать APK напрямую
-      </a>
-      <div class="warning">
-        ⚠️ Если нет в Play Store — скачай APK. Это официальная версия с GitHub!
+    <div id="install-step" style="display: none;">
+      <div class="step">
+        <h2><span class="step-num">1</span>Установи Hiddify</h2>
+        <p>Бесплатное приложение</p>
+        <a href="https://play.google.com/store/apps/details?id=app.hiddify.com" class="btn btn-blue" target="_blank">
+          📲 Google Play
+        </a>
+        <a href="https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk" class="btn btn-orange" target="_blank">
+          📦 Скачать APK напрямую
+        </a>
+        <div class="warning">
+          ⚠️ Если нет в Play Store — скачай APK. Это официальная версия с GitHub!
+        </div>
       </div>
     </div>
 
     <div class="step">
       <h2><span class="step-num">2</span>Добавь VPN</h2>
-      <p>Нажми кнопку — Hiddify откроется автоматически!</p>
+      <p>Нажми кнопку — Hiddify откроется и добавит сервер автоматически!</p>
       <a href="${hiddifyDeepLink}" class="btn btn-green">
         ⚡ ПОДКЛЮЧИТЬ VPN
       </a>
       <div class="warning">
-        💡 Если не открылось: открой Hiddify → нажми + → выбери "Ссылка на подписку" → вставь:
+        💡 Если не открылось: открой Hiddify → нажми + → выбери "Добавить из буфера"
       </div>
       <div class="copy-box">
         <input type="text" value="${subUrl}" readonly>
@@ -297,7 +365,7 @@ function androidPage(subUrl: string, vlessUri: string): string {
 
     <div class="success">
       <div class="icon">🎉</div>
-      <h3>Готово!</h3>
+      <h3>Почти готово!</h3>
       <p>Нажми "Подключить" в Hiddify и открой Instagram!</p>
     </div>
   </div>

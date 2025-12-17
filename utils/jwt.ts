@@ -63,9 +63,13 @@ export function generateConfigToken(clientInfo: {
  */
 export function validateConfigToken(token: string): TokenPayload | null {
   try {
-    const decoded = jwt.verify(token, getJwtSecret()) as unknown as TokenPayload;
-    return decoded;
+    const secret = getJwtSecret();
+    return jwt.verify(token, secret) as TokenPayload;
   } catch (error) {
+    console.error('JWT Verification Failed:', error);
+    // Для отладки можно временно раскомментировать:
+    // console.log('Token:', token);
+    // console.log('Secret (first 3 chars):', getJwtSecret().substring(0, 3));
     return null;
   }
 }

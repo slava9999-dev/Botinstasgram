@@ -36,7 +36,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const payload = validateConfigToken(token);
   
   if (!payload) {
-    return res.status(401).send('Token expired or invalid');
+    console.error('Token validation failed for token:', token.substring(0, 10) + '...');
+    return res.status(401).send('Token invalid. Check server logs. Make sure JWT_SECRET matches.');
   }
 
   // Build VLESS URI

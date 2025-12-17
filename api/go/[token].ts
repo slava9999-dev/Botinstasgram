@@ -204,10 +204,8 @@ function copyToClipboard(text) {
 `;
 
 function iosPage(subUrl: string, vlessUri: string): string {
-  // Multiple app deep links for Russia (FoXray may be blocked)
+  // Streisand - лучший вариант для России
   const streisandDeepLink = `streisand://import/${Buffer.from(vlessUri).toString('base64')}`;
-  const v2boxDeepLink = `v2box://install-sub?url=${encodeURIComponent(subUrl)}`;
-  const foxrayDeepLink = `foxray://add?url=${encodeURIComponent(subUrl)}`;
   
   return `<!DOCTYPE html>
 <html lang="ru">
@@ -223,33 +221,27 @@ function iosPage(subUrl: string, vlessUri: string): string {
     <h1>VPN для iPhone</h1>
     
     <div class="step">
-      <h2><span class="step-num">1</span>Установи приложение</h2>
-      <p>Выбери одно из доступных в России:</p>
+      <h2><span class="step-num">1</span>Установи Streisand</h2>
+      <p>Лучшее бесплатное приложение для VPN:</p>
       <a href="https://apps.apple.com/app/streisand/id6450534064" class="btn btn-blue" target="_blank">
-        📲 Streisand (бесплатно)
-      </a>
-      <a href="https://apps.apple.com/app/v2box-v2ray-client/id6446814690" class="btn btn-blue" target="_blank" style="margin-top: 8px;">
-        📲 V2Box (бесплатно)
+        📲 Скачать Streisand (бесплатно)
       </a>
       <div class="warning">
-        ⚠️ Если приложения недоступны — смените регион App Store на Казахстан или США
+        ⚠️ Если приложение недоступно — смените регион App Store на Казахстан или США
       </div>
     </div>
 
     <div class="step">
-      <h2><span class="step-num">2</span>Добавь VPN</h2>
-      <p>Попробуй автоматически:</p>
+      <h2><span class="step-num">2</span>Добавь VPN автоматически</h2>
+      <p>Нажми кнопку — Streisand откроется и добавит сервер сам!</p>
       <a href="${streisandDeepLink}" class="btn btn-green">
-        ⚡ Открыть в Streisand
-      </a>
-      <a href="${v2boxDeepLink}" class="btn btn-green" style="margin-top: 8px;">
-        ⚡ Открыть в V2Box
+        ⚡ ПОДКЛЮЧИТЬ VPN
       </a>
       <div class="warning" style="margin-top: 15px;">
         💡 Если не открылось автоматически:<br>
         1. Скопируй ссылку ниже<br>
-        2. Открой приложение → нажми +<br>
-        3. Выбери "Добавить из буфера"
+        2. Открой Streisand → нажми +<br>
+        3. Выбери "Добавить из буфера обмена"
       </div>
       <div class="copy-box">
         <input type="text" value="${subUrl}" readonly id="sub-url">
@@ -468,7 +460,7 @@ function universalPage(subUrl: string, vlessUri: string): string {
 
     <div class="step">
       <h2>Выбери своё устройство:</h2>
-      <a href="https://apps.apple.com/app/foxray/id6448898396" class="btn btn-blue">📱 iPhone (FoXray)</a>
+      <a href="https://apps.apple.com/app/streisand/id6450534064" class="btn btn-blue">📱 iPhone (Streisand)</a>
       <a href="https://play.google.com/store/apps/details?id=app.hiddify.com" class="btn btn-green">🤖 Android (Hiddify)</a>
       <a href="https://github.com/hiddify/hiddify-next/releases" class="btn btn-orange">💻 Windows/Mac</a>
     </div>

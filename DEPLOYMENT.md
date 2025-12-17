@@ -18,7 +18,7 @@
 □ INBOUND_ID установлен (обычно 1)
 □ REALITY_PK установлен
 □ REALITY_SHORT_ID установлен
-□ SNI_DOMAIN установлен (yahoo.com)
+□ SNI_DOMAIN установлен (www.microsoft.com)
 
 # Для продакшена с платежами
 □ YOOKASSA_SHOP_ID установлен

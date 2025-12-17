@@ -426,7 +426,7 @@ NODE_ENV=production
 # Reality Settings (получаются из 3X-UI)
 REALITY_PUBLIC_KEY=your-public-key
 REALITY_SHORT_ID=your-short-id
-SNI_DOMAIN=yahoo.com
+SNI_DOMAIN=www.microsoft.com
 ```
 
 ---

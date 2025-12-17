@@ -100,30 +100,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
  */
 async function sendVPNLink(botToken: string, chatId: number, userId: number, firstName: string) {
   const vpnUrl = `https://botinstasgram.vercel.app?tg_id=${userId}`;
+  const payUrl = `https://botinstasgram.vercel.app?tg_id=${userId}&action=pay`;
   
   const message: TelegramMessage = {
     chat_id: chatId,
     text: `👋 Привет, ${firstName}!\n\n` +
-          `🔐 Получи бесплатный VPN для доступа к Instagram и YouTube!\n\n` +
+          `🔐 Получи VPN для доступа к Instagram и YouTube!\n\n` +
           `✨ Что ты получишь:\n` +
           `• 3 дня бесплатного доступа\n` +
           `• Безлимитный трафик\n` +
           `• Высокая скорость\n` +
           `• Работает на всех устройствах\n\n` +
-          `📱 Нажми кнопку ниже для получения VPN:`,
+          `📱 Выбери вариант:`,
     parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [
         [
           {
-            text: '🚀 Получить VPN БЕСПЛАТНО',
+            text: '🚀 Получить VPN БЕСПЛАТНО (3 дня)',
             url: vpnUrl
           }
         ],
         [
           {
             text: '💳 Купить подписку (99₽/месяц)',
-            url: vpnUrl
+            url: payUrl
           }
         ]
       ]

@@ -21,12 +21,13 @@ export const URLS = {
   PRIVACY_PAGE: '/privacy.html',
   
   // App Stores
-  FOXRAY_APPSTORE: 'https://apps.apple.com/app/foxray/id6448898396',
+  STREISAND_APPSTORE: 'https://apps.apple.com/app/streisand/id6450534064', // Основной для iOS
   HIDDIFY_PLAYSTORE: 'https://play.google.com/store/apps/details?id=app.hiddify.com',
   HIDDIFY_APK: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk',
   HIDDIFY_WINDOWS: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe',
   HIDDIFY_MAC: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-MacOS.dmg',
   HIDDIFY_RELEASES: 'https://github.com/hiddify/hiddify-next/releases',
+  FOXRAY_APPSTORE: 'https://apps.apple.com/app/foxray/id6448898396', // Альтернатива
 } as const;
 
 // ============================================

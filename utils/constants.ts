@@ -184,13 +184,14 @@ export const APP_URLS = {
  */
 export const CLIENT_APPS = {
   // Recommended clients
-  IOS_FOXRAY: 'https://apps.apple.com/app/foxray/id6448898396',
+  IOS_STREISAND: 'https://apps.apple.com/app/streisand/id6450534064', // Основной для iOS
   ANDROID_HIDDIFY: 'https://play.google.com/store/apps/details?id=app.hiddify.com',
   ANDROID_APK: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk',
   WINDOWS_HIDDIFY: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Windows-Setup-x64.exe',
   MACOS_HIDDIFY: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-MacOS.dmg',
   HIDDIFY_RELEASES: 'https://github.com/hiddify/hiddify-next/releases',
-  // Legacy clients (for reference)
+  // Legacy/alternative clients
+  IOS_FOXRAY: 'https://apps.apple.com/app/foxray/id6448898396', // Альтернатива
   WINDOWS_V2RAYN: 'https://github.com/2dust/v2rayN/releases',
   IOS_SHADOWROCKET: 'https://apps.apple.com/app/shadowrocket/id932747118',
 } as const;

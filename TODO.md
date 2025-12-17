@@ -72,8 +72,8 @@ bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.
    - Network: **TCP**
    - Security: **Reality**
    - uTLS: **Chrome**
-   - Dest: `yahoo.com:443`
-   - SNI: `yahoo.com`
+   - Dest: `www.microsoft.com:443`
+   - SNI: `www.microsoft.com`
 4. Нажать **Generate** для Reality Keys
 5. **Записать:**
    - Port (порт)
@@ -121,7 +121,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.
 | `INBOUND_ID`          | 3X-UI inbound             | `1`                        |
 | `REALITY_PK`          | 3X-UI Reality Public Key  | `abc123...`                |
 | `REALITY_SHORT_ID`    | 3X-UI Reality Short ID    | `abcd1234`                 |
-| `SNI_DOMAIN`          | SNI из inbound            | `yahoo.com`                |
+| `SNI_DOMAIN`          | SNI из inbound            | `www.microsoft.com`        |
 
 **После добавления:**
 

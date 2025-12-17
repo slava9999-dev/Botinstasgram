@@ -473,7 +473,7 @@
                     <div class="step-num">2</div>
                     <div class="step-content">
                         <div class="step-title">Установите приложение</div>
-                        <div class="step-desc">Hiddify для Android/ПК или FoXray для iPhone</div>
+                        <div class="step-desc">Hiddify для Android/ПК или Streisand для iPhone</div>
                     </div>
                 </div>
                 <div class="step">
@@ -549,9 +549,23 @@
         
         const telegramId = getTelegramId(); // NO FALLBACK in production!
 
+        // Check if action=pay (from bot "Buy subscription" button)
+        function getAction() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('action');
+        }
+
         // Show appropriate alert
         if (telegramId) {
             document.getElementById('tg-info').classList.remove('hidden');
+            
+            // Если action=pay - автоматически открываем оплату
+            if (getAction() === 'pay') {
+                // Небольшая задержка чтобы страница успела загрузиться
+                setTimeout(() => {
+                    openPayment();
+                }, 500);
+            }
         } else {
             // ✅ PRODUCTION: Показываем предупреждение
             document.getElementById('tg-warning').classList.remove('hidden');
@@ -656,7 +670,7 @@
                     throw new Error(data.error || 'Ошибка создания платежа');
                 }
 
-                window.location.href = data.confirmationUrl;
+                window.location.href = data.data.confirmationUrl;
 
             } catch (err) {
                 console.error('Payment error:', err);

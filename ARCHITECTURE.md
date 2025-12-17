@@ -258,7 +258,7 @@ YOOKASSA_SECRET_KEY=live_xxx
 # Reality (from 3X-UI)
 REALITY_PK=xxx
 REALITY_SHORT_ID=xxx
-SNI_DOMAIN=yahoo.com
+SNI_DOMAIN=www.microsoft.com
 ```
 
 ---

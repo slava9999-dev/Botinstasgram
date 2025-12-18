@@ -28,6 +28,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const telegramId = typeof tg_id === 'string' ? tg_id : null;
 
   if (!telegramId) {
+    // Для оферты не нужен telegramId
+    if (action === 'offer') {
+      const protocol = req.headers['x-forwarded-proto'] || 'https';
+      const host = req.headers['host'] || 'botinstasgram.vercel.app';
+      return res.redirect(302, `${protocol}://${host}/offer.html`);
+    }
     return res.status(400).send(errorPage('Откройте ссылку через Telegram бот'));
   }
 
@@ -37,6 +43,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (action === 'pay') {
     return handlePay(req, res, telegramId);
+  }
+
+  if (action === 'offer') {
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['host'] || 'botinstasgram.vercel.app';
+    return res.redirect(302, `${protocol}://${host}/offer.html`);
   }
 
   return res.status(400).send(errorPage('Неизвестное действие'));

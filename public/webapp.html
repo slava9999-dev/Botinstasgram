@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VPN Connect — Доступ к любым сервисам</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="VPN для YouTube, Instagram, Facebook, Twitter, Netflix и всех зарубежных сервисов. Работают также все российские сервисы. Подключение за 30 секунд.">
+    <meta name="keywords" content="VPN, YouTube, Instagram, Facebook, Twitter, Netflix, Spotify, разблокировка, прокси, анонимность, безопасность">
+    
+    <!-- Telegram WebApp Script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        :root {
+            --tg-theme-bg-color: #1a1a2e;
+            --tg-theme-text-color: #ffffff;
+            --tg-theme-button-color: #667eea;
+            --tg-theme-button-text-color: #ffffff;
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --success-dark: #059669;
+            --warning: #f59e0b;
+            --gradient-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gradient-main);
+            min-height: 100vh;
+            color: #1a1a2e;
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            color: #fff;
+        }
+
+        .header-icon {
+            font-size: 64px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 12px 0 8px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--gradient-success);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 700;
+            margin-top: 16px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 24px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e293b;
+        }
+
+        /* Platform Buttons */
+        .platforms {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .platform-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 16px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .platform-btn:active {
+            transform: scale(0.95);
+        }
+
+        .platform-btn.android {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            color: #fff;
+        }
+
+        .platform-btn.ios {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: #fff;
+        }
+
+        .platform-btn.desktop {
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+            color: #fff;
+        }
+
+        .platform-btn.pay {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1a1a2e;
+        }
+
+        .platform-icon {
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+
+        .platform-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .platform-subtext {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* Services Grid */
+        .services {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .service-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .service-tag img {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* Info Section */
+        .info-section {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .info-section h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0369a1;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-section ul {
+            list-style: none;
+            font-size: 13px;
+            color: #0c4a6e;
+            line-height: 1.8;
+        }
+
+        .info-section li::before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #fff;
+        }
+
+        .loading.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Status Banner */
+        .status-banner {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .status-banner.show {
+            display: block;
+        }
+
+        .status-banner.connected {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #10b981;
+        }
+
+        .status-banner h3 {
+            color: #059669;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-banner p {
+            color: #065f46;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        /* All services note */
+        .all-services {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #92400e;
+            text-align: center;
+        }
+
+        .all-services strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">🛡️</div>
+            <h1>VPN Connect</h1>
+            <p class="header-subtitle">
+                Безлимитный доступ к любым сервисам<br>
+                Быстро • Безопасно • Анонимно
+            </p>
+            <span class="badge">
+                <span>🎁</span>
+                <span>3 дня БЕСПЛАТНО</span>
+            </span>
+        </div>
+
+        <!-- Status Banner (показывается после подключения) -->
+        <div id="status-banner" class="status-banner">
+            <h3>🟢 VPN готов к работе!</h3>
+            <p>Откройте приложение и нажмите "Подключить"</p>
+        </div>
+
+        <!-- Platform Selection -->
+        <div class="card">
+            <div class="card-title">
+                <span>📱</span>
+                <span>Выберите устройство</span>
+            </div>
+
+            <div class="platforms">
+                <button class="platform-btn android" onclick="connectPlatform('android')">
+                    <span class="platform-icon">🤖</span>
+                    <span class="platform-text">Android</span>
+                    <span class="platform-subtext">Hiddify</span>
+                </button>
+
+                <button class="platform-btn ios" onclick="connectPlatform('ios')">
+                    <span class="platform-icon">📱</span>
+                    <span class="platform-text">iPhone</span>
+                    <span class="platform-subtext">Streisand</span>
+                </button>
+
+                <button class="platform-btn desktop" onclick="connectPlatform('desktop')">
+                    <span class="platform-icon">💻</span>
+                    <span class="platform-text">Компьютер</span>
+                    <span class="platform-subtext">Windows/Mac</span>
+                </button>
+
+                <button class="platform-btn pay" onclick="openPayment()">
+                    <span class="platform-icon">💳</span>
+                    <span class="platform-text">99₽/мес</span>
+                    <span class="platform-subtext">После триала</span>
+                </button>
+            </div>
+
+            <!-- Popular Services -->
+            <div class="services">
+                <span class="service-tag">▶️ YouTube</span>
+                <span class="service-tag">📸 Instagram</span>
+                <span class="service-tag">👤 Facebook</span>
+                <span class="service-tag">🐦 Twitter/X</span>
+                <span class="service-tag">🎵 Spotify</span>
+                <span class="service-tag">🎬 Netflix</span>
+            </div>
+
+            <div class="all-services">
+                <strong>🌍 Все зарубежные сервисы</strong>
+                ChatGPT, Discord, Twitch, LinkedIn, TikTok и другие
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="card">
+            <div class="card-title">
+                <span>✨</span>
+                <span>Что вы получаете</span>
+            </div>
+
+            <div class="info-section">
+                <h4>🚀 Преимущества</h4>
+                <ul>
+                    <li>Доступ к YouTube, Instagram, Facebook</li>
+                    <li>Все зарубежные и российские сервисы</li>
+                    <li>Банковские приложения работают</li>
+                    <li>Высокая скорость соединения</li>
+                    <li>Шифрование военного уровня</li>
+                    <li>Без логов и отслеживания</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="card">
+            <div class="card-title">
+                <span>📋</span>
+                <span>Как подключиться</span>
+            </div>
+
+            <div style="font-size: 14px; line-height: 1.8; color: #475569;">
+                <p><strong>1.</strong> Выберите свою систему выше</p>
+                <p><strong>2.</strong> Установите приложение (один раз)</p>
+                <p><strong>3.</strong> Нажмите "Подключить" — готово!</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                <a href="/offer.html" target="_blank">Оферта</a> · 
+                <a href="/privacy.html" target="_blank">Конфиденциальность</a>
+            </p>
+            <p style="margin-top: 10px; opacity: 0.7;">
+                © 2024 VPN Connect
+            </p>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Создаём ваш VPN...</p>
+    </div>
+
+    <script>
+        // Telegram WebApp API
+        const tg = window.Telegram?.WebApp;
+        
+        // Initialize WebApp
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            
+            // Set theme colors
+            document.body.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#1a1a2e');
+        }
+
+        // Get user info from Telegram
+        function getTelegramUserId() {
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                return tg.initDataUnsafe.user.id;
+            }
+            // Fallback: check URL params
+            const params = new URLSearchParams(window.location.search);
+            return params.get('tg_id');
+        }
+
+        // Get base URL
+        function getBaseUrl() {
+            return window.location.origin;
+        }
+
+        // Show loading
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('show', show);
+        }
+
+        // Show status banner
+        function showStatus(message) {
+            const banner = document.getElementById('status-banner');
+            banner.querySelector('p').textContent = message;
+            banner.classList.add('show');
+        }
+
+        // Main function: Connect to VPN
+        async function connectPlatform(platform) {
+            const telegramId = getTelegramUserId();
+            
+            if (!telegramId) {
+                if (tg) {
+                    tg.showAlert('Пожалуйста, откройте приложение через Telegram бот');
+                } else {
+                    alert('Пожалуйста, откройте приложение через Telegram бот');
+                }
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // Create VPN config via API
+                const response = await fetch(`${getBaseUrl()}/api/create-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        telegramId: telegramId,
+                        planDuration: 3
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    // Handle trial expired
+                    if (data.code === 'TRIAL_EXPIRED') {
+                        showLoading(false);
+                        if (tg) {
+                            tg.showAlert('Бесплатный период закончился. Оплатите подписку за 99₽');
+                        } else {
+                            alert('Бесплатный период закончился. Оплатите подписку за 99₽');
+                        }
+                        return;
+                    }
+                    throw new Error(data.error || 'Ошибка создания VPN');
+                }
+
+                const configToken = data.data.configToken;
+                const goUrl = `${getBaseUrl()}/api/go/${configToken}`;
+
+                showLoading(false);
+
+                // Platform-specific actions
+                switch (platform) {
+                    case 'android':
+                        showStatus('Hiddify откроется автоматически. Нажмите "Подключить".');
+                        // Open via go endpoint which handles deep links
+                        window.location.href = goUrl;
+                        break;
+
+                    case 'ios':
+                        showStatus('Streisand откроется автоматически. Нажмите "Подключить".');
+                        window.location.href = goUrl;
+                        break;
+
+                    case 'desktop':
+                        showStatus('Скопируйте ссылку и вставьте в Hiddify на компьютере.');
+                        window.location.href = goUrl;
+                        break;
+                }
+
+                // Close WebApp after redirect (with delay)
+                if (tg) {
+                    setTimeout(() => {
+                        // Don't close immediately, let the redirect happen
+                    }, 2000);
+                }
+
+            } catch (error) {
+                showLoading(false);
+                console.error('Error:', error);
+                if (tg) {
+                    tg.showAlert('Ошибка: ' + error.message);
+                } else {
+                    alert('Ошибка: ' + error.message);
+                }
+            }
+        }
+
+        // Open payment
+        async function openPayment() {
+            const telegramId = getTelegramUserId();
+            showLoading(true);
+
+            try {
+                const response = await fetch(`${getBaseUrl()}/api/payment/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        telegramId: telegramId,
+                        amount: 99,
+                        planDuration: 30
+                    })
+                });
+
+                const data = await response.json();
+                showLoading(false);
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Ошибка создания платежа');
+                }
+
+                // Redirect to YooKassa
+                window.location.href = data.data.confirmationUrl;
+
+            } catch (error) {
+                showLoading(false);
+                console.error('Payment error:', error);
+                if (tg) {
+                    tg.showAlert('Ошибка оплаты: ' + error.message);
+                } else {
+                    alert('Ошибка оплаты: ' + error.message);
+                }
+            }
+        }
+
+        // Auto-detect platform on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const ua = navigator.userAgent.toLowerCase();
+            const buttons = document.querySelectorAll('.platform-btn');
+            
+            // Highlight detected platform
+            if (/android/i.test(ua)) {
+                document.querySelector('.platform-btn.android').style.boxShadow = '0 0 0 3px #fff, 0 8px 25px rgba(16, 185, 129, 0.5)';
+            } else if (/iphone|ipad|ipod/i.test(ua)) {
+                document.querySelector('.platform-btn.ios').style.boxShadow = '0 0 0 3px #fff, 0 8px 25px rgba(59, 130, 246, 0.5)';
+            }
+        });
+    </script>
+</body>
+</html>

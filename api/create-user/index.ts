@@ -2,8 +2,14 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { v4 as uuidv4 } from 'uuid';
 import { PanelManager } from '../../utils/panel';
 import { generateConfigToken } from '../../utils/jwt';
-import { checkRateLimit, RateLimitPresets } from '../../utils/rate-limit';
+import { RateLimitStorage, TrialStorage } from '../../utils/storage';
 import { requireValidEnvironment } from '../../utils/env-validator';
+import { logger, LogEvent } from '../../utils/logger';
+
+// ✅ KV-based rate limit presets (распределённый между инстансами)
+const KV_RATE_PRESETS = {
+  USER_CREATE: { maxRequests: 10, windowMs: 60000 }  // 10 req/min
+};
 
 
 /**
@@ -33,9 +39,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Rate limiting: 10 requests per minute per IP
-  const rateLimitResult = checkRateLimit(req, RateLimitPresets.USER_CREATE);
+  // ✅ Rate limiting через Vercel KV (распределённый!)
+  const forwardedFor = req.headers['x-forwarded-for'];
+  const clientIP = typeof forwardedFor === 'string' 
+    ? forwardedFor.split(',')[0].trim() 
+    : req.headers['x-real-ip'] as string || 'unknown';
+  
+  const rateLimitResult = await RateLimitStorage.check(clientIP, KV_RATE_PRESETS.USER_CREATE);
   if (!rateLimitResult.allowed) {
+    logger.warn(LogEvent.RATE_LIMIT_EXCEEDED, 'Rate limit exceeded for user creation', { clientIP });
     return res.status(429).json({
       error: 'Слишком много запросов. Попробуйте через минуту.',
       code: 'RATE_LIMIT_EXCEEDED',
@@ -147,6 +159,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Build response
     const expiresAt = new Date(Date.now() + duration * 24 * 60 * 60 * 1000).toISOString();
 
+    // ✅ Сохраняем trial в KV Storage для отслеживания
+    if (isTrial && telegramId) {
+      await TrialStorage.markUsed(telegramId, {
+        telegramId: String(telegramId),
+        email,
+        uuid,
+        createdAt: new Date().toISOString(),
+        expiresAt,
+        used: true
+      });
+    }
+    
+    // Логируем создание пользователя
+    logger.logUserCreated(uuid, email, duration);
+
     return res.status(200).json({
       success: true,
       data: {
@@ -160,7 +187,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
   } catch (error: any) {
-    console.error('Error creating user:', error);
+    logger.error(LogEvent.USER_CREATION_FAILED, 'Error creating user', { error: error.message });
     return res.status(500).json({ 
       error: error.message || 'Внутренняя ошибка сервера',
       code: 'INTERNAL_ERROR'

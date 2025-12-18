@@ -38,7 +38,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { amount = 299, description = 'VPN подписка на 30 дней', email } = req.body || {};
+    // ✅ Извлекаем все параметры включая telegramId и planDuration
+    const { 
+      amount = 99,           // Дефолт 99₽ (не 299!)
+      planDuration = 30,     // 30 дней по умолчанию
+      telegramId,            // Telegram ID пользователя
+      email 
+    } = req.body || {};
+    
+    // Генерируем динамическое описание
+    const description = `VPN подписка на ${planDuration} дней`;
 
     const SHOP_ID = process.env.YOOKASSA_SHOP_ID;
     const SECRET_KEY = process.env.YOOKASSA_SECRET_KEY;
@@ -68,8 +77,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       capture: true,
       description: description,
+      // ✅ Сохраняем всю информацию для webhook обработки
       metadata: {
-        email: email || 'anonymous'
+        email: email || 'anonymous',
+        telegramId: telegramId || undefined,
+        planDuration: planDuration
       }
     };
 

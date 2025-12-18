@@ -36,6 +36,7 @@ interface TelegramMessage {
       text: string;
       url?: string;
       callback_data?: string;
+      web_app?: { url: string };  // ✅ Telegram Mini App support
     }>>;
   };
 }
@@ -96,53 +97,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 }
 
 /**
- * Send VPN link to user
+ * Send VPN link to user with Mini App button
  */
 async function sendVPNLink(botToken: string, chatId: number, userId: number, firstName: string) {
-  const vpnUrl = `https://botinstasgram.vercel.app?tg_id=${userId}`;
-  const payUrl = `https://botinstasgram.vercel.app?tg_id=${userId}&action=pay`;
+  // ✅ Динамический base URL для preview deployments
+  const baseUrl = process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` 
+    : process.env.BASE_URL || 'https://botinstasgram.vercel.app';
+    
+  const webAppUrl = `${baseUrl}/webapp.html`;
   
   const message: TelegramMessage = {
     chat_id: chatId,
     text: `👋 Привет, ${firstName}!\n\n` +
-          `🔐 <b>VPN для Instagram и YouTube</b>\n\n` +
-          `📋 <b>Как подключиться (2 шага):</b>\n\n` +
-          `<b>Шаг 1:</b> Скачай приложение 👇\n` +
-          `(выбери свою систему)\n\n` +
-          `<b>Шаг 2:</b> Вернись сюда и нажми\n` +
-          `"🚀 Получить VPN" — всё настроится автоматически!\n\n` +
-          `✨ <b>3 дня БЕСПЛАТНО</b>`,
+          `🛡️ <b>VPN Connect — доступ ко всем сервисам</b>\n\n` +
+          `▶️ <b>YouTube</b> • 📸 <b>Instagram</b> • 👤 <b>Facebook</b>\n` +
+          `🐦 Twitter/X • 🎵 Spotify • 🎬 Netflix\n` +
+          `💬 ChatGPT • 🎮 Discord • 📺 Twitch\n\n` +
+          `✅ <b>Все зарубежные сервисы</b> работают!\n` +
+          `✅ <b>Российские сервисы</b> и банки тоже работают!\n\n` +
+          `🎁 <b>3 дня БЕСПЛАТНО</b> — нажми кнопку ниже 👇`,
     parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [
         [
           {
-            text: '📱 Скачать для iPhone',
-            url: 'https://apps.apple.com/app/streisand/id6450534064'
+            text: '🚀 ОТКРЫТЬ VPN CONNECT',
+            web_app: { url: webAppUrl }
           }
         ],
         [
           {
-            text: '🤖 Скачать для Android',
+            text: '📱 Скачать для iPhone',
+            url: 'https://apps.apple.com/app/streisand/id6450534064'
+          },
+          {
+            text: '🤖 Для Android',
             url: 'https://play.google.com/store/apps/details?id=app.hiddify.com'
           }
         ],
         [
           {
-            text: '📦 Android APK (если нет Play Store)',
-            url: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk'
-          }
-        ],
-        [
-          {
-            text: '🚀 Получить VPN БЕСПЛАТНО',
-            url: vpnUrl
-          }
-        ],
-        [
-          {
-            text: '💳 Купить подписку (99₽/месяц)',
-            url: payUrl
+            text: '💻 Для ПК (Windows/Mac)',
+            url: 'https://github.com/hiddify/hiddify-next/releases'
           }
         ]
       ]

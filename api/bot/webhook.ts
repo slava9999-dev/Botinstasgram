@@ -103,9 +103,9 @@ async function sendVPNLink(botToken: string, chatId: number, userId: number, fir
   // ✅ Динамический base URL
   const baseUrl = process.env.BASE_URL || 'https://botinstasgram.vercel.app';
     
-  // ПРЯМЫЕ API ВЫЗОВЫ (без лендинга!)
-  const vpnApiUrl = `${baseUrl}/api/bot/get-vpn?tg_id=${userId}`;
-  const payApiUrl = `${baseUrl}/api/bot/pay?tg_id=${userId}`;
+  // ОБЪЕДИНЁННЫЙ API (экономим serverless функции!)
+  const vpnApiUrl = `${baseUrl}/api/bot/actions?action=vpn&tg_id=${userId}`;
+  const payApiUrl = `${baseUrl}/api/bot/actions?action=pay&tg_id=${userId}`;
   const offerUrl = `${baseUrl}/offer.html`;
   const photoUrl = `${baseUrl}/all.png`;  // Картинка с сервисами
   

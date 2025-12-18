@@ -97,49 +97,79 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 }
 
 /**
- * Send VPN link to user with Mini App button
+ * Send VPN link with all buttons: VPN, Payment, Apps, Offer
  */
 async function sendVPNLink(botToken: string, chatId: number, userId: number, firstName: string) {
-  // ✅ Динамический base URL для preview deployments
-  const baseUrl = process.env.VERCEL_URL 
-    ? `https://${process.env.VERCEL_URL}` 
-    : process.env.BASE_URL || 'https://botinstasgram.vercel.app';
+  // ✅ Динамический base URL
+  const baseUrl = process.env.BASE_URL || 'https://botinstasgram.vercel.app';
     
-  const webAppUrl = `${baseUrl}/webapp.html`;
+  const vpnUrl = `${baseUrl}?tg_id=${userId}`;
+  const payUrl = `${baseUrl}?tg_id=${userId}&action=pay`;
+  const offerUrl = `${baseUrl}/offer.html`;
   
   const message: TelegramMessage = {
     chat_id: chatId,
-    text: `👋 Привет, ${firstName}!\n\n` +
-          `🛡️ <b>VPN Connect — доступ ко всем сервисам</b>\n\n` +
-          `▶️ <b>YouTube</b> • 📸 <b>Instagram</b> • 👤 <b>Facebook</b>\n` +
-          `🐦 Twitter/X • 🎵 Spotify • 🎬 Netflix\n` +
-          `💬 ChatGPT • 🎮 Discord • 📺 Twitch\n\n` +
-          `✅ <b>Все зарубежные сервисы</b> работают!\n` +
-          `✅ <b>Российские сервисы</b> и банки тоже работают!\n\n` +
-          `🎁 <b>3 дня БЕСПЛАТНО</b> — нажми кнопку ниже 👇`,
+    text: `👋 Привет, <b>${firstName}</b>!\n\n` +
+          `🛡️ <b>VPN Connect</b> — безлимитный доступ\n\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n` +
+          `▶️ YouTube  •  📸 Instagram  •  👤 Facebook\n` +
+          `🐦 Twitter  •  🎵 Spotify  •  🎬 Netflix\n` +
+          `💬 ChatGPT  •  🎮 Discord  •  📺 Twitch\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n\n` +
+          `✅ <b>Все зарубежные сервисы</b>\n` +
+          `✅ <b>Российские банки и сервисы</b>\n` +
+          `✅ <b>Высокая скорость</b>\n\n` +
+          `🎁 <b>3 дня БЕСПЛАТНО</b>\n` +
+          `💰 Далее всего <b>99₽/месяц</b>\n\n` +
+          `━━━━━━━━━━━━━━━━━━━━\n` +
+          `📲 <b>Как подключиться:</b>\n\n` +
+          `<b>1.</b> Скачай приложение (кнопки ниже)\n` +
+          `<b>2.</b> Нажми "🚀 Получить VPN"\n` +
+          `<b>3.</b> Готово — VPN настроится автоматически!`,
     parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [
+        // Row 1: Main action - Get VPN
         [
           {
-            text: '🚀 ОТКРЫТЬ VPN CONNECT',
-            web_app: { url: webAppUrl }
+            text: '🚀 ПОЛУЧИТЬ VPN БЕСПЛАТНО',
+            url: vpnUrl
           }
         ],
+        // Row 2: Download apps
         [
           {
-            text: '📱 Скачать для iPhone',
+            text: '📱 iPhone (Streisand)',
             url: 'https://apps.apple.com/app/streisand/id6450534064'
           },
           {
-            text: '🤖 Для Android',
+            text: '🤖 Android (Hiddify)',
             url: 'https://play.google.com/store/apps/details?id=app.hiddify.com'
           }
         ],
+        // Row 3: Desktop + APK
         [
           {
-            text: '💻 Для ПК (Windows/Mac)',
+            text: '💻 Windows/Mac',
             url: 'https://github.com/hiddify/hiddify-next/releases'
+          },
+          {
+            text: '📦 APK (без Play Store)',
+            url: 'https://github.com/hiddify/hiddify-next/releases/latest/download/Hiddify-Android-universal.apk'
+          }
+        ],
+        // Row 4: Payment
+        [
+          {
+            text: '💳 ОПЛАТИТЬ 99₽/месяц',
+            url: payUrl
+          }
+        ],
+        // Row 5: Legal
+        [
+          {
+            text: '📄 Договор оферты',
+            url: offerUrl
           }
         ]
       ]

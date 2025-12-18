@@ -82,6 +82,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json({ ok: true });
     }
 
+    // Handle /offer command - отправляем ссылку на оферту
+    if (text.startsWith('/offer')) {
+      await sendMessage(BOT_TOKEN, {
+        chat_id: chatId,
+        text: '📄 <b>Договор оферты</b>\n\nhttps://botinstasgram.vercel.app/offer.html',
+        parse_mode: 'HTML'
+      });
+      return res.status(200).json({ ok: true });
+    }
+
     // Default response
     await sendMessage(BOT_TOKEN, {
       chat_id: chatId,
@@ -104,8 +114,8 @@ async function sendVPNLink(botToken: string, chatId: number, userId: number, fir
     
   const vpnApiUrl = `${baseUrl}/api/bot/actions?action=vpn&tg_id=${userId}`;
   const payApiUrl = `${baseUrl}/api/bot/actions?action=pay&tg_id=${userId}`;
-  // Прямой URL для оферты (гарантированно работает)
-  const offerUrl = 'https://botinstasgram.vercel.app/offer.html';
+  // Прямой URL для оферты с cache-bust параметром
+  const offerUrl = `https://botinstasgram.vercel.app/offer.html?t=${Date.now()}`;
   
   const message: TelegramMessage = {
     chat_id: chatId,

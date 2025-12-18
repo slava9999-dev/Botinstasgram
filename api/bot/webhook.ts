@@ -104,7 +104,8 @@ async function sendVPNLink(botToken: string, chatId: number, userId: number, fir
     
   const vpnApiUrl = `${baseUrl}/api/bot/actions?action=vpn&tg_id=${userId}`;
   const payApiUrl = `${baseUrl}/api/bot/actions?action=pay&tg_id=${userId}`;
-  const offerUrl = `${baseUrl}/offer.html`;
+  // Прямой URL для оферты (гарантированно работает)
+  const offerUrl = 'https://botinstasgram.vercel.app/offer.html';
   
   const message: TelegramMessage = {
     chat_id: chatId,

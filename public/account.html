@@ -16,95 +16,107 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
-            background: var(--tg-theme-bg-color, linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%));
-            color: var(--tg-theme-text-color, #fff);
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             padding: 20px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.7;
         }
 
         .container {
-            max-width: 400px;
+            max-width: 420px;
             margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
+        h1 {
+            color: #fff;
             font-size: 24px;
             margin-bottom: 8px;
+            text-align: center;
         }
 
-        .header .subtitle {
-            color: var(--tg-theme-hint-color, rgba(255,255,255,0.6));
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 24px;
             font-size: 14px;
         }
 
+        /* Status Card */
         .status-card {
-            background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.1));
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 20px;
+            padding: 30px;
             text-align: center;
+            margin-bottom: 24px;
         }
 
         .status-icon {
-            font-size: 60px;
+            font-size: 64px;
             margin-bottom: 16px;
+            line-height: 1;
         }
 
         .days-left {
-            font-size: 48px;
+            font-size: 56px;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #667eea;
+            line-height: 1;
         }
 
         .days-label {
-            font-size: 18px;
-            color: var(--tg-theme-hint-color, rgba(255,255,255,0.6));
-            margin-top: 4px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
         }
 
         .status-badge {
             display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
+            padding: 8px 24px;
+            border-radius: 30px;
             font-size: 14px;
             font-weight: 600;
-            margin-top: 16px;
+            margin-top: 20px;
         }
 
         .status-active {
             background: rgba(46, 204, 113, 0.2);
             color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
         }
 
         .status-warning {
             background: rgba(241, 196, 15, 0.2);
             color: #f1c40f;
+            border: 1px solid rgba(241, 196, 15, 0.3);
         }
 
         .status-expired {
             background: rgba(231, 76, 60, 0.2);
             color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
+        /* Info Card */
         .info-card {
-            background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.1));
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .info-row:last-child {
@@ -112,76 +124,119 @@
         }
 
         .info-label {
-            color: var(--tg-theme-hint-color, rgba(255,255,255,0.6));
+            color: rgba(255, 255, 255, 0.5);
             font-size: 14px;
         }
 
         .info-value {
             font-weight: 600;
             font-size: 14px;
+            color: #fff;
         }
 
+        /* Buttons */
         .action-button {
             width: 100%;
-            padding: 16px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 14px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 12px;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+            text-align: center;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
         .btn-secondary {
-            background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.1));
-            color: var(--tg-theme-text-color, #fff);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Loading */
         .loading {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
         }
 
         .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255,255,255,0.1);
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             border-top-color: #667eea;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 24px;
+        }
+
+        .loading p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 15px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
+        /* Error */
         .error-card {
             background: rgba(231, 76, 60, 0.1);
             border: 1px solid rgba(231, 76, 60, 0.3);
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 20px;
+            padding: 40px 24px;
             text-align: center;
         }
 
         .error-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
+            font-size: 56px;
+            margin-bottom: 20px;
+        }
+
+        .error-card h2 {
+            color: #fff;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .error-card p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .hidden {
             display: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer p {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
         }
     </style>
 </head>
@@ -190,15 +245,13 @@
         <!-- Loading State -->
         <div id="loading" class="loading">
             <div class="loading-spinner"></div>
-            <p>Загрузка...</p>
+            <p>Загрузка данных...</p>
         </div>
 
         <!-- Main Content -->
         <div id="content" class="hidden">
-            <div class="header">
-                <h1>📊 Моя подписка</h1>
-                <p class="subtitle" id="userName">VPN Connect</p>
-            </div>
+            <h1>📊 Моя подписка</h1>
+            <p class="subtitle" id="userName">VPN Connect</p>
 
             <div class="status-card">
                 <div class="status-icon" id="statusIcon">🛡️</div>
@@ -209,39 +262,44 @@
 
             <div class="info-card">
                 <div class="info-row">
-                    <span class="info-label">Действует до</span>
+                    <span class="info-label">📅 Действует до</span>
                     <span class="info-value" id="expiryDate">—</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Email</span>
+                    <span class="info-label">📧 Аккаунт</span>
                     <span class="info-value" id="userEmail">—</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Статус VPN</span>
+                    <span class="info-label">🔌 Статус VPN</span>
                     <span class="info-value" id="vpnStatus">—</span>
                 </div>
             </div>
 
             <button class="action-button btn-primary hidden" id="payButton" onclick="openPayment()">
-                💳 Продлить подписку — 99₽
+                💳 Продлить подписку — 99₽/мес
             </button>
 
             <button class="action-button btn-secondary" onclick="getVPN()">
-                🔄 Получить конфиг VPN
+                🔄 Получить конфигурацию VPN
             </button>
+
+            <div class="footer">
+                <p>VPN Connect • Безопасный доступ</p>
+            </div>
         </div>
 
         <!-- Error State -->
         <div id="error" class="hidden">
             <div class="error-card">
-                <div class="error-icon">😕</div>
+                <div class="error-icon">🔍</div>
                 <h2>Подписка не найдена</h2>
-                <p style="margin-top: 12px; color: rgba(255,255,255,0.6);">
+                <p>
                     Вы ещё не получали VPN.<br>
-                    Нажмите /start в боте чтобы получить 3 дня бесплатно!
+                    Вернитесь в бот и нажмите /start<br>
+                    чтобы получить 3 дня бесплатно!
                 </p>
             </div>
-            <button class="action-button btn-primary" onclick="closeWebApp()">
+            <button class="action-button btn-primary" style="margin-top: 24px;" onclick="closeWebApp()">
                 ← Вернуться в бот
             </button>
         </div>
@@ -252,6 +310,11 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
+
+        // Apply Telegram theme colors if available
+        if (tg.themeParams.bg_color) {
+            document.body.style.background = tg.themeParams.bg_color;
+        }
 
         // Get user data
         const user = tg.initDataUnsafe?.user;
@@ -290,10 +353,12 @@
             document.getElementById('error').classList.add('hidden');
 
             // Set user name
-            document.getElementById('userName').textContent = firstName;
+            document.getElementById('userName').textContent = `Привет, ${firstName}!`;
 
-            // Set email
-            document.getElementById('userEmail').textContent = data.email || '—';
+            // Set email (shortened)
+            const email = data.email || '—';
+            const shortEmail = email.length > 20 ? email.substring(0, 18) + '...' : email;
+            document.getElementById('userEmail').textContent = shortEmail;
 
             const now = Date.now();
             const expiryTime = data.expiryTime;

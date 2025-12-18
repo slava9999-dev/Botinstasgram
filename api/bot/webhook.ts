@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { PanelManager } from '../../utils/panel';
 
 /**
  * Telegram Bot Webhook Handler
@@ -79,6 +80,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle /help command
     if (text.startsWith('/help')) {
       await sendHelp(BOT_TOKEN, chatId);
+      return res.status(200).json({ ok: true });
+    }
+
+    // Handle /status command - показать сколько дней осталось
+    if (text.startsWith('/status')) {
+      await sendStatus(BOT_TOKEN, chatId, userId, firstName);
       return res.status(200).json({ ok: true });
     }
 
@@ -212,12 +219,13 @@ async function sendHelp(botToken: string, chatId: number) {
     text: `ℹ️ <b>Помощь</b>\n\n` +
           `<b>Доступные команды:</b>\n` +
           `/start - Получить VPN\n` +
+          `/status - Проверить подписку\n` +
           `/help - Показать эту справку\n\n` +
           `<b>Как это работает:</b>\n` +
           `1. Нажми /start\n` +
-          `2. Нажми кнопку "Получить VPN"\n` +
-          `3. Следуй инструкциям на сайте\n` +
-          `4. Наслаждайся доступом к Instagram!\n\n` +
+          `2. Скачай приложение\n` +
+          `3. Нажми "Получить VPN"\n` +
+          `4. Всё настроится автоматически!\n\n` +
           `<b>Поддержка:</b> @vpn_connect_support`,
     parse_mode: 'HTML'
   };
@@ -246,4 +254,109 @@ async function sendMessage(botToken: string, message: TelegramMessage) {
   }
 
   return response.json();
+}
+
+/**
+ * Send subscription status
+ */
+async function sendStatus(botToken: string, chatId: number, userId: number, firstName: string) {
+  const baseUrl = process.env.BASE_URL || 'https://botinstasgram.vercel.app';
+  const payApiUrl = `${baseUrl}/api/bot/actions?action=pay&tg_id=${userId}`;
+  
+  try {
+    const INBOUND_ID = parseInt(process.env.INBOUND_ID || '1', 10);
+    const email = `tg_${userId}@vpn.local`;
+    const panel = new PanelManager();
+    
+    const client = await panel.getClientByEmail(INBOUND_ID, email);
+    
+    let statusText: string;
+    let showPayButton = false;
+    
+    if (!client) {
+      statusText = 
+        `👋 <b>${firstName}</b>, вы ещё не получали VPN!\n\n` +
+        `Нажмите /start чтобы получить\n` +
+        `🎁 <b>3 дня бесплатно</b>`;
+    } else {
+      const now = Date.now();
+      const expiryTime = client.expiryTime;
+      
+      if (!expiryTime || expiryTime === 0) {
+        statusText = 
+          `✅ <b>${firstName}</b>, ваша подписка:\n\n` +
+          `📅 Статус: <b>Безлимит</b>\n` +
+          `🟢 VPN: Активен`;
+      } else if (expiryTime < now) {
+        const expiredDaysAgo = Math.floor((now - expiryTime) / (24 * 60 * 60 * 1000));
+        statusText = 
+          `❌ <b>${firstName}</b>, подписка истекла!\n\n` +
+          `📅 Истекла: ${expiredDaysAgo} дней назад\n` +
+          `🔴 VPN: Не активен\n\n` +
+          `Продлите подписку чтобы продолжить пользоваться VPN 👇`;
+        showPayButton = true;
+      } else {
+        const daysLeft = Math.ceil((expiryTime - now) / (24 * 60 * 60 * 1000));
+        const expiryDate = new Date(expiryTime).toLocaleDateString('ru-RU');
+        
+        let statusEmoji = '🟢';
+        let urgencyText = '';
+        
+        if (daysLeft <= 3) {
+          statusEmoji = '🟡';
+          urgencyText = '\n\n⚠️ <b>Подписка скоро истечёт!</b>';
+          showPayButton = true;
+        }
+        
+        statusText = 
+          `✅ <b>${firstName}</b>, ваша подписка:\n\n` +
+          `📅 Осталось: <b>${daysLeft} ${getDaysWord(daysLeft)}</b>\n` +
+          `📆 До: ${expiryDate}\n` +
+          `${statusEmoji} VPN: Активен${urgencyText}`;
+      }
+    }
+    
+    const message: TelegramMessage = {
+      chat_id: chatId,
+      text: statusText,
+      parse_mode: 'HTML',
+      reply_markup: showPayButton ? {
+        inline_keyboard: [
+          [{ text: '💳 Продлить подписку 99₽', url: payApiUrl }]
+        ]
+      } : undefined
+    };
+    
+    await sendMessage(botToken, message);
+    
+  } catch (error: any) {
+    console.error('[Bot] Error getting status:', error.message);
+    await sendMessage(botToken, {
+      chat_id: chatId,
+      text: `❌ Не удалось получить статус.\n\nПопробуйте позже или напишите /start`,
+      parse_mode: 'HTML'
+    });
+  }
+}
+
+/**
+ * Helper: склонение слова "день"
+ */
+function getDaysWord(days: number): string {
+  const lastDigit = days % 10;
+  const lastTwoDigits = days % 100;
+  
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return 'дней';
+  }
+  
+  if (lastDigit === 1) {
+    return 'день';
+  }
+  
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return 'дня';
+  }
+  
+  return 'дней';
 }

@@ -122,6 +122,7 @@ async function handlePay(req: VercelRequest, res: VercelResponse, telegramId: st
     const planDuration = 30;
     const description = `VPN подписка на ${planDuration} дней`;
     const idempotenceKey = uuidv4();
+    const customerEmail = `tg_${telegramId}@vpn.local`;
     
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['host'] || 'botinstasgram.vercel.app';
@@ -138,8 +139,27 @@ async function handlePay(req: VercelRequest, res: VercelResponse, telegramId: st
       },
       capture: true,
       description: description,
+      // ✅ Чек для онлайн-кассы (обязательно для ЮKassa)
+      receipt: {
+        customer: {
+          email: customerEmail
+        },
+        items: [
+          {
+            description: 'VPN подписка 30 дней',
+            quantity: '1.00',
+            amount: {
+              value: amount.toFixed(2),
+              currency: 'RUB'
+            },
+            vat_code: 1,  // НДС не облагается
+            payment_mode: 'full_payment',
+            payment_subject: 'service'
+          }
+        ]
+      },
       metadata: {
-        email: `tg_${telegramId}@vpn.local`,
+        email: customerEmail,
         telegramId: telegramId,
         planDuration: planDuration
       }

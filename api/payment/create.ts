@@ -60,6 +60,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const idempotenceKey = uuidv4();
+    const customerEmail = email || `user_${Date.now()}@vpn.local`;
     
     // Get base URL for return
     const baseUrl = process.env.VERCEL_URL 
@@ -77,9 +78,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       capture: true,
       description: description,
-      // ✅ Сохраняем всю информацию для webhook обработки
+      // ✅ Чек для онлайн-кассы
+      receipt: {
+        customer: {
+          email: customerEmail
+        },
+        items: [
+          {
+            description: `VPN подписка ${planDuration} дней`,
+            quantity: '1.00',
+            amount: {
+              value: amount.toFixed(2),
+              currency: 'RUB'
+            },
+            vat_code: 1,
+            payment_mode: 'full_payment',
+            payment_subject: 'service'
+          }
+        ]
+      },
       metadata: {
-        email: email || 'anonymous',
+        email: customerEmail,
         telegramId: telegramId || undefined,
         planDuration: planDuration
       }

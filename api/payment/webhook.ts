@@ -149,20 +149,53 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const telegramId = payment.metadata?.telegramId;
     const amount = parseFloat(payment.amount?.value || '99');
 
-    // Create user in 3X-UI panel
+    // Create or extend user in 3X-UI panel
     const INBOUND_ID = parseInt(process.env.INBOUND_ID || '1', 10);
-    const uuid = uuidv4();
     const planDuration = 30; // days
 
     let configToken: string;
     let configUrl: string;
+    let uuid: string;
+    let isExtension = false;
 
     try {
       const panel = new PanelManager();
-      const clientInfo = await panel.addClient(INBOUND_ID, email, uuid, planDuration);
       
-      // Generate stateless token
-      configToken = generateConfigToken(clientInfo, planDuration);
+      // ✅ Сначала проверяем - есть ли уже такой пользователь
+      const existingClient = await panel.getClientByEmail(INBOUND_ID, email);
+      
+      if (existingClient) {
+        // ✅ ПРОДЛЕНИЕ ПОДПИСКИ существующего пользователя
+        console.log(`[Webhook] Found existing client ${email}, extending subscription`);
+        
+        const extensionResult = await panel.extendClientByEmail(INBOUND_ID, email, planDuration);
+        
+        if (extensionResult) {
+          uuid = extensionResult.uuid;
+          isExtension = true;
+          console.log(`[Webhook] ✅ Extended ${email} until ${extensionResult.message}`);
+          
+          // Генерируем токен с данными клиента
+          configToken = generateConfigToken({
+            uuid: existingClient.uuid,
+            email: existingClient.email,
+            inboundId: existingClient.inboundId,
+            serverAddress: existingClient.serverAddress,
+            port: existingClient.port,
+            publicKey: existingClient.publicKey,
+            shortId: existingClient.shortId,
+            serverName: existingClient.serverName
+          }, planDuration);
+        } else {
+          throw new Error('Failed to extend subscription');
+        }
+      } else {
+        // ✅ НОВЫЙ ПОЛЬЗОВАТЕЛЬ - создаём
+        console.log(`[Webhook] Creating new client ${email}`);
+        uuid = uuidv4();
+        const clientInfo = await panel.addClient(INBOUND_ID, email, uuid, planDuration);
+        configToken = generateConfigToken(clientInfo, planDuration);
+      }
 
       // Build config URL
       const baseUrl = process.env.VERCEL_URL 

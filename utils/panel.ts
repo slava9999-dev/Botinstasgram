@@ -386,4 +386,81 @@ export class PanelManager {
       return null;
     }
   }
+
+  /**
+   * Продлить подписку существующего клиента
+   * Если клиент истёк - продлевает от текущего времени
+   * Если клиент активен - добавляет дни к текущему expiryTime
+   */
+  async extendClientByEmail(inboundId: number, email: string, additionalDays: number): Promise<{
+    success: boolean;
+    uuid: string;
+    newExpiryTime: number;
+    message: string;
+  } | null> {
+    await this.ensureLoggedIn();
+
+    try {
+      const inbound = await this.getInboundDetails(inboundId);
+      const settings = JSON.parse(inbound.settings);
+      
+      const clientIndex = settings.clients?.findIndex((c: any) => c.email === email);
+      
+      if (clientIndex === -1 || clientIndex === undefined) {
+        console.log(`[Panel] Client ${email} not found for extension`);
+        return null;
+      }
+
+      const client = settings.clients[clientIndex];
+      const now = Date.now();
+      const additionalMs = additionalDays * 24 * 60 * 60 * 1000;
+      
+      // Если клиент истёк или expiryTime = 0 - начинаем от текущего времени
+      // Если клиент активен - добавляем к текущему времени истечения
+      let newExpiryTime: number;
+      if (!client.expiryTime || client.expiryTime < now) {
+        newExpiryTime = now + additionalMs;
+        console.log(`[Panel] Client ${email} expired, extending from now`);
+      } else {
+        newExpiryTime = client.expiryTime + additionalMs;
+        console.log(`[Panel] Client ${email} active, adding ${additionalDays} days`);
+      }
+
+      // Обновляем клиента
+      settings.clients[clientIndex].expiryTime = newExpiryTime;
+      settings.clients[clientIndex].enable = true; // Включаем если был выключен
+
+      // Сохраняем изменения
+      const updateResponse = await this.axiosInstance.post('/panel/api/inbounds/update/' + inboundId, {
+        id: inboundId,
+        remark: inbound.remark,
+        enable: true,
+        expiryTime: inbound.expiryTime,
+        listen: "",
+        port: inbound.port,
+        protocol: inbound.protocol,
+        settings: JSON.stringify(settings),
+        streamSettings: inbound.streamSettings,
+        sniffing: inbound.sniffing || JSON.stringify({ enabled: true, destOverride: ["http", "tls", "quic"] })
+      });
+
+      if (!updateResponse.data.success) {
+        throw new Error('Failed to update client: ' + updateResponse.data.msg);
+      }
+
+      const expiryDate = new Date(newExpiryTime).toISOString();
+      console.log(`[Panel] ✅ Client ${email} extended until ${expiryDate}`);
+
+      return {
+        success: true,
+        uuid: client.id,
+        newExpiryTime,
+        message: `Extended until ${expiryDate}`
+      };
+
+    } catch (error: any) {
+      console.error('[Panel] Error extending client:', error.message);
+      return null;
+    }
+  }
 }

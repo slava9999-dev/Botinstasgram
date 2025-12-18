@@ -51,6 +51,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.redirect(302, `${protocol}://${host}/offer.html`);
   }
 
+  if (action === 'account') {
+    return handleAccount(req, res, telegramId);
+  }
+
   return res.status(400).send(errorPage('Неизвестное действие'));
 }
 
@@ -253,4 +257,45 @@ function errorPage(message: string): string {
 </body>
 </html>
   `;
+}
+
+// ============================================
+// ACCOUNT HANDLER (for Mini App)
+// ============================================
+async function handleAccount(req: VercelRequest, res: VercelResponse, telegramId: string) {
+  // CORS for Mini App
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Content-Type', 'application/json');
+
+  try {
+    const email = `tg_${telegramId}@vpn.local`;
+    const INBOUND_ID = parseInt(process.env.INBOUND_ID || '1', 10);
+    const panel = new PanelManager();
+
+    const client = await panel.getClientByEmail(INBOUND_ID, email);
+
+    if (!client) {
+      return res.status(200).json({
+        found: false,
+        error: 'Subscription not found'
+      });
+    }
+
+    return res.status(200).json({
+      found: true,
+      email: client.email,
+      uuid: client.uuid,
+      expiryTime: client.expiryTime,
+      enable: client.enable,
+      telegramId: telegramId
+    });
+
+  } catch (error: any) {
+    console.error('[Account] Error:', error.message);
+    return res.status(500).json({
+      found: false,
+      error: error.message
+    });
+  }
 }

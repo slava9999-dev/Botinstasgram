@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Моя подписка — VPN Connect</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: var(--tg-theme-bg-color, linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%));
+            color: var(--tg-theme-text-color, #fff);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header .subtitle {
+            color: var(--tg-theme-hint-color, rgba(255,255,255,0.6));
+            font-size: 14px;
+        }
+
+        .status-card {
+            background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.1));
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+        }
+
+        .days-left {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .days-label {
+            font-size: 18px;
+            color: var(--tg-theme-hint-color, rgba(255,255,255,0.6));
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .status-warning {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+
+        .status-expired {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .info-card {
+            background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.1));
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--tg-theme-hint-color, rgba(255,255,255,0.6));
+            font-size: 14px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--tg-theme-secondary-bg-color, rgba(255,255,255,0.1));
+            color: var(--tg-theme-text-color, #fff);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-card {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Загрузка...</p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="content" class="hidden">
+            <div class="header">
+                <h1>📊 Моя подписка</h1>
+                <p class="subtitle" id="userName">VPN Connect</p>
+            </div>
+
+            <div class="status-card">
+                <div class="status-icon" id="statusIcon">🛡️</div>
+                <div class="days-left" id="daysLeft">—</div>
+                <div class="days-label" id="daysLabel">дней осталось</div>
+                <div class="status-badge status-active" id="statusBadge">Активна</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-row">
+                    <span class="info-label">Действует до</span>
+                    <span class="info-value" id="expiryDate">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email</span>
+                    <span class="info-value" id="userEmail">—</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Статус VPN</span>
+                    <span class="info-value" id="vpnStatus">—</span>
+                </div>
+            </div>
+
+            <button class="action-button btn-primary hidden" id="payButton" onclick="openPayment()">
+                💳 Продлить подписку — 99₽
+            </button>
+
+            <button class="action-button btn-secondary" onclick="getVPN()">
+                🔄 Получить конфиг VPN
+            </button>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="hidden">
+            <div class="error-card">
+                <div class="error-icon">😕</div>
+                <h2>Подписка не найдена</h2>
+                <p style="margin-top: 12px; color: rgba(255,255,255,0.6);">
+                    Вы ещё не получали VPN.<br>
+                    Нажмите /start в боте чтобы получить 3 дня бесплатно!
+                </p>
+            </div>
+            <button class="action-button btn-primary" onclick="closeWebApp()">
+                ← Вернуться в бот
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        // Get user data
+        const user = tg.initDataUnsafe?.user;
+        const userId = user?.id;
+        const firstName = user?.first_name || 'Пользователь';
+
+        // API base URL
+        const API_BASE = window.location.origin;
+
+        // Load subscription data
+        async function loadSubscription() {
+            if (!userId) {
+                showError();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/bot/actions?action=account&tg_id=${userId}`);
+                const data = await response.json();
+
+                if (data.error || !data.found) {
+                    showError();
+                    return;
+                }
+
+                showContent(data);
+            } catch (e) {
+                console.error('Error loading subscription:', e);
+                showError();
+            }
+        }
+
+        function showContent(data) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+            document.getElementById('error').classList.add('hidden');
+
+            // Set user name
+            document.getElementById('userName').textContent = firstName;
+
+            // Set email
+            document.getElementById('userEmail').textContent = data.email || '—';
+
+            const now = Date.now();
+            const expiryTime = data.expiryTime;
+
+            if (!expiryTime || expiryTime === 0) {
+                // Unlimited
+                document.getElementById('daysLeft').textContent = '∞';
+                document.getElementById('daysLabel').textContent = 'безлимит';
+                document.getElementById('statusIcon').textContent = '👑';
+                document.getElementById('expiryDate').textContent = 'Бессрочно';
+                document.getElementById('vpnStatus').textContent = '🟢 Активен';
+                document.getElementById('statusBadge').textContent = 'Безлимит';
+                document.getElementById('statusBadge').className = 'status-badge status-active';
+            } else if (expiryTime < now) {
+                // Expired
+                const expiredDays = Math.floor((now - expiryTime) / (24 * 60 * 60 * 1000));
+                document.getElementById('daysLeft').textContent = '0';
+                document.getElementById('daysLabel').textContent = `истекла ${expiredDays} дн. назад`;
+                document.getElementById('statusIcon').textContent = '😢';
+                document.getElementById('expiryDate').textContent = formatDate(expiryTime);
+                document.getElementById('vpnStatus').textContent = '🔴 Не активен';
+                document.getElementById('statusBadge').textContent = 'Истекла';
+                document.getElementById('statusBadge').className = 'status-badge status-expired';
+                document.getElementById('payButton').classList.remove('hidden');
+            } else {
+                // Active
+                const daysLeft = Math.ceil((expiryTime - now) / (24 * 60 * 60 * 1000));
+                document.getElementById('daysLeft').textContent = daysLeft;
+                document.getElementById('daysLabel').textContent = getDaysWord(daysLeft) + ' осталось';
+                document.getElementById('expiryDate').textContent = formatDate(expiryTime);
+                document.getElementById('vpnStatus').textContent = '🟢 Активен';
+
+                if (daysLeft <= 3) {
+                    document.getElementById('statusIcon').textContent = '⚠️';
+                    document.getElementById('statusBadge').textContent = 'Скоро истечёт';
+                    document.getElementById('statusBadge').className = 'status-badge status-warning';
+                    document.getElementById('payButton').classList.remove('hidden');
+                } else {
+                    document.getElementById('statusIcon').textContent = '✅';
+                    document.getElementById('statusBadge').textContent = 'Активна';
+                    document.getElementById('statusBadge').className = 'status-badge status-active';
+                }
+            }
+        }
+
+        function showError() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('content').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+        }
+
+        function formatDate(timestamp) {
+            return new Date(timestamp).toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+
+        function getDaysWord(days) {
+            const lastDigit = days % 10;
+            const lastTwo = days % 100;
+            
+            if (lastTwo >= 11 && lastTwo <= 19) return 'дней';
+            if (lastDigit === 1) return 'день';
+            if (lastDigit >= 2 && lastDigit <= 4) return 'дня';
+            return 'дней';
+        }
+
+        function openPayment() {
+            const payUrl = `${API_BASE}/api/bot/actions?action=pay&tg_id=${userId}`;
+            tg.openLink(payUrl);
+        }
+
+        function getVPN() {
+            const vpnUrl = `${API_BASE}/api/bot/actions?action=vpn&tg_id=${userId}`;
+            tg.openLink(vpnUrl);
+        }
+
+        function closeWebApp() {
+            tg.close();
+        }
+
+        // Start loading
+        loadSubscription();
+    </script>
+</body>
+</html>

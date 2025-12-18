@@ -189,6 +189,13 @@ async function sendVPNLink(botToken: string, chatId: number, userId: number, fir
             url: vpnApiUrl
           }
         ],
+        // Моя подписка - Mini App
+        [
+          {
+            text: '📊 Моя подписка',
+            web_app: { url: `${baseUrl}/account.html` }
+          }
+        ],
         // Оплата
         [
           {

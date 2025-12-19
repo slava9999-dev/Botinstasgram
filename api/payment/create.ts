@@ -1,7 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import { checkRateLimit, RateLimitPresets } from '../../utils/rate-limit';
+import { RateLimitStorage } from '../../utils/storage';
+import { logger, LogEvent } from '../../utils/logger';
+
+// ✅ KV-based rate limit presets (персистентный между инстансами)
+const KV_RATE_PRESETS = {
+  PAYMENT_CREATE: { maxRequests: 5, windowMs: 60000 }  // 5 req/min
+};
 
 /**
  * POST /api/payment/create
@@ -27,11 +33,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Rate limiting: 5 requests per minute per IP
-  const rateLimitResult = checkRateLimit(req, RateLimitPresets.PAYMENT_CREATE);
+  // ✅ Rate limiting через Vercel KV (распределённый!)
+  const forwardedFor = req.headers['x-forwarded-for'];
+  const clientIP = typeof forwardedFor === 'string' 
+    ? forwardedFor.split(',')[0].trim() 
+    : req.headers['x-real-ip'] as string || 'unknown';
+  
+  const rateLimitResult = await RateLimitStorage.check(clientIP, KV_RATE_PRESETS.PAYMENT_CREATE);
   if (!rateLimitResult.allowed) {
+    logger.warn(LogEvent.RATE_LIMIT_EXCEEDED, 'Rate limit exceeded for payment creation', { clientIP });
     return res.status(429).json({
-      error: 'Too many payment requests. Please try again later.',
+      error: 'Слишком много запросов. Попробуйте через минуту.',
       code: 'RATE_LIMIT_EXCEEDED',
       retryAfter: rateLimitResult.retryAfter
     });
@@ -131,7 +143,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
   } catch (error: any) {
-    console.error('Payment error:', error.response?.data || error.message);
+    logger.error(LogEvent.PAYMENT_FAILED, 'Payment creation error', { 
+      error: error.message,
+      details: error.response?.data 
+    });
     return res.status(500).json({
       error: error.response?.data?.description || 'Payment creation failed',
       code: 'PAYMENT_ERROR'

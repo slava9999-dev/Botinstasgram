@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PanelManager } from '../../utils/panel';
+import { logger, LogEvent } from '../../utils/logger';
 
 /**
  * Telegram Bot Webhook Handler
@@ -51,7 +52,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   
   if (!BOT_TOKEN) {
-    console.error('[Bot] TELEGRAM_BOT_TOKEN not configured');
+    logger.error(LogEvent.CONFIG_ERROR, 'TELEGRAM_BOT_TOKEN not configured');
     return res.status(500).json({ error: 'Bot not configured' });
   }
 
@@ -69,7 +70,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const text = message.text || '';
     const firstName = message.from.first_name;
 
-    console.log(`[Bot] Received message from ${firstName} (${userId}): ${text}`);
+    logger.info(LogEvent.USER_CREATED, `Bot received message from ${firstName}`, { userId, text, firstName });
 
     // Handle /start command
     if (text.startsWith('/start')) {
@@ -108,7 +109,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({ ok: true });
 
   } catch (error: any) {
-    console.error('[Bot] Error processing update:', error);
+    logger.error(LogEvent.CONFIG_ERROR, 'Error processing bot update', { error: error.message });
     return res.status(200).json({ ok: true }); // Always return 200 to Telegram
   }
 }
@@ -256,7 +257,7 @@ async function sendMessage(botToken: string, message: TelegramMessage) {
 
   if (!response.ok) {
     const error = await response.text();
-    console.error('[Bot] Failed to send message:', error);
+    logger.error(LogEvent.CONFIG_ERROR, 'Failed to send Telegram message', { error });
     throw new Error(`Failed to send message: ${error}`);
   }
 
@@ -337,7 +338,7 @@ async function sendStatus(botToken: string, chatId: number, userId: number, firs
     await sendMessage(botToken, message);
     
   } catch (error: any) {
-    console.error('[Bot] Error getting status:', error.message);
+    logger.error(LogEvent.CONFIG_ERROR, 'Error getting user status', { error: error.message, userId });
     await sendMessage(botToken, {
       chat_id: chatId,
       text: `❌ Не удалось получить статус.\n\nПопробуйте позже или напишите /start`,

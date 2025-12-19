@@ -18,6 +18,7 @@ export enum LogEvent {
   // Config generation
   CONFIG_GENERATED = 'config_generated',
   CONFIG_GENERATION_FAILED = 'config_generation_failed',
+  CONFIG_ERROR = 'config_error',
   
   // Panel operations
   PANEL_LOGIN_SUCCESS = 'panel_login_success',
@@ -40,7 +41,12 @@ export enum LogEvent {
   WEBHOOK_IGNORED = 'webhook_ignored',
   
   // Traffic
-  TRAFFIC_CHECKED = 'traffic_checked'
+  TRAFFIC_CHECKED = 'traffic_checked',
+  
+  // Telegram Bot events
+  BOT_MESSAGE = 'bot_message',
+  BOT_COMMAND = 'bot_command',
+  BOT_ERROR = 'bot_error'
 }
 
 interface LogContext {

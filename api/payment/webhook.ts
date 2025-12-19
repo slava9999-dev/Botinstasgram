@@ -45,8 +45,14 @@ const YOOKASSA_IP_RANGES = [
   '77.75.156.', '77.75.157.',   // Additional ranges
 ];
 
+// ✅ PRODUCTION: Строгий режим проверки IP (по умолчанию включён)
+// Для тестов можно установить YOOKASSA_STRICT_MODE=false в .env
+const STRICT_MODE = process.env.YOOKASSA_STRICT_MODE !== 'false';
+
 /**
  * Verify that request comes from YooKassa IP
+ * 
+ * 🔒 SECURITY: В production режиме (STRICT_MODE=true) блокирует неизвестные IP
  */
 function isYooKassaIP(req: VercelRequest): boolean {
   // Get client IP from various headers (Vercel uses x-forwarded-for)
@@ -62,25 +68,42 @@ function isYooKassaIP(req: VercelRequest): boolean {
     clientIP = realIP.trim();
   }
   
-  // Log for monitoring
-  console.log(`[Webhook] IP check: forwarded=${forwardedFor}, real=${realIP}, detected=${clientIP}`);
+  // Логируем для мониторинга
+  logger.info(LogEvent.WEBHOOK_RECEIVED, 'IP verification check', {
+    forwardedFor: forwardedFor || 'none',
+    realIP: realIP || 'none',
+    detectedIP: clientIP || 'none',
+    strictMode: STRICT_MODE
+  });
   
-  // If no IP detected - allow (Vercel edge case)
+  // Если IP не определён
   if (!clientIP) {
-    console.warn('[Webhook] No IP detected - allowing request');
+    if (STRICT_MODE) {
+      logger.warn(LogEvent.WEBHOOK_IGNORED, 'No IP detected - BLOCKING in strict mode');
+      return false;
+    }
+    logger.warn(LogEvent.WEBHOOK_RECEIVED, 'No IP detected - allowing (non-strict mode)');
     return true;
   }
   
-  // Check if IP starts with any of the YooKassa ranges
+  // Проверяем соответствие IP диапазонам YooKassa
   const isValid = YOOKASSA_IP_RANGES.some(range => clientIP!.startsWith(range));
   
   if (!isValid) {
-    console.warn(`[Webhook] IP ${clientIP} not in YooKassa range - checking if valid request`);
-    // На Vercel IP может приходить через прокси, поэтому разрешаем но логируем
-    // Безопасность обеспечивается проверкой структуры данных YooKassa
+    if (STRICT_MODE) {
+      // 🔴 PRODUCTION: Блокируем неизвестные IP!
+      logger.error(LogEvent.WEBHOOK_IGNORED, `BLOCKED: IP ${clientIP} not in YooKassa range`, {
+        clientIP,
+        allowedRanges: YOOKASSA_IP_RANGES
+      });
+      return false;
+    }
+    // Нестрогий режим: предупреждаем, но разрешаем
+    logger.warn(LogEvent.WEBHOOK_RECEIVED, `IP ${clientIP} not in YooKassa range - allowing (non-strict mode)`);
+  } else {
+    logger.info(LogEvent.WEBHOOK_RECEIVED, `IP ${clientIP} verified as YooKassa`);
   }
   
-  // Разрешаем - безопасность через валидацию данных, а не IP
   return true;
 }
 
@@ -105,7 +128,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // ✅ SECURITY: Verify YooKassa IP
     if (!isYooKassaIP(req)) {
-      console.error('[Webhook] Request from unauthorized IP');
+      logger.error(LogEvent.WEBHOOK_IGNORED, 'Request from unauthorized IP blocked');
       // Return 200 to not reveal security check to attacker
       return res.status(200).json({ status: 'ignored' });
     }
@@ -114,7 +137,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Validate notification structure
     if (!notification || !notification.event || !notification.object) {
-      console.error('[Webhook] Invalid notification structure:', notification);
+      logger.error(LogEvent.WEBHOOK_IGNORED, 'Invalid notification structure', { notification });
       return res.status(400).json({ error: 'Invalid notification format' });
     }
 
@@ -131,14 +154,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // For waiting_for_capture, we need to capture it (auto-capture should be enabled)
     if (payment.status !== 'succeeded' && payment.status !== 'waiting_for_capture') {
-      console.log(`[Webhook] Payment not succeeded yet: ${payment.status}`);
+      logger.info(LogEvent.WEBHOOK_RECEIVED, `Payment not succeeded yet: ${payment.status}`, { paymentId: payment.id, status: payment.status });
       return res.status(200).json({ status: 'pending', paymentStatus: payment.status });
     }
 
     // Check if already processed (using KV now!)
     const existingPayment = await PaymentStorage.getById(payment.id);
     if (existingPayment) {
-      console.log(`[Webhook] Payment already processed: ${payment.id}`);
+      logger.info(LogEvent.WEBHOOK_RECEIVED, `Payment already processed: ${payment.id}`, { paymentId: payment.id });
       return res.status(200).json({ 
         status: 'already_processed',
         configUrl: existingPayment.configUrl 
@@ -167,14 +190,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       
       if (existingClient) {
         // ✅ ПРОДЛЕНИЕ ПОДПИСКИ существующего пользователя
-        console.log(`[Webhook] Found existing client ${email}, extending subscription`);
+        logger.info(LogEvent.PAYMENT_SUCCEEDED, `Found existing client ${email}, extending subscription`, { email });
         
         const extensionResult = await panel.extendClientByEmail(INBOUND_ID, email, planDuration);
         
         if (extensionResult) {
           uuid = extensionResult.uuid;
           isExtension = true;
-          console.log(`[Webhook] ✅ Extended ${email} until ${extensionResult.message}`);
+          logger.info(LogEvent.PAYMENT_SUCCEEDED, `Extended ${email} until ${extensionResult.message}`, { email, message: extensionResult.message });
           
           // Генерируем токен с данными клиента
           configToken = generateConfigToken({
@@ -192,7 +215,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       } else {
         // ✅ НОВЫЙ ПОЛЬЗОВАТЕЛЬ - создаём
-        console.log(`[Webhook] Creating new client ${email}`);
+        logger.info(LogEvent.USER_CREATED, `Creating new client ${email}`, { email });
         uuid = uuidv4();
         const clientInfo = await panel.addClient(INBOUND_ID, email, uuid, planDuration);
         configToken = generateConfigToken(clientInfo, planDuration);
@@ -205,7 +228,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       
       configUrl = `${baseUrl}/api/go/${configToken}`;
     } catch (panelError: any) {
-      console.error('[Webhook] Panel error:', panelError.message);
+      logger.error(LogEvent.PANEL_LOGIN_FAILED, 'Panel error during payment processing', { error: panelError.message, paymentId: payment.id });
       // Still acknowledge the webhook, but log the error
       return res.status(200).json({ 
         status: 'panel_error',
@@ -232,7 +255,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await PaymentStorage.save(record);
 
-    console.log(`[Webhook] ✅ Payment confirmed and saved: ${payment.id}, email: ${email}`);
+    logger.info(LogEvent.PAYMENT_SUCCEEDED, `Payment confirmed and saved: ${payment.id}`, { paymentId: payment.id, email, configUrl });
 
     return res.status(200).json({
       status: 'success',
@@ -243,7 +266,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
   } catch (error: any) {
-    console.error('[Webhook] Error:', error);
+    logger.error(LogEvent.PAYMENT_FAILED, 'Webhook processing error', { error: error.message });
     // Always return 200 to YooKassa to prevent retries on our errors
     return res.status(200).json({
       status: 'error',

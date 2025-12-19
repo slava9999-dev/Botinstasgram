@@ -13,6 +13,8 @@
  * Пока Vercel KV не подключён, используется fallback на in-memory storage.
  */
 
+import { logger, LogEvent } from './logger';
+
 // Type definitions for when @vercel/kv is not installed
 interface KVStore {
   get<T = unknown>(key: string): Promise<T | null>;
@@ -99,15 +101,15 @@ async function getKV(): Promise<KVStore> {
       // @ts-ignore - @vercel/kv may not be installed
       const vercelKV = await import('@vercel/kv');
       kvInstance = vercelKV.kv as unknown as KVStore;
-      console.log('[KV] Using Vercel KV storage');
+      logger.info(LogEvent.KV_CONNECTED, 'Using Vercel KV storage');
       return kvInstance;
     } catch (error) {
-      console.warn('[KV] Vercel KV not available, using in-memory fallback');
+      logger.warn(LogEvent.KV_FALLBACK, 'Vercel KV not available, using in-memory fallback');
     }
   }
   
   // Fallback to in-memory
-  console.log('[KV] Using in-memory storage (data will be lost on cold start)');
+  logger.warn(LogEvent.KV_FALLBACK, 'Using in-memory storage (data will be lost on cold start)');
   kvInstance = new InMemoryStore();
   return kvInstance;
 }
@@ -148,7 +150,7 @@ export const PaymentStorage = {
       await kv.set(`payment:tg:${record.telegramId}`, record.paymentId, { ex: ttl });
     }
     
-    console.log(`[KV] Payment saved: ${record.paymentId}`);
+    logger.info(LogEvent.KV_PAYMENT_SAVED, 'Payment saved', { paymentId: record.paymentId, email: record.email });
   },
   
   /**
@@ -270,7 +272,7 @@ export const TrialStorage = {
     const kv = await getKV();
     const ttl = 60 * 60 * 24 * 365; // 1 year
     await kv.set(`trial:${telegramId}`, record, { ex: ttl });
-    console.log(`[KV] Trial marked as used for TG: ${telegramId}`);
+    logger.info(LogEvent.KV_TRIAL_MARKED, 'Trial marked as used', { telegramId });
   },
   
   /**

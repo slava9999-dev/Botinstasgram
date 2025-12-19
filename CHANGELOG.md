@@ -7,6 +7,58 @@
 
 ---
 
+## [2.2.2] - 2025-12-19
+
+### 🔧 Рефакторинг (P1 ИСПРАВЛЕНИЯ)
+
+- **Полная унификация логирования:**
+
+  - Все `console.log/warn/error` заменены на структурированный `logger`
+  - Добавлены 20+ новых LogEvent типов для полного покрытия:
+    - `PANEL_SESSION_CACHED`, `PANEL_CLIENT_CREATED`, `PANEL_CLIENT_EXTENDED`, `PANEL_CONNECTION_ERROR`
+    - `TOKEN_VALIDATED`
+    - `PAYMENT_STATUS_CHECKED`
+    - `TRAFFIC_ERROR`
+    - `BOT_ACTION`
+    - `KV_CONNECTED`, `KV_FALLBACK`, `KV_PAYMENT_SAVED`, `KV_TRIAL_MARKED`
+    - `HEALTH_CHECK`, `HEALTH_PANEL_OK`, `HEALTH_PANEL_FAILED`
+    - `ENV_VALIDATED`, `ENV_VALIDATION_FAILED`, `ENV_WARNING`
+    - `ACCOUNT_VIEWED`, `ACCOUNT_ERROR`
+  - Централизованный JSON-формат для мониторинга
+
+- **Убрано дублирование CORS:**
+
+  - CORS headers теперь только в `vercel.json`
+  - Удалены дублирующие `res.setHeader()` из 10 endpoints
+
+- **Очистка кода:**
+  - Удалён неиспользуемый `utils/rate-limit.ts` (legacy in-memory)
+  - Вся логика rate limiting теперь через Vercel KV
+
+### 📁 Изменённые файлы (15+)
+
+- `utils/logger.ts` — 20+ новых LogEvent типов
+- `utils/panel.ts` — полная унификация логов
+- `utils/storage.ts` — logger вместо console
+- `utils/jwt.ts` — logger вместо console
+- `utils/env-validator.ts` — logger вместо console
+- `api/create-user/index.ts` — logger + убран CORS
+- `api/go/[token].ts` — logger
+- `api/sub/[token].ts` — logger + убран CORS
+- `api/health/index.ts` — logger + убран CORS
+- `api/payment/status.ts` — logger + убран CORS
+- `api/payment/webhook.ts` — убран CORS
+- `api/payment/create.ts` — убран CORS
+- `api/users/[uuid]/traffic.ts` — logger + убран CORS
+- `api/bot/actions.ts` — logger
+- `package.json` — версия 2.2.2
+
+### 🗑️ Удалено
+
+- `utils/rate-limit.ts` — заменён на `utils/storage.ts` (Vercel KV)
+
+---
+
 ## [2.2.1] - 2025-12-19
 
 ### 🔒 Безопасность (КРИТИЧЕСКИЕ P0 ИСПРАВЛЕНИЯ)

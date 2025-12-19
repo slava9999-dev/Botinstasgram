@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PanelManager } from '../../../utils/panel';
 import { validateConfigToken } from '../../../utils/jwt';
+import { logger, LogEvent } from '../../../utils/logger';
 
 /**
  * GET /api/users/:uuid/traffic
@@ -15,9 +16,7 @@ import { validateConfigToken } from '../../../utils/jwt';
  * }
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  // Note: CORS headers are set globally in vercel.json
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -60,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
   } catch (error: any) {
-    console.error('[Traffic] Error:', error);
+    logger.error(LogEvent.TRAFFIC_ERROR, 'Error getting traffic stats', { error: error.message });
     return res.status(500).json({ 
       error: error.message || 'Internal Server Error',
       code: 'INTERNAL_ERROR'

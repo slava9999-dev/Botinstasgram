@@ -5,6 +5,8 @@
  * Помогает избежать runtime ошибок из-за отсутствующей конфигурации.
  */
 
+import { logger, LogEvent } from './logger';
+
 export interface EnvValidationResult {
   valid: boolean;
   missing: string[];
@@ -86,12 +88,12 @@ export function requireValidEnvironment(): void {
                   `Please check your .env file or Vercel Environment Variables.\n` +
                   `See .env.example for reference.`;
     
-    console.error('[ENV] Validation failed:', error);
+    logger.error(LogEvent.ENV_VALIDATION_FAILED, 'Validation failed', { missing: result.missing });
     throw new Error(error);
   }
   
   if (result.warnings.length > 0) {
-    console.warn('[ENV] Configuration warnings:', result.warnings);
+    logger.warn(LogEvent.ENV_WARNING, 'Configuration warnings', { warnings: result.warnings });
   }
 }
 
@@ -101,22 +103,22 @@ export function requireValidEnvironment(): void {
 export function logEnvironmentStatus(): void {
   const result = validateEnvironment();
   
-  console.log('[ENV] Configuration status:', {
+  logger.info(LogEvent.ENV_VALIDATED, 'Configuration status', {
     valid: result.valid,
     missingCount: result.missing.length,
     warningsCount: result.warnings.length
   });
   
   if (result.missing.length > 0) {
-    console.error('[ENV] Missing variables:', result.missing);
+    logger.error(LogEvent.ENV_VALIDATION_FAILED, 'Missing variables', { missing: result.missing });
   }
   
   if (result.warnings.length > 0) {
-    console.warn('[ENV] Warnings:', result.warnings);
+    logger.warn(LogEvent.ENV_WARNING, 'Configuration warnings', { warnings: result.warnings });
   }
   
   // Безопасный вывод установленных переменных (без значений!)
-  console.log('[ENV] Configured variables:', {
+  logger.debug(LogEvent.ENV_VALIDATED, 'Configured variables', {
     JWT_SECRET: !!process.env.JWT_SECRET,
     PANEL_URL: !!process.env.PANEL_URL,
     PANEL_USER: !!process.env.PANEL_USER,

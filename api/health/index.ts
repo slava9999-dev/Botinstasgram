@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PanelManager } from '../../utils/panel';
 import { validateEnvironment, logEnvironmentStatus } from '../../utils/env-validator';
 import { checkKVHealth } from '../../utils/storage';
+import { logger, LogEvent } from '../../utils/logger';
 
 
 /**
@@ -16,9 +17,7 @@ import { checkKVHealth } from '../../utils/storage';
  * - Storage (Vercel KV / in-memory)
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  // Note: CORS headers are set globally in vercel.json
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -59,13 +58,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } else {
     // Try to connect to panel
     try {
-      console.log('[Health] Testing panel connection...');
+      logger.info(LogEvent.HEALTH_CHECK, 'Testing panel connection...');
       const panel = new PanelManager();
       await panel.login();
       checks.services.panel = { status: 'ok' };
-      console.log('[Health] Panel connection successful');
+      logger.info(LogEvent.HEALTH_PANEL_OK, 'Panel connection successful');
     } catch (error: any) {
-      console.error('[Health] Panel connection failed:', error.message);
+      logger.error(LogEvent.HEALTH_PANEL_FAILED, 'Panel connection failed', { error: error.message });
       checks.services.panel = { 
         status: 'error', 
         message: `Panel connection failed: ${error.message}` 

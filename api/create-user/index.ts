@@ -26,10 +26,7 @@ const KV_RATE_PRESETS = {
  * }
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // Note: CORS headers are set globally in vercel.json
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -73,7 +70,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // ✅ PRODUCTION: Telegram ID is REQUIRED for trial users
     // This prevents abuse and ensures one trial per real Telegram user
     if (!isPaid && !telegramId) {
-      console.error('[Create-User] Trial request without Telegram ID blocked');
+      logger.warn(LogEvent.USER_CREATION_FAILED, 'Trial request without Telegram ID blocked');
       return res.status(400).json({ 
         error: 'Telegram ID обязателен для пробного периода',
         code: 'TELEGRAM_ID_REQUIRED',
@@ -83,7 +80,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Validate Telegram ID format (should be numeric string or number)
     if (telegramId && !/^\d+$/.test(String(telegramId))) {
-      console.error('[Create-User] Invalid Telegram ID format:', telegramId);
+      logger.warn(LogEvent.USER_CREATION_FAILED, 'Invalid Telegram ID format', { telegramId });
       return res.status(400).json({
         error: 'Неверный формат Telegram ID',
         code: 'INVALID_TELEGRAM_ID'

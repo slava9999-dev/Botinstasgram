@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PaymentStorage } from '../../utils/storage';
+import { logger, LogEvent } from '../../utils/logger';
 
 /**
  * GET /api/payment/status?payment_id=xxx
@@ -12,10 +13,7 @@ import { PaymentStorage } from '../../utils/storage';
  */
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // Note: CORS headers are set globally in vercel.json
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -68,7 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
   } catch (error: any) {
-    console.error('[Status] Error:', error);
+    logger.error(LogEvent.PAYMENT_STATUS_CHECKED, 'Error checking payment status', { error: error.message });
     return res.status(500).json({
       success: false,
       error: error.message

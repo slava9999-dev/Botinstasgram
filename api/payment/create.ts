@@ -21,9 +21,7 @@ const KV_RATE_PRESETS = {
  * }
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // Note: CORS headers are set globally in vercel.json
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();

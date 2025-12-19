@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { validateConfigToken, TokenPayload } from '../../utils/jwt';
+import { logger, LogEvent } from '../../utils/logger';
 
 /**
  * GET /api/sub/[token]
@@ -15,9 +16,7 @@ import { validateConfigToken, TokenPayload } from '../../utils/jwt';
  * 5. User just clicks "Connect"!
  */
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  // Note: CORS headers are set globally in vercel.json
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -36,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const payload = validateConfigToken(token);
   
   if (!payload) {
-    console.error('Token validation failed for token:', token.substring(0, 10) + '...');
+    logger.warn(LogEvent.TOKEN_INVALID, 'Token validation failed', { tokenPreview: String(token).substring(0, 10) + '...' });
     return res.status(401).send('Token invalid. Check server logs. Make sure JWT_SECRET matches.');
   }
 

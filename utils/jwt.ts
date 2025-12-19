@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { logger, LogEvent } from './logger';
 
 export interface TokenPayload {
   uuid: string;
@@ -74,7 +75,7 @@ export function validateConfigToken(token: string): TokenPayload | null {
     
     if (expMs < now) {
       const expiredAgo = Math.floor((now - expMs) / 1000 / 60); // minutes
-      console.error('[JWT] Token expired:', {
+      logger.warn(LogEvent.TOKEN_EXPIRED, 'Token expired', {
         expiredAt: new Date(expMs).toISOString(),
         expiredAgoMinutes: expiredAgo,
         now: new Date(now).toISOString()
@@ -83,7 +84,7 @@ export function validateConfigToken(token: string): TokenPayload | null {
     }
     
     // Validation successful
-    console.log('[JWT] Token validated successfully:', {
+    logger.debug(LogEvent.TOKEN_VALIDATED, 'Token validated successfully', {
       uuid: decoded.uuid.substring(0, 8) + '...',
       email: decoded.email,
       expiresIn: Math.floor((expMs - now) / 1000 / 60 / 60 / 24) + ' days'
@@ -96,7 +97,7 @@ export function validateConfigToken(token: string): TokenPayload | null {
     const errorType = error.name || 'UnknownError';
     const errorMsg = error.message || 'No error message';
     
-    console.error('[JWT] Validation failed:', {
+    logger.error(LogEvent.TOKEN_INVALID, 'Validation failed', {
       errorType,
       errorMessage: errorMsg,
       tokenPreview: token.substring(0, 20) + '...',
@@ -105,11 +106,11 @@ export function validateConfigToken(token: string): TokenPayload | null {
     
     // Different handling for different error types
     if (errorType === 'TokenExpiredError') {
-      console.error('[JWT] Token has expired. User needs to request a new config.');
+      logger.warn(LogEvent.TOKEN_EXPIRED, 'Token has expired. User needs to request a new config.');
     } else if (errorType === 'JsonWebTokenError') {
-      console.error('[JWT] Invalid token signature or format. Possible causes: wrong secret, corrupted token.');
+      logger.error(LogEvent.TOKEN_INVALID, 'Invalid token signature or format. Possible causes: wrong secret, corrupted token.');
     } else if (errorType === 'NotBeforeError') {
-      console.error('[JWT] Token used before its validity period.');
+      logger.warn(LogEvent.TOKEN_INVALID, 'Token used before its validity period.');
     }
     
     return null;

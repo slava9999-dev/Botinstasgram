@@ -24,11 +24,16 @@ export enum LogEvent {
   PANEL_LOGIN_SUCCESS = 'panel_login_success',
   PANEL_LOGIN_FAILED = 'panel_login_failed',
   PANEL_API_ERROR = 'panel_api_error',
+  PANEL_SESSION_CACHED = 'panel_session_cached',
+  PANEL_CLIENT_CREATED = 'panel_client_created',
+  PANEL_CLIENT_EXTENDED = 'panel_client_extended',
+  PANEL_CONNECTION_ERROR = 'panel_connection_error',
   
   // Token management
   TOKEN_GENERATED = 'token_generated',
   TOKEN_EXPIRED = 'token_expired',
   TOKEN_INVALID = 'token_invalid',
+  TOKEN_VALIDATED = 'token_validated',
   
   // Rate limiting
   RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
@@ -37,16 +42,39 @@ export enum LogEvent {
   PAYMENT_CREATED = 'payment_created',
   PAYMENT_SUCCEEDED = 'payment_succeeded',
   PAYMENT_FAILED = 'payment_failed',
+  PAYMENT_STATUS_CHECKED = 'payment_status_checked',
   WEBHOOK_RECEIVED = 'webhook_received',
   WEBHOOK_IGNORED = 'webhook_ignored',
   
   // Traffic
   TRAFFIC_CHECKED = 'traffic_checked',
+  TRAFFIC_ERROR = 'traffic_error',
   
   // Telegram Bot events
   BOT_MESSAGE = 'bot_message',
   BOT_COMMAND = 'bot_command',
-  BOT_ERROR = 'bot_error'
+  BOT_ERROR = 'bot_error',
+  BOT_ACTION = 'bot_action',
+  
+  // Storage/KV events
+  KV_CONNECTED = 'kv_connected',
+  KV_FALLBACK = 'kv_fallback',
+  KV_PAYMENT_SAVED = 'kv_payment_saved',
+  KV_TRIAL_MARKED = 'kv_trial_marked',
+  
+  // Health check
+  HEALTH_CHECK = 'health_check',
+  HEALTH_PANEL_OK = 'health_panel_ok',
+  HEALTH_PANEL_FAILED = 'health_panel_failed',
+  
+  // Environment
+  ENV_VALIDATED = 'env_validated',
+  ENV_VALIDATION_FAILED = 'env_validation_failed',
+  ENV_WARNING = 'env_warning',
+  
+  // Account/Mini App
+  ACCOUNT_VIEWED = 'account_viewed',
+  ACCOUNT_ERROR = 'account_error'
 }
 
 interface LogContext {

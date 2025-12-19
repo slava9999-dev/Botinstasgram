@@ -199,7 +199,7 @@ async function handlePay(req: VercelRequest, res: VercelResponse, telegramId: st
     return res.redirect(302, response.data.confirmation.confirmation_url);
 
   } catch (error: any) {
-    console.error('Bot payment error:', error.response?.data || error.message);
+    logger.error(LogEvent.PAYMENT_FAILED, 'Bot payment error', { error: error.response?.data || error.message });
     return res.status(500).send(errorPage(error.response?.data?.description || error.message));
   }
 }
@@ -292,7 +292,7 @@ async function handleAccount(req: VercelRequest, res: VercelResponse, telegramId
     });
 
   } catch (error: any) {
-    console.error('[Account] Error:', error.message);
+    logger.error(LogEvent.ACCOUNT_ERROR, 'Error getting account info', { error: error.message, telegramId });
     return res.status(500).json({
       found: false,
       error: error.message

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import * as https from 'https';
 import { v4 as uuidv4 } from 'uuid';
+import { logger, LogEvent } from './logger';
 
 export interface ClientInfo {
   uuid: string;
@@ -91,12 +92,12 @@ export class PanelManager {
   async login(retryCount = 0): Promise<void> {
     // Skip login if we already have a valid session
     if (this.cookie && Date.now() < PanelManager.sessionExpiry) {
-      console.log('[Panel] Using cached session');
+      logger.debug(LogEvent.PANEL_SESSION_CACHED, 'Using cached session');
       return;
     }
 
     try {
-      console.log(`[Panel] Attempting login to ${this.baseURL} (attempt ${retryCount + 1}/4)`); // Changed from panelUrl
+      logger.info(LogEvent.PANEL_LOGIN_SUCCESS, `Attempting login (attempt ${retryCount + 1}/4)`, { panelUrl: this.baseURL, attempt: retryCount + 1 });
       
       const response = await this.axiosInstance.post('/login', {
         username: this.username,
@@ -113,20 +114,20 @@ export class PanelManager {
           PanelManager.cachedCookie = this.cookie;
           PanelManager.sessionExpiry = Date.now() + this.SESSION_TTL;
           
-          console.log('[Panel] Login successful, session cached');
+          logger.info(LogEvent.PANEL_LOGIN_SUCCESS, 'Login successful, session cached');
         } else {
-          console.warn('[Panel] Login response OK but no cookies received');
+          logger.warn(LogEvent.PANEL_LOGIN_FAILED, 'Login response OK but no cookies received');
         }
       } else {
         const errorMsg = response.data.msg || 'Unknown error';
-        console.error('[Panel] Login failed:', errorMsg);
+        logger.error(LogEvent.PANEL_LOGIN_FAILED, 'Login failed', { error: errorMsg });
         throw new Error('Login failed: ' + errorMsg);
       }
     } catch (error: any) {
       // Детальное логирование разных типов ошибок
       const errorType = error.code || error.name || 'UnknownError';
       
-      console.error('[Panel] Login error:', {
+      logger.error(LogEvent.PANEL_CONNECTION_ERROR, 'Login error', {
         type: errorType,
         message: error.message,
         panelUrl: this.panelUrl,
@@ -136,21 +137,21 @@ export class PanelManager {
       
       // Специфичные сообщения для разных ошибок
       if (errorType === 'ECONNREFUSED') {
-        console.error('[Panel] Connection refused. Check if panel is running and firewall allows connections.');
+        logger.error(LogEvent.PANEL_CONNECTION_ERROR, 'Connection refused. Check if panel is running and firewall allows connections.');
       } else if (errorType === 'ETIMEDOUT') {
-        console.error('[Panel] Connection timeout. Panel may be slow or unreachable.');
+        logger.error(LogEvent.PANEL_CONNECTION_ERROR, 'Connection timeout. Panel may be slow or unreachable.');
       } else if (errorType === 'ENOTFOUND') {
-        console.error('[Panel] DNS resolution failed. Check PANEL_URL in environment variables.');
+        logger.error(LogEvent.PANEL_CONNECTION_ERROR, 'DNS resolution failed. Check PANEL_URL in environment variables.');
       } else if (error.response?.status === 401) {
-        console.error('[Panel] Invalid credentials. Check PANEL_USER and PANEL_PASS.');
+        logger.error(LogEvent.PANEL_CONNECTION_ERROR, 'Invalid credentials. Check PANEL_USER and PANEL_PASS.');
       } else if (error.response?.status === 403) {
-        console.error('[Panel] Access forbidden. Check panel permissions.');
+        logger.error(LogEvent.PANEL_CONNECTION_ERROR, 'Access forbidden. Check panel permissions.');
       }
       
       // Retry logic
       if (retryCount < 3) {
         const delay = Math.pow(2, retryCount) * 1000;
-        console.log(`[Panel] Retrying in ${delay}ms...`);
+        logger.info(LogEvent.PANEL_LOGIN_FAILED, `Retrying in ${delay}ms...`, { delay, retryCount: retryCount + 1 });
         await new Promise(resolve => setTimeout(resolve, delay));
         return this.login(retryCount + 1);
       }
@@ -161,7 +162,7 @@ export class PanelManager {
         `Last error: ${error.message}. ` +
         `Please check PANEL_URL, credentials, and VPS accessibility.`
       );
-      console.error('[Panel] All login attempts failed');
+      logger.error(LogEvent.PANEL_LOGIN_FAILED, 'All login attempts failed', { attempts: 4 });
       throw userFriendlyError;
     }
   }
@@ -220,7 +221,7 @@ export class PanelManager {
           shortId = streamSettings.realitySettings.shortId || shortId;
         }
       } catch (e) {
-        console.warn('Failed to parse stream settings', e);
+        logger.warn(LogEvent.PANEL_API_ERROR, 'Failed to parse stream settings', { error: String(e) });
       }
 
       return {
@@ -236,7 +237,7 @@ export class PanelManager {
         serverName
       };
     } catch (error) {
-      console.error('Error getting client by email:', error);
+      logger.error(LogEvent.PANEL_API_ERROR, 'Error getting client by email', { email, error: String(error) });
       return null;
     }
   }
@@ -261,7 +262,7 @@ export class PanelManager {
         shortId = streamSettings.realitySettings.shortId || shortId;
       }
     } catch (e) {
-      console.warn('Failed to parse stream settings', e);
+      logger.warn(LogEvent.PANEL_API_ERROR, 'Failed to parse stream settings', { error: String(e) });
     }
 
     // Check if client already exists
@@ -289,7 +290,7 @@ export class PanelManager {
       ? new Date(expiryTime).toISOString() 
       : 'unlimited';
     
-    console.log(`[Panel] Creating client with expiryTime: ${expiryTime} (${expiryDate})`);
+    logger.info(LogEvent.PANEL_CLIENT_CREATED, 'Creating client', { email, uuid, expiryTime, expiryDate });
 
     const newClient = {
       id: uuid,
@@ -382,7 +383,7 @@ export class PanelManager {
         expiryTime: client.expiryTime
       };
     } catch (e) {
-      console.error('Error fetching traffic stats', e);
+      logger.error(LogEvent.TRAFFIC_ERROR, 'Error fetching traffic stats', { error: String(e) });
       return null;
     }
   }
@@ -407,7 +408,7 @@ export class PanelManager {
       const clientIndex = settings.clients?.findIndex((c: any) => c.email === email);
       
       if (clientIndex === -1 || clientIndex === undefined) {
-        console.log(`[Panel] Client ${email} not found for extension`);
+        logger.info(LogEvent.PANEL_CLIENT_EXTENDED, 'Client not found for extension', { email });
         return null;
       }
 
@@ -420,10 +421,10 @@ export class PanelManager {
       let newExpiryTime: number;
       if (!client.expiryTime || client.expiryTime < now) {
         newExpiryTime = now + additionalMs;
-        console.log(`[Panel] Client ${email} expired, extending from now`);
+        logger.info(LogEvent.PANEL_CLIENT_EXTENDED, 'Client expired, extending from now', { email });
       } else {
         newExpiryTime = client.expiryTime + additionalMs;
-        console.log(`[Panel] Client ${email} active, adding ${additionalDays} days`);
+        logger.info(LogEvent.PANEL_CLIENT_EXTENDED, 'Client active, adding days', { email, additionalDays });
       }
 
       // Обновляем клиента
@@ -449,7 +450,7 @@ export class PanelManager {
       }
 
       const expiryDate = new Date(newExpiryTime).toISOString();
-      console.log(`[Panel] ✅ Client ${email} extended until ${expiryDate}`);
+      logger.info(LogEvent.PANEL_CLIENT_EXTENDED, 'Client extended successfully', { email, expiryDate, newExpiryTime });
 
       return {
         success: true,
@@ -459,7 +460,7 @@ export class PanelManager {
       };
 
     } catch (error: any) {
-      console.error('[Panel] Error extending client:', error.message);
+      logger.error(LogEvent.PANEL_API_ERROR, 'Error extending client', { email, error: error.message });
       return null;
     }
   }

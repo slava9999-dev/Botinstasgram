@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { validateConfigToken } from '../../utils/jwt';
+import { logger, LogEvent } from '../../utils/logger';
 
 /**
  * GET /api/go/[token]
@@ -23,7 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const payload = validateConfigToken(token);
   
   if (!payload) {
-    console.error('[Go] Invalid token access attempt');
+    logger.warn(LogEvent.TOKEN_INVALID, 'Invalid token access attempt', { tokenPreview: String(token).substring(0, 10) + '...' });
     return res.status(401).send(errorPage(
       'Ссылка истекла или недействительна. Пожалуйста, создайте новый VPN конфиг на главной странице.'
     ));

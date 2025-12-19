@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Моя подписка — VPN Connect</title>
+    <title>Моя подписка — SmartVPN</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -16,7 +16,8 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            /* Принудительно тёмный фон */
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important;
             padding: 20px;
             color: rgba(255, 255, 255, 0.85);
             line-height: 1.7;
@@ -27,6 +28,7 @@
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 24px;
             padding: 30px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -238,6 +240,26 @@
             color: rgba(255, 255, 255, 0.4);
             font-size: 12px;
         }
+
+        /* Feature highlight */
+        .feature-highlight {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .feature-highlight p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .feature-highlight strong {
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
@@ -251,13 +273,17 @@
         <!-- Main Content -->
         <div id="content" class="hidden">
             <h1>📊 Моя подписка</h1>
-            <p class="subtitle" id="userName">VPN Connect</p>
+            <p class="subtitle" id="userName">SmartVPN</p>
 
             <div class="status-card">
                 <div class="status-icon" id="statusIcon">🛡️</div>
                 <div class="days-left" id="daysLeft">—</div>
                 <div class="days-label" id="daysLabel">дней осталось</div>
                 <div class="status-badge status-active" id="statusBadge">Активна</div>
+            </div>
+
+            <div class="feature-highlight">
+                <p>✨ <strong>Умная маршрутизация</strong> — банки работают без отключения VPN</p>
             </div>
 
             <div class="info-card">
@@ -284,7 +310,7 @@
             </button>
 
             <div class="footer">
-                <p>VPN Connect • Безопасный доступ</p>
+                <p>SmartVPN • Умный VPN для России</p>
             </div>
         </div>
 
@@ -311,10 +337,11 @@
         tg.ready();
         tg.expand();
 
-        // Apply Telegram theme colors if available
-        if (tg.themeParams.bg_color) {
-            document.body.style.background = tg.themeParams.bg_color;
-        }
+        // НЕ применяем тему Telegram - используем свою тёмную тему!
+        // Закомментировано специально:
+        // if (tg.themeParams.bg_color) {
+        //     document.body.style.background = tg.themeParams.bg_color;
+        // }
 
         // Get user data
         const user = tg.initDataUnsafe?.user;

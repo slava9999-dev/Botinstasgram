@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { PanelManager } from '../../utils/panel';
 import { logger, LogEvent } from '../../utils/logger';
+import { getBaseUrl } from '../../utils/constants';
 
 /**
  * Telegram Bot Webhook Handler
@@ -118,7 +119,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
  * Send VPN link - простые инструкции, профессиональный дизайн
  */
 async function sendVPNLink(botToken: string, chatId: number, userId: number, firstName: string) {
-  const baseUrl = process.env.BASE_URL || 'https://botinstasgram.vercel.app';
+  const baseUrl = getBaseUrl();
     
   const vpnApiUrl = `${baseUrl}/api/bot/actions?action=vpn&tg_id=${userId}`;
   const payApiUrl = `${baseUrl}/api/bot/actions?action=pay&tg_id=${userId}`;
@@ -268,7 +269,7 @@ async function sendMessage(botToken: string, message: TelegramMessage) {
  * Send subscription status
  */
 async function sendStatus(botToken: string, chatId: number, userId: number, firstName: string) {
-  const baseUrl = process.env.BASE_URL || 'https://botinstasgram.vercel.app';
+  const baseUrl = getBaseUrl();
   const payApiUrl = `${baseUrl}/api/bot/actions?action=pay&tg_id=${userId}`;
   
   try {

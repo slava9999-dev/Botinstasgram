@@ -304,3 +304,33 @@ Object.freeze(CLIENT_APPS);
 Object.freeze(VALIDATION);
 Object.freeze(ERROR_CODES);
 
+// ============================================
+// 🔧 UTILITY FUNCTIONS
+// ============================================
+
+/**
+ * Get base URL for the application
+ * 
+ * Priority:
+ * 1. VERCEL_URL (auto-set by Vercel, includes preview deployments)
+ * 2. BASE_URL (custom override)
+ * 3. Fallback to production URL
+ * 
+ * @returns Base URL with https:// prefix
+ */
+export function getBaseUrl(): string {
+  // Priority 1: Vercel auto-detected URL (works for preview deployments)
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  // Priority 2: Custom BASE_URL (for local dev or custom domains)
+  if (process.env.BASE_URL) {
+    return process.env.BASE_URL;
+  }
+  
+  // Priority 3: Fallback to production
+  return APP_URLS.PRODUCTION;
+}
+
+

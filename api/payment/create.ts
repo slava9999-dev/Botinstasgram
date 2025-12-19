@@ -3,7 +3,6 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { RateLimitStorage } from '../../utils/storage';
 import { logger, LogEvent } from '../../utils/logger';
-import { getBaseUrl } from '../../utils/constants';
 
 // ✅ KV-based rate limit presets (персистентный между инстансами)
 const KV_RATE_PRESETS = {
@@ -76,7 +75,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const customerEmail = email || `user_${Date.now()}@vpn.local`;
     
     // Get base URL for return
-    const baseUrl = getBaseUrl();
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : process.env.BASE_URL || 'https://botinstasgram.vercel.app';
 
     const paymentData = {
       amount: {

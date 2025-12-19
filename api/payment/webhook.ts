@@ -1,11 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { v4 as uuidv4 } from 'uuid';
-import { createHmac } from 'crypto';
 import { PanelManager } from '../../utils/panel';
 import { generateConfigToken } from '../../utils/jwt';
 import { logger, LogEvent } from '../../utils/logger';
 import { PaymentStorage, PaymentRecord } from '../../utils/storage';
-import { getBaseUrl } from '../../utils/constants';
 
 /**
  * POST /api/payment/webhook
@@ -109,55 +107,6 @@ function isYooKassaIP(req: VercelRequest): boolean {
   return true;
 }
 
-/**
- * Verify webhook signature (HMAC-SHA256)
- * 
- * 🔒 SECURITY: Дополнительная защита помимо IP-проверки
- * YooKassa может отправлять подпись в заголовке X-YooKassa-Signature
- */
-function verifyWebhookSignature(req: VercelRequest): boolean {
-  const signature = req.headers['x-yookassa-signature'] as string | undefined;
-  
-  // Если подпись не отправлена, пропускаем проверку
-  // (YooKassa не всегда отправляет подпись, зависит от настроек)
-  if (!signature) {
-    logger.info(LogEvent.WEBHOOK_RECEIVED, 'No signature provided, skipping HMAC verification');
-    return true;
-  }
-  
-  const secretKey = process.env.YOOKASSA_SECRET_KEY;
-  if (!secretKey) {
-    logger.warn(LogEvent.WEBHOOK_RECEIVED, 'YOOKASSA_SECRET_KEY not configured, cannot verify signature');
-    return true;
-  }
-  
-  try {
-    // Вычисляем ожидаемую подпись
-    const payload = JSON.stringify(req.body);
-    const expectedSignature = createHmac('sha256', secretKey)
-      .update(payload)
-      .digest('hex');
-    
-    const isValid = signature === expectedSignature;
-    
-    if (!isValid) {
-      logger.error(LogEvent.WEBHOOK_IGNORED, 'Invalid webhook signature', {
-        received: signature.substring(0, 10) + '...',
-        expected: expectedSignature.substring(0, 10) + '...'
-      });
-      return false;
-    }
-    
-    logger.info(LogEvent.WEBHOOK_RECEIVED, 'Webhook signature verified successfully');
-    return true;
-    
-  } catch (error: any) {
-    logger.error(LogEvent.WEBHOOK_IGNORED, 'Error verifying signature', { error: error.message });
-    return false;
-  }
-}
-
-
 // ============================================
 // MAIN HANDLER
 // ============================================
@@ -183,13 +132,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Return 200 to not reveal security check to attacker
       return res.status(200).json({ status: 'ignored' });
     }
-
-    // ✅ SECURITY: Verify webhook signature (HMAC)
-    if (!verifyWebhookSignature(req)) {
-      logger.error(LogEvent.WEBHOOK_IGNORED, 'Request with invalid signature blocked');
-      return res.status(200).json({ status: 'ignored' });
-    }
-
 
     const notification = req.body;
 
@@ -280,7 +222,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Build config URL
-      const baseUrl = getBaseUrl();
+      const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : process.env.BASE_URL || 'https://botinstasgram.vercel.app';
       
       configUrl = `${baseUrl}/api/go/${configToken}`;
     } catch (panelError: any) {

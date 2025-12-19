@@ -5,7 +5,6 @@ import { PanelManager } from '../../utils/panel';
 import { generateConfigToken } from '../../utils/jwt';
 import { RateLimitStorage, TrialStorage } from '../../utils/storage';
 import { logger, LogEvent } from '../../utils/logger';
-import { getBaseUrl } from '../../utils/constants';
 
 /**
  * GET /api/bot/actions?action=vpn&tg_id=123456789
@@ -31,8 +30,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!telegramId) {
     // Для оферты не нужен telegramId
     if (action === 'offer') {
-      const baseUrl = getBaseUrl();
-      return res.redirect(302, `${baseUrl}/offer.html`);
+      const protocol = req.headers['x-forwarded-proto'] || 'https';
+      const host = req.headers['host'] || 'botinstasgram.vercel.app';
+      return res.redirect(302, `${protocol}://${host}/offer.html`);
     }
     return res.status(400).send(errorPage('Откройте ссылку через Telegram бот'));
   }
@@ -46,8 +46,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (action === 'offer') {
-    const baseUrl = getBaseUrl();
-    return res.redirect(302, `${baseUrl}/offer.html`);
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['host'] || 'botinstasgram.vercel.app';
+    return res.redirect(302, `${protocol}://${host}/offer.html`);
   }
 
   if (action === 'account') {
@@ -109,8 +110,9 @@ async function handleVPN(req: VercelRequest, res: VercelResponse, telegramId: st
       logger.logUserCreated(uuid, email, duration);
     }
 
-    const baseUrl = getBaseUrl();
-    const goUrl = `${baseUrl}/api/go/${configToken}`;
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['host'] || 'botinstasgram.vercel.app';
+    const goUrl = `${protocol}://${host}/api/go/${configToken}`;
 
     return res.redirect(302, goUrl);
 
@@ -138,7 +140,9 @@ async function handlePay(req: VercelRequest, res: VercelResponse, telegramId: st
     const idempotenceKey = uuidv4();
     const customerEmail = `tg_${telegramId}@vpn.local`;
     
-    const baseUrl = getBaseUrl();
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers['host'] || 'botinstasgram.vercel.app';
+    const baseUrl = `${protocol}://${host}`;
 
     const paymentData = {
       amount: {

@@ -207,6 +207,13 @@ async function sendVPNLink(botToken: string, chatId: number, userId: number, fir
             text: '📄 Договор оферты',
             url: offerUrl
           }
+        ],
+        // Поддержка
+        [
+          {
+            text: '❓ Помощь',
+            url: 'https://t.me/Vyacheslav_Neuro'
+          }
         ]
       ]
     }
@@ -233,8 +240,13 @@ async function sendHelp(botToken: string, chatId: number) {
           `4. Всё настроится автоматически!\n\n` +
           `<b>Умная маршрутизация:</b>\n` +
           `Банки и Госуслуги работают без отключения VPN!\n\n` +
-          `<b>Поддержка:</b> @vpn_connect_support`,
-    parse_mode: 'HTML'
+          `<b>Поддержка:</b> @Vyacheslav_Neuro`,
+    parse_mode: 'HTML',
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '❓ Написать в поддержку', url: 'https://t.me/Vyacheslav_Neuro' }]
+      ]
+    }
   };
 
   await sendMessage(botToken, message);

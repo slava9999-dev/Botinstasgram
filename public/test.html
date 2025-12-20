@@ -639,7 +639,13 @@
                     throw new Error(data.error || 'Ошибка создания платежа');
                 }
 
-                window.location.href = data.confirmationUrl;
+                // ✅ КРИТИЧНО: Сохраняем данные ПЕРЕД редиректом на ЮКасса
+                localStorage.setItem('vpn_payment_id', data.data.paymentId);
+                if (telegramId) {
+                    localStorage.setItem('vpn_email', `tg_${telegramId}@vpn.local`);
+                }
+
+                window.location.href = data.data.confirmationUrl;
 
             } catch (err) {
                 console.error('Payment error:', err);

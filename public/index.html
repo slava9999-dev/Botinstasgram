@@ -681,6 +681,14 @@
                     throw new Error(data.error || 'Ошибка создания платежа');
                 }
 
+                // ✅ КРИТИЧНО: Сохраняем данные ПЕРЕД редиректом на ЮКасса
+                // Без этого success.html не сможет проверить статус платежа!
+                localStorage.setItem('vpn_payment_id', data.data.paymentId);
+                // Используем telegramId как идентификатор (email не требуем с пользователя)
+                if (telegramId) {
+                    localStorage.setItem('vpn_email', `tg_${telegramId}@vpn.local`);
+                }
+
                 window.location.href = data.data.confirmationUrl;
 
             } catch (err) {

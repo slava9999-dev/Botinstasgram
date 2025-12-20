@@ -166,10 +166,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Extract data from metadata
-    const email = payment.metadata?.email || `user_${payment.id}@vpn.local`;
+    const metadataEmail = payment.metadata?.email || `user_${payment.id}@vpn.local`;
     const telegramId = payment.metadata?.telegramId;
     const amount = parseFloat(payment.amount?.value || '99');
 
+    // ✅ ВАЖНО: Для поиска существующего клиента используем telegramId!
+    // Клиенты из trial создаются с email формата: tg_${telegramId}@vpn.local
+    const clientEmailFromTelegram = telegramId ? `tg_${telegramId}@vpn.local` : null;
+    
     // Create or extend user in 3X-UI panel
     const INBOUND_ID = parseInt(process.env.INBOUND_ID || '1', 10);
     const planDuration = 30; // days
@@ -178,23 +182,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let configUrl: string;
     let uuid: string;
     let isExtension = false;
+    let clientEmail: string; // Email который будем использовать
 
     try {
       const panel = new PanelManager();
       
-      // ✅ Сначала проверяем - есть ли уже такой пользователь
-      const existingClient = await panel.getClientByEmail(INBOUND_ID, email);
+      // ✅ КРИТИЧНО: Ищем существующего клиента по telegramId!
+      // Trial клиенты создаются с email: tg_${telegramId}@vpn.local
+      let existingClient = null;
+      
+      if (clientEmailFromTelegram) {
+        existingClient = await panel.getClientByEmail(INBOUND_ID, clientEmailFromTelegram);
+        logger.info(LogEvent.PAYMENT_SUCCEEDED, `Searching for existing client by telegramId`, { clientEmailFromTelegram, found: !!existingClient });
+      }
+      
+      // Если не нашли по telegramId - ищем по email из metadata
+      if (!existingClient && metadataEmail !== metadataEmail) {
+        existingClient = await panel.getClientByEmail(INBOUND_ID, metadataEmail);
+      }
       
       if (existingClient) {
         // ✅ ПРОДЛЕНИЕ ПОДПИСКИ существующего пользователя
-        logger.info(LogEvent.PAYMENT_SUCCEEDED, `Found existing client ${email}, extending subscription`, { email });
+        clientEmail = existingClient.email;
+        logger.info(LogEvent.PAYMENT_SUCCEEDED, `Found existing client ${clientEmail}, extending subscription`, { email: clientEmail });
         
-        const extensionResult = await panel.extendClientByEmail(INBOUND_ID, email, planDuration);
+        const extensionResult = await panel.extendClientByEmail(INBOUND_ID, clientEmail, planDuration);
         
         if (extensionResult) {
           uuid = extensionResult.uuid;
           isExtension = true;
-          logger.info(LogEvent.PAYMENT_SUCCEEDED, `Extended ${email} until ${extensionResult.message}`, { email, message: extensionResult.message });
+          logger.info(LogEvent.PAYMENT_SUCCEEDED, `Extended ${clientEmail} until ${extensionResult.message}`, { email: clientEmail, message: extensionResult.message });
           
           // Генерируем токен с данными клиента
           configToken = generateConfigToken({
@@ -211,10 +228,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           throw new Error('Failed to extend subscription');
         }
       } else {
-        // ✅ НОВЫЙ ПОЛЬЗОВАТЕЛЬ - создаём
-        logger.info(LogEvent.USER_CREATED, `Creating new client ${email}`, { email });
+        // ✅ НОВЫЙ ПОЛЬЗОВАТЕЛЬ - создаём с email на основе telegramId
+        clientEmail = clientEmailFromTelegram || metadataEmail;
+        logger.info(LogEvent.USER_CREATED, `Creating new client ${clientEmail}`, { email: clientEmail });
         uuid = uuidv4();
-        const clientInfo = await panel.addClient(INBOUND_ID, email, uuid, planDuration);
+        const clientInfo = await panel.addClient(INBOUND_ID, clientEmail, uuid, planDuration);
         configToken = generateConfigToken(clientInfo, planDuration);
       }
 
@@ -239,7 +257,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // ✅ Save to Vercel KV (persistent!)
     const record: PaymentRecord = {
       paymentId: payment.id,
-      email,
+      email: clientEmail,
       telegramId,
       amount,
       configToken,
@@ -252,12 +270,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     await PaymentStorage.save(record);
 
-    logger.info(LogEvent.PAYMENT_SUCCEEDED, `Payment confirmed and saved: ${payment.id}`, { paymentId: payment.id, email, configUrl });
+    logger.info(LogEvent.PAYMENT_SUCCEEDED, `Payment confirmed and saved: ${payment.id}`, { paymentId: payment.id, email: clientEmail, configUrl });
 
     return res.status(200).json({
       status: 'success',
       paymentId: payment.id,
-      email,
+      email: clientEmail,
       configUrl,
       expiresAt: expiresAt.toISOString()
     });

@@ -1,6 +1,6 @@
 {
   "name": "vpn-connect-smart-config",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "VPN Connect - Smart Config Generator with Telegram Mini App and YooKassa payment integration",
   "private": true,
   "scripts": {

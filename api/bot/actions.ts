@@ -252,7 +252,7 @@ function errorPage(message: string): string {
   <div class="card">
     <h1>❌</h1>
     <p>${message}</p>
-    <a href="https://t.me/your_bot" class="btn">Вернуться в бот</a>
+    <a href="https://t.me/Vyacheslav_Neuro" class="btn">В поддержку</a>
   </div>
 </body>
 </html>
@@ -263,9 +263,7 @@ function errorPage(message: string): string {
 // ACCOUNT HANDLER (for Mini App)
 // ============================================
 async function handleAccount(req: VercelRequest, res: VercelResponse, telegramId: string) {
-  // CORS for Mini App
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+// Note: CORS is configured globally in vercel.json
   res.setHeader('Content-Type', 'application/json');
 
   try {
